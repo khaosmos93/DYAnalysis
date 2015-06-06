@@ -16,7 +16,6 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ## Source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-                                      #"file:/data1/kplee/AODTest/024378CE-4F9D-E411-9D76-001E673971CA.root"
                                     ""
     #"root://cms-xrd-global.cern.ch//store/mc/Phys14DR/ZprimeToMuMu_M-5000_Tune4C_13TeV-pythia8/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v1/00000/64A3B071-C66F-E411-9876-002481E0D9BC.root"
     )
