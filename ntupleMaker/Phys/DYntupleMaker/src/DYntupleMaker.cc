@@ -26,6 +26,7 @@
 //#include "DataFormats/PatCandidates/interface/TriggerPrimitive.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -168,7 +169,7 @@ DYntupleMaker::DYntupleMaker(const edm::ParameterSet& iConfig)
 
   theStorePriVtxFlag                =  iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
   theStoreJetFlag                   =  iConfig.getUntrackedParameter<bool>("StoreJetFlag", false);
-  theStoreMETFlag                   =  iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
+  theStoreMETFlag                   =  iConfig.getUntrackedParameter<bool>("StoreMETFlag", false);
   theStoreHLTReportFlag             =  iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   isMC                              =  iConfig.getUntrackedParameter<bool>("isMC");
   theStoreElectronFlag              =  iConfig.getUntrackedParameter<bool>("StoreElectronFlag", true);
@@ -376,11 +377,69 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
        Muon_dxyBS[i] = Muon_dszBS[i] = Muon_dzBS[i] = -100;
        Muon_dxyVTX[i] = Muon_dszVTX[i] = Muon_dzVTX[i] = -100;
        Muon_dxycktVTX[i] = Muon_dszcktVTX[i] = Muon_dzcktVTX[i] = -100;
+
+       //Various track informations
+       //MuonBestTrack
+       Muon_Best_pT[i] = -9999;
+       Muon_Best_pTError[i] = -9999;
+       Muon_Best_Px[i] = -9999;
+       Muon_Best_Py[i] = -9999;
+       Muon_Best_Pz[i] = -9999;
+       Muon_Best_eta[i] = -9999;
+       Muon_Best_phi[i] = -9999;
+       //Inner Track
+       Muon_Inner_pT[i] = -9999;
+       Muon_Inner_pTError[i] = -9999;
+       Muon_Inner_Px[i] = -9999;
+       Muon_Inner_Py[i] = -9999;
+       Muon_Inner_Pz[i] = -9999;
+       Muon_Inner_eta[i] = -9999;
+       Muon_Inner_phi[i] = -9999;
+       //Outer Track
+       Muon_Outer_pT[i] = -9999;
+       Muon_Outer_pTError[i] = -9999;
+       Muon_Outer_Px[i] = -9999;
+       Muon_Outer_Py[i] = -9999;
+       Muon_Outer_Pz[i] = -9999;
+       Muon_Outer_eta[i] = -9999;
+       Muon_Outer_phi[i] = -9999;
+       //Global Track
+       Muon_GLB_pT[i] = -9999;
+       Muon_GLB_pTError[i] = -9999;
+       Muon_GLB_Px[i] = -9999;
+       Muon_GLB_Py[i] = -9999;
+       Muon_GLB_Pz[i] = -9999;
+       Muon_GLB_eta[i] = -9999;
+       Muon_GLB_phi[i] = -9999;
+
+       //tuneP MuonBestTrack
+       Muon_TuneP_pT[i] = -9999;
+       Muon_TuneP_pTError[i] = -9999;
+       Muon_TuneP_Px[i] = -9999;
+       Muon_TuneP_Py[i] = -9999;
+       Muon_TuneP_Pz[i] = -9999;
+       Muon_TuneP_eta[i] = -9999;
+       Muon_TuneP_phi[i] = -9999;
    
        // GEN
        GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother[i] = -100;
        GENLepton_Px[i] = GENLepton_Py[i] = GENLepton_Pz[i] = -100;
        GENLepton_charge[i] = GENLepton_status[i] = GENLepton_ID[i] = -100;
+       GENLepton_isPrompt[i] = 0;
+       GENLepton_isPromptFinalState[i] = 0;
+       GENLepton_isTauDecayProduct[i] = 0;
+       GENLepton_isPromptTauDecayProduct[i] = 0;
+       GENLepton_isDirectPromptTauDecayProductFinalState[i] = 0;
+       GENLepton_isHardProcess[i] = 0;
+       GENLepton_isLastCopy[i] = 0;
+       GENLepton_isLastCopyBeforeFSR[i] = 0;
+       GENLepton_isPromptDecayed[i] = 0;
+       GENLepton_isDecayedLeptonHadron[i] = 0;
+       GENLepton_fromHardProcessBeforeFSR[i] = 0;
+       GENLepton_fromHardProcessDecayed[i] = 0;
+       GENLepton_fromHardProcessFinalState[i] = 0;
+       GENEvt_weight = 0; //Weights for NLO generated events
+
    }
 
    nEvt++;
@@ -403,38 +462,38 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
    edm::ESHandle<GlobalTrackingGeometry> glbTrackingGeometry;
    iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
 
-   // Pile-up reweight
-   if( isMC ) {
-     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-     iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-     std::vector<PileupSummaryInfo>::const_iterator PVI;
+   // // Pile-up reweight
+   // if( isMC ) {
+   //   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+   //   iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+   //   std::vector<PileupSummaryInfo>::const_iterator PVI;
 
-     int npv = -1;
-     int npvin = -1;
-     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+   //   int npv = -1;
+   //   int npvin = -1;
+   //   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
 
-       int BX = PVI->getBunchCrossing();
+   //     int BX = PVI->getBunchCrossing();
 
-       if(BX == 0) {
-         npvin = PVI->getPU_NumInteractions(); // in time only
-         npv = PVI->getTrueNumInteractions(); // in and out of time
-         continue;
-       }
-     }
+   //     if(BX == 0) {
+   //       npvin = PVI->getPU_NumInteractions(); // in time only
+   //       npv = PVI->getTrueNumInteractions(); // in and out of time
+   //       continue;
+   //     }
+   //   }
 
-     nPileUp = npv;
-     pileUpReweightIn = LumiWeights_.weight( npvin );
-     pileUpReweight = LumiWeights_.weight( npv );
+   //   nPileUp = npv;
+   //   pileUpReweightIn = LumiWeights_.weight( npvin );
+   //   pileUpReweight = LumiWeights_.weight( npv );
    
-     pileUpReweightPlus  = PShiftUp_.ShiftWeight( npv );
-     pileUpReweightMinus = PShiftDown_.ShiftWeight( npv );
+   //   pileUpReweightPlus  = PShiftUp_.ShiftWeight( npv );
+   //   pileUpReweightMinus = PShiftDown_.ShiftWeight( npv );
 
-     pileUpReweightInMuonPhys = LumiWeightsMuonPhys_.weight( npvin );
-     pileUpReweightMuonPhys = LumiWeightsMuonPhys_.weight( npv );
+   //   pileUpReweightInMuonPhys = LumiWeightsMuonPhys_.weight( npvin );
+   //   pileUpReweightMuonPhys = LumiWeightsMuonPhys_.weight( npv );
    
-     pileUpReweightPlusMuonPhys  = PShiftUpMuonPhys_.ShiftWeight( npv );
-     pileUpReweightMinusMuonPhys = PShiftDownMuonPhys_.ShiftWeight( npv );
-   }
+   //   pileUpReweightPlusMuonPhys  = PShiftUpMuonPhys_.ShiftWeight( npv );
+   //   pileUpReweightMinusMuonPhys = PShiftDownMuonPhys_.ShiftWeight( npv );
+   // }
 
    // call pat objects
    edm::Handle< pat::MuonCollection > muonHandle;
@@ -604,6 +663,69 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         Muon_Pz[_nMuon] = imuon.pz();
         Muon_eta[_nMuon] = imuon.eta();
         Muon_phi[_nMuon] = imuon.phi();
+
+        //Various track informations
+        //MuonBestTrack
+        if( imuon.muonBestTrack().isNonnull() )
+        {
+          Muon_Best_pT[_nMuon] = imuon.muonBestTrack()->pt();
+          Muon_Best_pTError[_nMuon] = imuon.muonBestTrack()->ptError();
+          Muon_Best_Px[_nMuon] = imuon.muonBestTrack()->px();
+          Muon_Best_Py[_nMuon] = imuon.muonBestTrack()->py();
+          Muon_Best_Pz[_nMuon] = imuon.muonBestTrack()->pz();
+          Muon_Best_eta[_nMuon] = imuon.muonBestTrack()->eta();
+          Muon_Best_phi[_nMuon] = imuon.muonBestTrack()->phi();
+        }
+
+        //Inner Track
+        if( imuon.innerTrack().isNonnull() )
+        {
+          Muon_Inner_pT[_nMuon] = imuon.innerTrack()->pt();
+          Muon_Inner_pTError[_nMuon] = imuon.innerTrack()->ptError();
+          Muon_Inner_Px[_nMuon] = imuon.innerTrack()->px();
+          Muon_Inner_Py[_nMuon] = imuon.innerTrack()->py();
+          Muon_Inner_Pz[_nMuon] = imuon.innerTrack()->pz();
+          Muon_Inner_eta[_nMuon] = imuon.innerTrack()->eta();
+          Muon_Inner_phi[_nMuon] = imuon.innerTrack()->phi();
+        }
+
+        //Outer Track
+        if( imuon.outerTrack().isNonnull() )
+        {
+          Muon_Outer_pT[_nMuon] = imuon.outerTrack()->pt();
+          Muon_Outer_pTError[_nMuon] = imuon.outerTrack()->ptError();
+          Muon_Outer_Px[_nMuon] = imuon.outerTrack()->px();
+          Muon_Outer_Py[_nMuon] = imuon.outerTrack()->py();
+          Muon_Outer_Pz[_nMuon] = imuon.outerTrack()->pz();
+          Muon_Outer_eta[_nMuon] = imuon.outerTrack()->eta();
+          Muon_Outer_phi[_nMuon] = imuon.outerTrack()->phi();
+        }
+
+        //Global Track
+        if( imuon.globalTrack().isNonnull() )
+        {
+          Muon_GLB_pT[_nMuon] = imuon.globalTrack()->pt();
+          Muon_GLB_pTError[_nMuon] = imuon.globalTrack()->ptError();
+          Muon_GLB_Px[_nMuon] = imuon.globalTrack()->px();
+          Muon_GLB_Py[_nMuon] = imuon.globalTrack()->py();
+          Muon_GLB_Pz[_nMuon] = imuon.globalTrack()->pz();
+          Muon_GLB_eta[_nMuon] = imuon.globalTrack()->eta();
+          Muon_GLB_phi[_nMuon] = imuon.globalTrack()->phi();
+        }
+
+        //tuneP MuonBestTrack
+        if( imuon.tunePMuonBestTrack().isNonnull() )
+        {
+          Muon_TuneP_pT[_nMuon] = imuon.tunePMuonBestTrack()->pt();
+          Muon_TuneP_pTError[_nMuon] = imuon.tunePMuonBestTrack()->ptError();
+          Muon_TuneP_Px[_nMuon] = imuon.tunePMuonBestTrack()->px();
+          Muon_TuneP_Py[_nMuon] = imuon.tunePMuonBestTrack()->py();
+          Muon_TuneP_Pz[_nMuon] = imuon.tunePMuonBestTrack()->pz();
+          Muon_TuneP_eta[_nMuon] = imuon.tunePMuonBestTrack()->eta();
+          Muon_TuneP_phi[_nMuon] = imuon.tunePMuonBestTrack()->phi();
+        }
+
+
 
         //ISOLATIONS GO HERE
         //detector based
@@ -889,26 +1011,26 @@ void
 DYntupleMaker::beginJob()
 {
 
-  if( isMC ) {
-    // Pileup Reweight: 2012, Summer12_S10
-    std::vector< float > _PUreweightRun2012 ;
-    std::vector< float > _PUreweightRun2012MuonPhys ;
-    std::vector< float > _MC2012;
+  // if( isMC ) {
+  //   // Pileup Reweight: 2012, Summer12_S10
+  //   std::vector< float > _PUreweightRun2012 ;
+  //   std::vector< float > _PUreweightRun2012MuonPhys ;
+  //   std::vector< float > _MC2012;
 
-    for( int i = 0; i < 100; ++i) {  
-      _PUreweightRun2012.push_back((float)PileUpRD_[i]);
-      _PUreweightRun2012MuonPhys.push_back((float)PileUpRDMuonPhys_[i]);
-      _MC2012.push_back((float)PileUpMC_[i]);
-    }
+  //   for( int i = 0; i < 100; ++i) {  
+  //     _PUreweightRun2012.push_back((float)PileUpRD_[i]);
+  //     _PUreweightRun2012MuonPhys.push_back((float)PileUpRDMuonPhys_[i]);
+  //     _MC2012.push_back((float)PileUpMC_[i]);
+  //   }
 
-    LumiWeights_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012);
-    PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-    PShiftUp_ = reweight::PoissonMeanShifter(0.5);
+  //   LumiWeights_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012);
+  //   PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+  //   PShiftUp_ = reweight::PoissonMeanShifter(0.5);
 
-    LumiWeightsMuonPhys_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012MuonPhys);
-    PShiftDownMuonPhys_ = reweight::PoissonMeanShifter(-0.5);
-    PShiftUpMuonPhys_ = reweight::PoissonMeanShifter(0.5);
-  }
+  //   LumiWeightsMuonPhys_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012MuonPhys);
+  //   PShiftDownMuonPhys_ = reweight::PoissonMeanShifter(-0.5);
+  //   PShiftUpMuonPhys_ = reweight::PoissonMeanShifter(0.5);
+  // }
 
   edm::Service<TFileService> fs;
   DYTree = fs->make<TTree>("DYTree","DYTree");
@@ -1108,6 +1230,48 @@ DYntupleMaker::beginJob()
   DYTree->Branch("Muon_trkisoR05", &Muon_trkisoR05,"Muon_trkisoR05[nMuon]/D");
   DYTree->Branch("Muon_hcalisoR05", &Muon_hcalisoR05,"Muon_hcalisoR05[nMuon]/D");
   DYTree->Branch("Muon_ecalisoR05", &Muon_ecalisoR05,"Muon_ecalisoR05[nMuon]/D");
+
+  //Various track informations
+  DYTree->Branch("Muon_Best_pT", &Muon_Best_pT, "Muon_Best_pT[nMuon]/D");
+  DYTree->Branch("Muon_Best_pTError", &Muon_Best_pTError, "Muon_Best_pTError[nMuon]/D");
+  DYTree->Branch("Muon_Best_Px", &Muon_Best_Px, "Muon_Best_Px[nMuon]/D");
+  DYTree->Branch("Muon_Best_Py", &Muon_Best_Py, "Muon_Best_Py[nMuon]/D");
+  DYTree->Branch("Muon_Best_Pz", &Muon_Best_Pz, "Muon_Best_Pz[nMuon]/D");
+  DYTree->Branch("Muon_Best_eta", &Muon_Best_eta, "Muon_Best_eta[nMuon]/D");
+  DYTree->Branch("Muon_Best_phi", &Muon_Best_phi, "Muon_Best_phi[nMuon]/D");
+
+  DYTree->Branch("Muon_Inner_pT", &Muon_Inner_pT, "Muon_Inner_pT[nMuon]/D");
+  DYTree->Branch("Muon_Inner_pTError", &Muon_Inner_pTError, "Muon_Inner_pTError[nMuon]/D");
+  DYTree->Branch("Muon_Inner_Px", &Muon_Inner_Px, "Muon_Inner_Px[nMuon]/D");
+  DYTree->Branch("Muon_Inner_Py", &Muon_Inner_Py, "Muon_Inner_Py[nMuon]/D");
+  DYTree->Branch("Muon_Inner_Pz", &Muon_Inner_Pz, "Muon_Inner_Pz[nMuon]/D");
+  DYTree->Branch("Muon_Inner_eta", &Muon_Inner_eta, "Muon_Inner_eta[nMuon]/D");
+  DYTree->Branch("Muon_Inner_phi", &Muon_Inner_phi, "Muon_Inner_phi[nMuon]/D");
+
+  DYTree->Branch("Muon_Outer_pT", &Muon_Outer_pT, "Muon_Outer_pT[nMuon]/D");
+  DYTree->Branch("Muon_Outer_pTError", &Muon_Outer_pTError, "Muon_Outer_pTError[nMuon]/D");
+  DYTree->Branch("Muon_Outer_Px", &Muon_Outer_Px, "Muon_Outer_Px[nMuon]/D");
+  DYTree->Branch("Muon_Outer_Py", &Muon_Outer_Py, "Muon_Outer_Py[nMuon]/D");
+  DYTree->Branch("Muon_Outer_Pz", &Muon_Outer_Pz, "Muon_Outer_Pz[nMuon]/D");
+  DYTree->Branch("Muon_Outer_eta", &Muon_Outer_eta, "Muon_Outer_eta[nMuon]/D");
+  DYTree->Branch("Muon_Outer_phi", &Muon_Outer_phi, "Muon_Outer_phi[nMuon]/D");
+
+  DYTree->Branch("Muon_GLB_pT", &Muon_GLB_pT, "Muon_GLB_pT[nMuon]/D");
+  DYTree->Branch("Muon_GLB_pTError", &Muon_GLB_pTError, "Muon_GLB_pTError[nMuon]/D");
+  DYTree->Branch("Muon_GLB_Px", &Muon_GLB_Px, "Muon_GLB_Px[nMuon]/D");
+  DYTree->Branch("Muon_GLB_Py", &Muon_GLB_Py, "Muon_GLB_Py[nMuon]/D");
+  DYTree->Branch("Muon_GLB_Pz", &Muon_GLB_Pz, "Muon_GLB_Pz[nMuon]/D");
+  DYTree->Branch("Muon_GLB_eta", &Muon_GLB_eta, "Muon_GLB_eta[nMuon]/D");
+  DYTree->Branch("Muon_GLB_phi", &Muon_GLB_phi, "Muon_GLB_phi[nMuon]/D");
+
+  DYTree->Branch("Muon_TuneP_pT", &Muon_TuneP_pT, "Muon_TuneP_pT[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_pTError", &Muon_TuneP_pTError, "Muon_TuneP_pTError[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_Px", &Muon_TuneP_Px, "Muon_TuneP_Px[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_Py", &Muon_TuneP_Py, "Muon_TuneP_Py[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_Pz", &Muon_TuneP_Pz, "Muon_TuneP_Pz[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_eta", &Muon_TuneP_eta, "Muon_TuneP_eta[nMuon]/D");
+  DYTree->Branch("Muon_TuneP_phi", &Muon_TuneP_phi, "Muon_TuneP_phi[nMuon]/D");
+         
   //pf iso
   DYTree->Branch("Muon_PfChargedHadronIsoR05", &Muon_PfChargedHadronIsoR05,"Muon_PfChargedHadronIsoR05[nMuon]/D");
   DYTree->Branch("Muon_PfNeutralHadronIsoR05", &Muon_PfNeutralHadronIsoR05,"Muon_PfNeutralHadronIsoR05[nMuon]/D");
@@ -1177,6 +1341,22 @@ DYntupleMaker::beginJob()
   DYTree->Branch("GENLepton_charge", &GENLepton_charge,"GENLepton_charge[GENnPair]/I");
   DYTree->Branch("GENLepton_status", &GENLepton_status,"GENLepton_status[GENnPair]/I");
   DYTree->Branch("GENLepton_ID", &GENLepton_ID,"GENLepton_ID[GENnPair]/I");
+  DYTree->Branch("GENLepton_isPrompt", &GENLepton_isPrompt,"GENLepton_isPrompt[GENnPair]/I");
+  DYTree->Branch("GENLepton_isPromptFinalState", &GENLepton_isPromptFinalState,"GENLepton_isPromptFinalState[GENnPair]/I");
+  DYTree->Branch("GENLepton_isTauDecayProduct", &GENLepton_isTauDecayProduct,"GENLepton_isTauDecayProduct[GENnPair]/I");
+  DYTree->Branch("GENLepton_isPromptTauDecayProduct", &GENLepton_isPromptTauDecayProduct,"GENLepton_isPromptTauDecayProduct[GENnPair]/I");
+  DYTree->Branch("GENLepton_isDirectPromptTauDecayProductFinalState", &GENLepton_isDirectPromptTauDecayProductFinalState,"GENLepton_isDirectPromptTauDecayProductFinalState[GENnPair]/I");
+  DYTree->Branch("GENLepton_isHardProcess",&GENLepton_isHardProcess,"GENLepton_isHardProcess[GENnPair]/I");
+  DYTree->Branch("GENLepton_isLastCopy",&GENLepton_isLastCopy,"GENLepton_isLastCopy[GENnPair]/I");
+  DYTree->Branch("GENLepton_isLastCopyBeforeFSR",&GENLepton_isLastCopyBeforeFSR,"GENLepton_isLastCopyBeforeFSR[GENnPair]/I");
+  DYTree->Branch("GENLepton_isPromptDecayed",&GENLepton_isPromptDecayed,"GENLepton_isPromptDecayed[GENnPair]/I");
+  DYTree->Branch("GENLepton_isDecayedLeptonHadron",&GENLepton_isDecayedLeptonHadron,"GENLepton_isDecayedLeptonHadron[GENnPair]/I");
+  DYTree->Branch("GENLepton_fromHardProcessBeforeFSR",&GENLepton_fromHardProcessBeforeFSR,"GENLepton_fromHardProcessBeforeFSR[GENnPair]/I");
+  DYTree->Branch("GENLepton_fromHardProcessDecayed",&GENLepton_fromHardProcessDecayed,"GENLepton_fromHardProcessDecayed[GENnPair]/I");
+  DYTree->Branch("GENLepton_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
+  DYTree->Branch("GENEvt_weight",&GENEvt_weight,"GENEvt_weight/D");
+
+
 
   // Pile-up Reweight
   DYTree->Branch("nPileUp",&nPileUp,"nPileUp/I");
@@ -1218,22 +1398,22 @@ DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
    const int nTrigName = 16;
    string trigs[nTrigName] = {
-    "HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*",
-     "HLT_Mu40_v*",
+     "HLT_IsoMu24_eta2p1_v*",
+     "HLT_Mu50_v*",
      "HLT_IsoMu24_eta2p1_v*",
      "HLT_Mu17_Mu8_v*", 
      "HLT_Mu17_TkMu8_v*",
      "HLT_Mu22_TkMu8_v*",
-     "HLT_Mu22_TkMu22_v*",
+     "HLT_Mu24_v*",
      "HLT_DoubleEle33_CaloIdL_v*",
      "HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*",
      "HLT_Ele27_WP80_v*",
-     "HLT_Photon30_CaloIdVL_v*",
-     "HLT_Photon50_CaloIdVL_v*",
-     "HLT_Photon70_CaloIdVL_v*",
-     "HLT_Photon135_v*",
-     "HLT_Photon150_v*",
-     "HLT_Mu22_Photon22_CaloIdL_v*"
+     "HLT_IsoMu27_v*",
+     "HLT_Mu45_eta2p1_v*",
+     "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",
+     "HLT_IsoMu20_v*",
+     "HLT_IsoMu24_IterTrk02_v*",
+     "HLT_IsoMu20_eta2p1_IterTrk02_v*"
    };
    MuonHLT.clear();
    MuonHLTPS.clear();
@@ -1451,7 +1631,7 @@ void DYntupleMaker::fillGENInfo(const edm::Event &iEvent) {
   int _GennPair = 0;
   for( size_t ipar = 0; ipar < particles->size(); ipar++ ) {
     const reco::GenParticle &parCand = (*particles)[ipar];
-    if( abs(parCand.pdgId()) == 13 || abs(parCand.pdgId()) == 11 ) {
+    if( abs(parCand.pdgId()) == 13 || abs(parCand.pdgId()) == 11 || abs(parCand.pdgId()) == 15 ) {
       GENLepton_ID[_GennPair] = parCand.pdgId(); 
       GENLepton_pT[_GennPair] = parCand.pt(); 
       GENLepton_Px[_GennPair] = parCand.px();
@@ -1463,10 +1643,30 @@ void DYntupleMaker::fillGENInfo(const edm::Event &iEvent) {
       GENLepton_status[_GennPair] = parCand.status();
       GENLepton_mother[_GennPair] = parCand.mother(0)->pdgId();
 
+      //Flags (Ref: https://indico.cern.ch/event/402279/contribution/5/attachments/805964/1104514/mcaod-Jun17-2015.pdf)
+      GENLepton_isPrompt[_GennPair] = parCand.statusFlags().isPrompt(); //not from hadron, muon or tau decay
+      GENLepton_isPromptFinalState[_GennPair] = parCand.isPromptFinalState(); //isPrompt && final state (status==1)
+      GENLepton_isTauDecayProduct[_GennPair] = parCand.statusFlags().isTauDecayProduct(); //is directly or indirectly from a tau decay
+      GENLepton_isPromptTauDecayProduct[_GennPair] = parCand.statusFlags().isPromptTauDecayProduct(); //is directly or indirectly from a tau decay, where the tau did not come from a hadron decay
+      GENLepton_isDirectPromptTauDecayProductFinalState[_GennPair] = parCand.isDirectPromptTauDecayProductFinalState(); // is the direct decay product from a tau decay (ie no intermediate hadron), where the tau did not come from a hadron decay && final state
+      GENLepton_isHardProcess[_GennPair] = parCand.isHardProcess();
+      GENLepton_isLastCopy[_GennPair] = parCand.isLastCopy();
+      GENLepton_isLastCopyBeforeFSR[_GennPair] = parCand.isLastCopyBeforeFSR();
+      GENLepton_isPromptDecayed[_GennPair] = parCand.isPromptDecayed();
+      GENLepton_isDecayedLeptonHadron[_GennPair] = parCand.statusFlags().isDecayedLeptonHadron();
+      GENLepton_fromHardProcessBeforeFSR[_GennPair] = parCand.fromHardProcessBeforeFSR();
+      GENLepton_fromHardProcessDecayed[_GennPair] = parCand.fromHardProcessDecayed();
+      GENLepton_fromHardProcessFinalState[_GennPair] = parCand.fromHardProcessFinalState();
+
       _GennPair++;
     }
   }
   GENnPair = _GennPair;
+
+  edm::Handle<GenEventInfoProduct> genEvtInfo;
+  iEvent.getByLabel("generator", genEvtInfo);
+  GENEvt_weight = genEvtInfo->weight();
+  // std::cout << "Evt Weight: " << GENEvt_weight<< std::endl;
 }
 
 //////////////////////////////////////////////////////////////

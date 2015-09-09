@@ -411,6 +411,49 @@ class DYntupleMaker : public edm::EDAnalyzer {
       std::vector<double> vtxTrkEMu1Pt;
       std::vector<double> vtxTrkEMu2Pt;
 
+      //Various track informations
+      //MuonBestTrack
+      double Muon_Best_pT[MPSIZE];
+      double Muon_Best_pTError[MPSIZE];
+      double Muon_Best_Px[MPSIZE];
+      double Muon_Best_Py[MPSIZE];
+      double Muon_Best_Pz[MPSIZE];
+      double Muon_Best_eta[MPSIZE];
+      double Muon_Best_phi[MPSIZE];
+      //Inner Track
+      double Muon_Inner_pT[MPSIZE];
+      double Muon_Inner_pTError[MPSIZE];
+      double Muon_Inner_Px[MPSIZE];
+      double Muon_Inner_Py[MPSIZE];
+      double Muon_Inner_Pz[MPSIZE];
+      double Muon_Inner_eta[MPSIZE];
+      double Muon_Inner_phi[MPSIZE];
+      //Outer Track
+      double Muon_Outer_pT[MPSIZE];
+      double Muon_Outer_pTError[MPSIZE];
+      double Muon_Outer_Px[MPSIZE];
+      double Muon_Outer_Py[MPSIZE];
+      double Muon_Outer_Pz[MPSIZE];
+      double Muon_Outer_eta[MPSIZE];
+      double Muon_Outer_phi[MPSIZE];
+      //Global Track
+      double Muon_GLB_pT[MPSIZE];
+      double Muon_GLB_pTError[MPSIZE];
+      double Muon_GLB_Px[MPSIZE];
+      double Muon_GLB_Py[MPSIZE];
+      double Muon_GLB_Pz[MPSIZE];
+      double Muon_GLB_eta[MPSIZE];
+      double Muon_GLB_phi[MPSIZE];
+
+      //tuneP MuonBestTrack
+      double Muon_TuneP_pT[MPSIZE];
+      double Muon_TuneP_pTError[MPSIZE];
+      double Muon_TuneP_Px[MPSIZE];
+      double Muon_TuneP_Py[MPSIZE];
+      double Muon_TuneP_Pz[MPSIZE];
+      double Muon_TuneP_eta[MPSIZE];
+      double Muon_TuneP_phi[MPSIZE];
+
       // GEN
       int GENnPair;
       double GENLepton_phi[MPSIZE];
@@ -423,6 +466,20 @@ class DYntupleMaker : public edm::EDAnalyzer {
       int GENLepton_charge[MPSIZE];
       int GENLepton_status[MPSIZE];
       int GENLepton_ID[MPSIZE];
+      int GENLepton_isPrompt[MPSIZE];
+      int GENLepton_isPromptFinalState[MPSIZE];
+      int GENLepton_isTauDecayProduct[MPSIZE];
+      int GENLepton_isPromptTauDecayProduct[MPSIZE];
+      int GENLepton_isDirectPromptTauDecayProductFinalState[MPSIZE];
+      int GENLepton_isHardProcess[MPSIZE];
+      int GENLepton_isLastCopy[MPSIZE];
+      int GENLepton_isLastCopyBeforeFSR[MPSIZE];
+      int GENLepton_isPromptDecayed[MPSIZE];
+      int GENLepton_isDecayedLeptonHadron[MPSIZE];
+      int GENLepton_fromHardProcessBeforeFSR[MPSIZE];
+      int GENLepton_fromHardProcessDecayed[MPSIZE];
+      int GENLepton_fromHardProcessFinalState[MPSIZE];
+      double GENEvt_weight;
 
       int NTT;
       double TTrack_dxy[MPSIZE];
