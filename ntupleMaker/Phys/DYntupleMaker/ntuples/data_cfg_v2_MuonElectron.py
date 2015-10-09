@@ -32,7 +32,7 @@ process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 # process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-process.GlobalTag.globaltag = cms.string('') #prompt-reco global tag
+process.GlobalTag.globaltag = cms.string('74X_dataRun2_Prompt_v2') #prompt-reco global tag
 # process.GlobalTag.globaltag = cms.string('MCRUN2_74_V9A::All')
 
 # from Configuration.AlCa.autoCond import autoCond
