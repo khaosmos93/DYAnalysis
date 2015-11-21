@@ -6,6 +6,10 @@
 //customized header files
 #include <NtupleHandle.h>
 
+// -- Header files for the Rochester Muon Momentum Correction -- //
+#include <rochcor2015.h> 
+#include <muresolution_run2.h>
+
 #define M_Mu 0.1056583715
 
 class Lepton
@@ -261,6 +265,22 @@ public:
 
    		Momentum = v;
    		cktMomentum = cktv;
+    }
+
+    void ApplyRochCorr(rochcor2015 *rmcor, Int_t type)
+    {
+      float qter = 1.0;
+
+      if (type == 0 ) // -- MC -- //
+        rmcor->momcor_mc(Momentum, charge, 0, qter);
+
+      else if (type == 1) // -- Data -- //
+        rmcor->momcor_data(Momentum, charge, 0, qter);
+
+      // -- Change Muon pT, eta and phi with updated(corrected) one -- //
+      Pt = Momentum.Pt();
+      eta = Momentum.Eta();
+      phi = Momentum.Phi();
     }
 
   Bool_t isTrigMatched(NtupleHandle *nh, TString HLT)
