@@ -1,0 +1,25 @@
+#necessary inputs to work with covariance matrix machinery
+
+#efficiency correlation matrix. Produced with EffCorrAndSyst code package
+-rw-r--r-- 1 asvyatko phys 141271 May  1 21:30 effCorr_12.09.13.root
+
+#Unfolding/response matrix
+-rw-r--r-- 1 asvyatko phys   8606 May  1 21:30 massResolUnfold.root
+
+#FSR response matrix
+-rw-r--r-- 1 asvyatko phys  20615 May  1 21:30 FSRresMatrixProd_tmp.root
+
+#systematic uncertainty tables produced with
+-rw-r--r-- 1 asvyatko phys   3914 May  1 21:30 r1D_syst_postFSR_fullPhS_mu_14.03.13.dat
+-rw-r--r-- 1 asvyatko phys   3915 May  1 21:30 r1D_syst_postFSR_inAcc_mu_14.03.13.dat
+-rw-r--r-- 1 asvyatko phys   3949 May  1 21:30 r1D_syst_preFSR_fullPhS_mu_12.09.13.dat
+-rw-r--r-- 1 asvyatko phys   3939 May  1 21:30 r1D_syst_preFSR_inAcc_mu_14.03.13.dat
+
+#same in 2D. Back in 7 TeV it was formatted by Hwidong - so I requested his macro
+-rw-r--r-- 1 asvyatko phys   5375 May  1 21:30 r2D_syst_preFSR_inAcc_mu_14.03.13.dat
+-rw-r--r-- 1 asvyatko phys   5371 May  1 21:30 r2D_syst_preFSR_inAcc_mu_26.03.13.dat
+
+#Theory results for chi2 test
+-rw-r--r-- 1 asvyatko phys   3389 Sep 12 22:14 shape_r_Theory_CT10_2D_mu_preFSR_inAcc_store.root
+-rw-r--r-- 1 asvyatko phys   3401 Sep 12 22:14 shape_r_Theory_NNPDF21_2D_mu_preFSR_inAcc_store.root
+

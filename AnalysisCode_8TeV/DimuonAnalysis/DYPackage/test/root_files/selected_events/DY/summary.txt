@@ -1,0 +1,21 @@
+*
+* SUMMARY
+*--------------------------------------------------
+
+  L_int = 19712/pb
+
+   Data: 0 events processed!
+         2478713.0 Z events!
+         118182.0 SS (+) events!
+         113413.0 SS (-) events!
+     /tmp/asvyatko/r12b-del-j22-v1_tight-loose_skim.root
+
+   MC:
+
+
+
+
+
+
+
+

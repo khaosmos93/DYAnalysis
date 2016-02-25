@@ -1,0 +1,45 @@
+<lcgdict>
+
+  <class name="purdue::Muon"/>
+  <class name="std::vector<purdue::Muon>"/>
+  <class name="edm::Wrapper<purdue::Muon>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Muon> >"/>
+  <class name="edm::Ptr<purdue::Muon>"/>
+
+  <class name="purdue::Electron"/>
+  <class name="std::vector<purdue::Electron>"/>
+  <class name="edm::Wrapper<purdue::Electron>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Electron> >"/>
+  <class name="edm::Ptr<purdue::Electron>"/>
+
+  <class name="purdue::Dielectron"/>
+  <class name="std::vector<purdue::Dielectron>"/>
+  <class name="edm::Wrapper<purdue::Dielectron>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Dielectron> >"/>
+  <class name="edm::Ptr<purdue::Dielectron>"/>
+
+  <class name="purdue::Dimuon"/>
+  <class name="std::vector<purdue::Dimuon>"/>
+  <class name="edm::Wrapper<purdue::Dimuon>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Dimuon> >"/>
+  <class name="edm::Ptr<purdue::Dimuon>"/>
+
+  <class name="purdue::Photon"/>
+  <class name="std::vector<purdue::Photon>"/>
+  <class name="edm::Wrapper<purdue::Photon>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Photon> >"/>
+  <class name="edm::Ptr<purdue::Photon>"/>
+
+  <class name="purdue::EventInfo"/>
+  <class name="std::vector<purdue::EventInfo>"/>
+  <class name="edm::Wrapper<purdue::EventInfo>"/>
+  <class name="edm::Wrapper<std::vector<purdue::EventInfo> >"/>
+  <class name="edm::Ptr<purdue::EventInfo>"/>
+
+  <class name="purdue::Jet"/>
+  <class name="std::vector<purdue::Jet>"/>
+  <class name="edm::Wrapper<purdue::Jet>"/>
+  <class name="edm::Wrapper<std::vector<purdue::Jet> >"/>
+  <class name="edm::Ptr<purdue::Jet>"/>
+
+</lcgdict>
