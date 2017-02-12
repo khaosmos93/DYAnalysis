@@ -1,0 +1,8 @@
+1) Background uncertainty
+Fix bug in MC-based statistical uncertainty
+
+2) Efficiency scale factor
+Fix a bug in syst. from binning choice (quadrature sum -> take larger one)
+
+3) FSR
+Use high-mass samples & updated FSR simulation (adjusting mass scale for each sample)
