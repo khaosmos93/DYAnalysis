@@ -7,12 +7,22 @@
 #include <DYAnalysis_76X/CommonCodes/Object.h>
 #include <DYAnalysis_76X/CommonCodes/NtupleHandle.h>
 
+#include <TSystem.h>
 #include <fstream>
 #include <iostream>
 
 #define Lumi 2832.673 // -- Up to Run260627 (Full 2015 Data), MuonPhys_v2 JSON. unit: /pb, Updated at 2016.02.24 -- //
 #define Lumi_HLTv4p2 865.919 // -- integrated luminosity before Run 257933 -- //
 #define nMassBin 43
+
+
+TString GetBasePath()
+{
+	TString BasePath = gSystem->HomeDirectory();
+	BasePath = BasePath + "/Physics/DYAnalysis_76X/";
+
+	return BasePath;
+}
 
 class DYAnalyzer
 {
@@ -149,7 +159,7 @@ DYAnalyzer::DYAnalyzer(TString HLTname)
 		cout << "===========================================================" << endl;
 	}
 
-	this->Path_CommonCodes = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/";
+	this->Path_CommonCodes = GetBasePath + "Include/";
 	printf("[Path_CommonCodes = %s]\n", Path_CommonCodes.Data() );
 }
 

@@ -20,11 +20,11 @@
 #include <TMath.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
+#include <DYAnalysis_76X/Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <DYAnalysis_76X/Include/RochesterMomCorr_76X/rochcor2015.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <DYAnalysis_76X/Include/DYAnalyzer.h>
 // #include </home/kplee/CommonCodes/DrellYanAnalysis/ControlPlots.h>
 
 static inline void loadBar(int x, int n, int r, int w);

@@ -3,7 +3,8 @@
 #define rochcor2015_cxx
 #include "rochcor2015.h"
 #include "TLorentzVector.h"
-
+#include <TSystem.h>
+#include <TString.h>
 
 const double rochcor2015::netabin[25] = {-2.4,-2.25,-2.1,-1.85,-1.6,-1.4,-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,
 					 0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.85,2.1,2.25,2.4};
@@ -228,7 +229,10 @@ rochcor2015::rochcor2015(){
 
   // muresol1.init("./RoccoR_13tev.txt");"/home/kplee/Physics/DYAnalysis_76X/CommonCodes/";
 
-  muresol1.init("/home/kplee/Physics/DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR_13tev.txt");
+  // muresol1.init("/home/kplee/Physics/DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR_13tev.txt");
+  TString Path_text = gSystem->HomeDirectory();
+  Path_text = Path_text + "/Physics/DYAnalysis_76X/Include/RochesterMomCorr_76X/RoccoR_13tev.txt";
+  muresol1.init( Path_text.Data() );
   muresol1.dumpParams();
   
   eran.SetSeed(123456);
@@ -251,7 +255,10 @@ rochcor2015::rochcor2015(){
 rochcor2015::rochcor2015(int seed){
 
   // muresol1.init("RoccoR_13tev.txt");
-  muresol1.init("/home/kplee/Physics/DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR_13tev.txt");
+  // muresol1.init("/home/kplee/Physics/DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR_13tev.txt");
+  TString Path_text = gSystem->HomeDirectory();
+  Path_text = Path_text + "/Physics/DYAnalysis_76X/Include/RochesterMomCorr_76X/RoccoR_13tev.txt";
+  muresol1.init( Path_text.Data() );
 
   eran.SetSeed(123456);
   sran.SetSeed(seed);
