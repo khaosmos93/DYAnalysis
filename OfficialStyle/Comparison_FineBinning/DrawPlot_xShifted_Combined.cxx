@@ -2,7 +2,8 @@
 
 void DrawLatexNDC( TLatex &latex );
 TGraphAsymmErrors* Convert_XShiftGraph( TGraphAsymmErrors* g_data, TH1D* h_ratio );
-void DrawPlot_xShifted()
+void ChangeValues_ShiftedGraph( TGraphAsymmErrors* g_data, TH1D* h_Comb );
+void DrawPlot_xShifted_Combined()
 {
 	TString FileName_NNLO = GetBasePath() + "TheoryValues/NNLO_NNPDF30_FineBinning/ROOTFile_DY_FEWZ_NNLO.root";
 	TFile *f_fewz = TFile::Open(FileName_NNLO);
@@ -14,7 +15,11 @@ void DrawPlot_xShifted()
 	// TH1D* h_data = (TH1D*)f_data->Get("h_DiffXsec_FSRCorr21")->Clone();
 	TGraphAsymmErrors *g_data = (TGraphAsymmErrors*)f_data->Get("g_DiffXSec_xShifted")->Clone();
 
-	TCanvas *c = new TCanvas("Comp_data_xShifted_vs_NNLO", "", 800, 800);
+	TFile *f_comb = TFile::Open("foutCanvas_DYCSCombi_corr_plotChCov.root"); f_comb->cd();
+	TH1D* h_Comb = (TH1D*)f_comb->Get("h1Combi")->Clone();
+	ChangeValues_ShiftedGraph( g_data, h_Comb );
+
+	TCanvas *c = new TCanvas("Comp_data_combined_xShifted_vs_NNLO", "", 800, 800);
 	c->cd();
 
 	TPad *TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
@@ -67,7 +72,8 @@ void DrawPlot_xShifted()
 	TString FileName_Data = GetBasePath() + "Include/Results_ROOTFiles_76X/ROOTFile_DiffXSec_FullUnc.root";
 	TFile *f_data2 = TFile::Open( FileName_Data );
 	f_data2->cd();
-	TH1D* h_data = (TH1D*)f_data2->Get("h_DiffXsec_FSRCorr_woLumi")->Clone(); h_data->Sumw2();
+	// TH1D* h_data = (TH1D*)f_data2->Get("h_DiffXsec_FSRCorr_woLumi")->Clone(); h_data->Sumw2();
+	TH1D* h_data = (TH1D*)h_Comb->Clone();
 	TH1D* h_fewz_Dimitri = (TH1D*)f_data2->Get("h_DiffXsec_FEWZ_NNPDF_NNLO")->Clone(); h_fewz_Dimitri->Sumw2();
 
 	TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
@@ -196,7 +202,33 @@ TGraphAsymmErrors* Convert_XShiftGraph( TGraphAsymmErrors* g_data, TH1D* h_ratio
 void DrawLatexNDC( TLatex &latex )
 {
 	Double_t lumi = 2.8;
-	latex.DrawLatexNDC(0.69, 0.965, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi ) );
+	latex.DrawLatexNDC(0.48, 0.965, "#font[42]{#scale[0.7]{2.3 fb^{-1} (ee) 2.8 fb^{-1} (#mu#mu)} #scale[0.8]{(13 TeV)}}" );
 	latex.DrawLatexNDC(0.14, 0.965, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.25, 0.965, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+}
+
+void ChangeValues_ShiftedGraph( TGraphAsymmErrors* g_data, TH1D* h_Comb )
+{
+	Int_t nPoint = g_data->GetN();
+	Int_t nBin = h_Comb->GetNbinsX();
+	if( nPoint != nBin )
+	{
+		printf("[nPoint != nBin ... check the details] (nPoint, nBin) = (%d, %d)\n", nPoint, nBin);
+		return;
+	}
+
+	for(Int_t i=0; i<nBin; i++)
+	{
+		Int_t i_bin = i+1;
+
+		Double_t DiffXSec = h_Comb->GetBinContent(i_bin);
+		Double_t Err_DiffXSec = h_Comb->GetBinError(i_bin);
+
+		Double_t x, y;
+		g_data->GetPoint( i, x, y);
+
+		g_data->SetPoint( i, x, DiffXSec );
+		g_data->SetPointEYlow( i, Err_DiffXSec );
+		g_data->SetPointEYhigh( i, Err_DiffXSec );
+	}
 }

@@ -77,7 +77,7 @@ public:
 	void Save_NormChi2( TFile *f_output )
 	{
 		this->h_Chi2nDOF = new TH1D("h_Chi2nDOF", "", nMassBin, MassBinEdges);
-		Int_t nChi2 = (TH1D*)vec_Chi2.size();
+		Int_t nChi2 = (Int_t)vec_Chi2.size();
 
 		if( nChi2 != nMassBin )
 		{
@@ -252,7 +252,7 @@ void GetExactDataXPoint()
 
 	TString FileName_Data = GetBasePath() + "Include/Results_ROOTFiles_76X/ROOTFile_DiffXSec_FullUnc.root";
 	TFile *f_data = TFile::Open(FileName_Data); f_data->cd();
-	TH1D* h_data = (TH1D*)f_data->Get("h_DiffXsec_FSRCorr")->Clone("h_DiffXSec");
+	TH1D* h_data = (TH1D*)f_data->Get("h_DiffXsec_FSRCorr_woLumi")->Clone("h_DiffXSec");
 
 	TFile *f_output = TFile::Open("ROOTFile_Histograms_XDataPoint.root", "RECREATE");
 
