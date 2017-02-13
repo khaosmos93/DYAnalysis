@@ -1,11 +1,10 @@
-#include <DYAnalysis_76X/CommonCodes/DYAnalyzer.h>
-#include <DYAnalysis_76X/CommonCodes/MyCanvas.C>
+#include <DYAnalysis_76X/Include/DYAnalyzer.h>
+#include <DYAnalysis_76X/Include/MyCanvas.C>
 #include <TLatex.h>
 
 class SysUncTool_Combine
 {
 public:
-	TString version;
 	TString FileLocation;
 	Double_t MassBinEdges[nMassBin+1];
 
@@ -38,11 +37,9 @@ public:
 	TString CanvasName;
 	TString LegendName_Theory;
 
-	SysUncTool_Combine(TString _verison)
+	SysUncTool_Combine()
 	{
-		version = _verison;
-
-		FileLocation = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/" + version;
+		FileLocation = GetBasePath() + "Includes/Results_ROOTFiles_76X";
 
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -1265,10 +1262,32 @@ public:
 
 		this->h_data->Write();
 		this->h_data_StatUnc->Write();
+		TH1D* h_data_woLumi = this->MakeDiffXSecPlot_woLumiUnc();
+		h_data_woLumi->Write();
 
 		this->h_aMCNLO->Write();
 		if( this->h_FEWZ != NULL )
 			this->h_FEWZ->Write();
+	}
+
+	TH1D* MakeDiffXSecPlot_woLumiUnc()
+	{
+		TString HistName = this->h_data->GetName();
+		TH1D* h_data_woLumi = (TH1D*)this->h_data->Clone(HistName+"_woLumi");
+		for(Int_t i=0; i<nMassBin; i++)
+		{
+			Int_t i_bin = i+1;
+
+			Double_t value = this->h_data->GetBinContent(i_bin);
+			Double_t AbsTotUnc = this->h_data->GetBinError(i_bin);
+			Double_t AbsLumiUnc = (this->h_RelLumiUnc->GetBinContent(i_bin) / 100.0) * value;
+
+			Double_t AbsTotUnc_woLumi = sqrt( AbsTotUnc*AbsTotUnc - AbsLumiUnc*AbsLumiUnc );
+
+			h_data_woLumi->SetBinError(i_bin, AbsTotUnc_woLumi );
+		}
+
+		return h_data_woLumi;
 	}
 
 	void PrintFinalResults()

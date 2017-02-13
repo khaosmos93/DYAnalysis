@@ -4,12 +4,18 @@
 // -- 2016.11.04 (v02): include v02 headers, SeparateDYLLSample_LHEInfo -> add DYEE case
 #pragma once
 
-#include <DYAnalysis_76X/CommonCodes/Object.h>
-#include <DYAnalysis_76X/CommonCodes/NtupleHandle.h>
+#include <DYAnalysis_76X/Include/Object.h>
+#include <DYAnalysis_76X/Include/NtupleHandle.h>
 
 #include <TSystem.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TFile.h>
 #include <fstream>
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 #define Lumi 2832.673 // -- Up to Run260627 (Full 2015 Data), MuonPhys_v2 JSON. unit: /pb, Updated at 2016.02.24 -- //
 #define Lumi_HLTv4p2 865.919 // -- integrated luminosity before Run 257933 -- //
@@ -159,7 +165,7 @@ DYAnalyzer::DYAnalyzer(TString HLTname)
 		cout << "===========================================================" << endl;
 	}
 
-	this->Path_CommonCodes = GetBasePath + "Include/";
+	this->Path_CommonCodes = GetBasePath + TString::Format("%s", "Include/");
 	printf("[Path_CommonCodes = %s]\n", Path_CommonCodes.Data() );
 }
 
