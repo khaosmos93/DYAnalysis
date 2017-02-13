@@ -70,7 +70,7 @@ public:
 		}
 		else // -- if not, it should be one of BB events or Eplus event -- //
 		{
-			if( fabs(eta1) < 0.9 && fabs(eta2) < 0.9 ) // -- BB event -- //
+			if( fabs(mu1.eta) < 0.9 && fabs(mu2.eta) < 0.9 ) // -- BB event -- //
 				h_mass_BB->Fill( M, weight );
 			else // -- Eplus event -- //
 				h_mass_Eplus->Fill( M, weight );
@@ -144,8 +144,8 @@ public:
 		if( this->isMC )
 			ntuple->TurnOnBranches_GenLepton();
 
-		HistContainer *Hists_DEN = new HistContainer( "DEN" );
-		HistContainer *Hists_NUM = new HistContainer( "NUM" );
+		HistContainer *Hist_DEN = new HistContainer( "DEN" );
+		HistContainer *Hist_NUM = new HistContainer( "NUM" );
 
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
@@ -239,8 +239,8 @@ public:
 
 		TFile *f_output = TFile::Open("ROOTFile_Output_Systematic_Eff_"+this->Tag+".root", "RECREATE");
 
-		Hists_DEN->Save( f_output );
-		Hists_NUM->Save( f_output );
+		Hist_DEN->Save( f_output );
+		Hist_NUM->Save( f_output );
 
 		Double_t TotalRunTime = totaltime.CpuTime();
 		cout << "\tTotal RunTime(" << this->Tag << "): " << TotalRunTime << " seconds\n" << endl;
@@ -257,9 +257,9 @@ protected:
 
 	Bool_t isMuon_DEN( Muon mu )
 	{
-		if( this->isTRK == 1
-			&& (this->AbsTrkIso / this->Inner_pT) < 0.1
-			&& this->TuneP_pT > 53
+		if( mu.isTRK == 1
+			&& (mu.AbsTrkIso / mu.Inner_pT) < 0.1
+			&& mu.TuneP_pT > 53
 			)
 		{
 			return 1;
