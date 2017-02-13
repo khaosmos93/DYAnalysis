@@ -165,7 +165,7 @@ DYAnalyzer::DYAnalyzer(TString HLTname)
 		cout << "===========================================================" << endl;
 	}
 
-	this->Path_CommonCodes = GetBasePath + TString::Format("%s", "Include/");
+	this->Path_CommonCodes = GetBasePath() + TString::Format("%s", "Include/");
 	printf("[Path_CommonCodes = %s]\n", Path_CommonCodes.Data() );
 }
 

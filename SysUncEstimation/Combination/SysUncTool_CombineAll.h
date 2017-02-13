@@ -39,7 +39,7 @@ public:
 
 	SysUncTool_Combine()
 	{
-		FileLocation = GetBasePath() + "Includes/Results_ROOTFiles_76X";
+		FileLocation = GetBasePath() + "Include/Results_ROOTFiles_76X";
 
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
