@@ -38,7 +38,7 @@ void DrawPlot_xShifted_Combined()
 	// h_fewz->Draw("LSAME");
 	// h_fewz->Draw("CSAME");
 
-	h_fewz->SetXTitle("m (#mu#mu) [GeV]");
+	h_fewz->SetXTitle("m [GeV]");
 	h_fewz->SetYTitle("d#sigma/dm [pb/GeV]");
 
 	h_fewz->GetXaxis()->SetNoExponent();
@@ -103,6 +103,7 @@ void DrawPlot_xShifted_Combined()
 	h_ratio->SetMarkerColor(kBlack);
 	// h_ratio->SetStats(kFALSE);
 
+	h_ratio->SetXTitle("m [GeV]");
 	h_ratio->GetXaxis()->SetTitleOffset( 0.9 );
 	h_ratio->GetXaxis()->SetTitleSize( 0.2 );
 	h_ratio->GetXaxis()->SetLabelColor(1);
@@ -113,7 +114,7 @@ void DrawPlot_xShifted_Combined()
 	h_ratio->GetXaxis()->SetNoExponent();
 	h_ratio->GetXaxis()->SetRangeUser( 15, 3000 );
 
-	h_ratio->GetYaxis()->SetTitle( "Data/MC" );
+	h_ratio->GetYaxis()->SetTitle( "Data/Theory" );
 	h_ratio->GetYaxis()->SetTitleOffset( 0.4 );
 	h_ratio->GetYaxis()->SetTitleSize( 0.15 );
 	h_ratio->GetYaxis()->SetLabelSize( 0.07 );
