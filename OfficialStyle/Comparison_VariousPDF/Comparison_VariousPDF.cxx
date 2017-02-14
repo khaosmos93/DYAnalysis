@@ -1,4 +1,6 @@
-#include </Users/KyeongPil_Lee/Physics/Include/PlotTools.h>
+#include <DYAnalysis_76X/Include/PlotTools.h>
+
+#include <TPad.h>
 
 TString FileName = "ROOTFile_Input_Comparison_VariousPDF.root";
 
@@ -36,7 +38,7 @@ Double_t yLabelOffset_pixel = 1;
 
 // Double_t xTickWidth = 0.1;
 
-void DrawOnPad_Data_vs_MC( TPad *Pad, HistInfo *Hist_Data_StatUnc, HistInfo *Hist_Data_TotUnc, HistInfo *Hist_Theory )
+void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistInfo *Hist_Data_TotUnc, HistInfo *Hist_Theory, Bool_t isLast = kFALSE )
 {
 	Pad->SetTopMargin(small);
 	Pad->SetBottomMargin(small);
@@ -75,7 +77,10 @@ void DrawOnPad_Data_vs_MC( TPad *Pad, HistInfo *Hist_Data_StatUnc, HistInfo *His
 	Y_axis->SetNdivisions( 503 );
 
 	TLegend *legend;
-	SetLegend( legend, 0.10, 0.10, 0.50, 0.30);
+	if( isLast )
+		SetLegend( legend, 0.10, 0.39, 0.50, 0.52);
+	else
+		SetLegend( legend, 0.10, 0.05, 0.50, 0.25);
 	legend->SetTextFont(62);
 	legend->AddEntry( Hist_Theory->h_ratio, Hist_Theory->LegendName );
 	legend->Draw();
@@ -94,7 +99,7 @@ void Comparison_VariousPDF()
 	AssignErrors( Hist_Data_StatUnc->h, h_RelStatUnc, kFALSE);
 	AssignErrors( Hist_Data_StatUnc->h_ratio, h_RelStatUnc, kFALSE);
 	Hist_Data_StatUnc->h_ratio->SetMarkerSize(0.1);
-	Hist_Data_StatUnc->h_ratio->SetLineWidth(1.5);
+	Hist_Data_StatUnc->h_ratio->SetLineWidth(1);
 	
 	// Print_Histogram( Hist_Data_StatUnc->h_ratio );
 
@@ -126,6 +131,7 @@ void Comparison_VariousPDF()
 	Hist_NNPDF->h_ratio->SetMarkerColorAlpha( color_NNPDF, 0 );
 	Hist_NNPDF->h_ratio->SetLineColorAlpha( color_NNPDF, 0 );
 	Hist_NNPDF->h_ratio->SetFillColorAlpha( color_NNPDF, 0.7 );
+	Hist_NNPDF->h_ratio->SetFillStyle( 1001 );
 
 	
 	// Print_Histogram( Hist_NNPDF->h_ratio );
@@ -235,19 +241,21 @@ void Comparison_VariousPDF()
 	TPad *LastPad = new TPad( "LastPad", "LastPad", 0.01, 0.00, 0.99, ySize_LastPad );
 	LastPad->Draw();
 	LastPad->cd();
-	DrawOnPad_Data_vs_MC( LastPad, Hist_Data_StatUnc, Hist_Data_TotUnc, Hist_ABM );
+	DrawOnPad_Data_vs_MC( LastPad, Hist_Data_StatUnc, Hist_Data_TotUnc, Hist_ABM, kTRUE );
 	LastPad->SetBottomMargin( LowerMargin_LastPad );
 	Hist_ABM->h_ratio->GetYaxis()->SetTitleOffset( yTitleOffset * (ySize_LastPad / ySize_Pads) );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleSize( 0.2 );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleOffset( 0.8 );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitle( "m (#mu#mu) [GeV]" );
-	// Hist_ABM->h->GetXaxis()->SetLabelSize(0.1);
+	TLegend *legend_lastPad = (TLegend*)LastPad->GetPrimitive("TPave");
+	legend_lastPad->SetY1NDC(0.3);
+	legend_lastPad->SetY2NDC(0.6);
 
 	BigPad->cd();
 	TLatex latex;
-	Double_t Lumi = 2.8;
+	Double_t lumi = 2.8;
 	Int_t E_CM = 13;
-	latex.DrawLatexNDC(0.72, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", Lumi, E_CM)+"}}");
+	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 	latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 	// latex.DrawLatexNDC( 0.76, 0.004, "#font[42]{#scale[0.8]{m (#mu#mu) [GeV]}}");

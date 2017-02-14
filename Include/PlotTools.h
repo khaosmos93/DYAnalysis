@@ -412,23 +412,23 @@ void DrawLine( TF1*& f_line, Int_t color = kRed )
 	f_line->Draw("PSAME");
 }
 
-void Latex_Preliminary( TLatex &latex, Double_t Lumi  )
+void Latex_Preliminary( TLatex &latex, Double_t lumi  )
 {
-	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", Lumi)+" fb^{-1} (13 TeV)}}");
+	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (13 TeV)}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
-void Latex_Preliminary( TLatex &latex, Double_t Lumi, Int_t E_CM  )
+void Latex_Preliminary( TLatex &latex, Double_t lumi, Int_t E_CM  )
 {
-	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", Lumi, E_CM)+"}}");
+	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
 void Latex_Preliminary_NoDataInfo( TLatex &latex )
 {
-	// latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", Lumi, E_CM)+"}}");
+	// latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }

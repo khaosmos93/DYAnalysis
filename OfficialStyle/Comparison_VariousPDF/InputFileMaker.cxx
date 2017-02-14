@@ -1,3 +1,4 @@
+#include <DYAnalysis_76X/Include/DYAnalyzer.h>
 #include "Comparison_VariousPDF.cxx"
 
 void FillROOTFile_Data( TFile *f_output );
@@ -22,13 +23,14 @@ void InputFileMaker()
 void FillROOTFile_Data( TFile *f_output )
 {
 	// -- uses dimuon channel -- //
-	TH1D* h_DXSec = Get_Hist( "ROOTFile_DiffXSec_FullUnc.root", "h_DiffXsec_FSRCorr", HistName_Data );
+	TString FileName_MM = GetBasePath()+"Include/Results_ROOTFiles_76X/ROOTFile_DiffXSec_FullUnc.root";
+	TH1D* h_DXSec = Get_Hist( FileName_MM, "h_DiffXsec_FSRCorr", HistName_Data );
 
-	TH1D* h_RelStatUnc = Get_Hist( "ROOTFile_DiffXSec_FullUnc.root", "h_RelStatUnc_Percent", HistName_RelStatUnc );
+	TH1D* h_RelStatUnc = Get_Hist( FileName_MM, "h_RelStatUnc_Percent", HistName_RelStatUnc );
 	h_RelStatUnc->Scale( 0.01 );
 	
-	TH1D* h_RelExpSystUnc = Get_Hist( "ROOTFile_DiffXSec_FullUnc.root", "h_RelSysUnc_Tot_Percent" );
-	TH1D* h_RelAccUnc = Get_Hist( "ROOTFile_DiffXSec_FullUnc.root", "h_RelSysUnc_Acc._Percent" );
+	TH1D* h_RelExpSystUnc = Get_Hist( FileName_MM, "h_RelSysUnc_Tot_Percent" );
+	TH1D* h_RelAccUnc = Get_Hist( FileName_MM, "h_RelSysUnc_Acc._Percent" );
 	TH1D* h_RelSystUnc = QuadSum_NoError( h_RelExpSystUnc, h_RelAccUnc );
 	h_RelSystUnc->Scale( 0.01 );
 
@@ -48,7 +50,8 @@ void FillROOTFile_Data( TFile *f_output )
 
 void FillROOTFile_NNPDF( TFile *f_output )
 {
-	TH1D* h_DXSec = Get_Hist("ROOTFile_xSec_Theory.root", "h_DiffXsec_FEWZ_NNPDF_NNLO", HistName_NNPDF);
+	TString FileName_MM = GetBasePath()+"Include/Results_ROOTFiles_76X/ROOTFile_DiffXSec_FullUnc.root";
+	TH1D* h_DXSec = Get_Hist(FileName_MM, "h_DiffXsec_FEWZ_NNPDF_NNLO", HistName_NNPDF);
 	TH1D* h_RelTotUnc = Extract_RelUnc( h_DXSec );
 	h_RelTotUnc->SetName( HistName_NNPDF_RelUnc );
 
@@ -63,7 +66,7 @@ void FillROOTFile_NNPDF( TFile *f_output )
 
 void FillROOTFile_OtherPDFs( TFile *f_output )
 {
-	TString BasePath = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/TheoryValues/v20161222_1st_NNLO_VariousPDF_HighMass_DYBin";
+	TString BasePath = GetBasePath() + "TheoryValues/NNLO_VariousPDF_Above200GeV";
 	TH1D* h_DXSec_CT = Get_Hist(BasePath+"/CT14/ROOTFile_DY_FEWZ_NNLO_CT14nnlo.root", "h_DiffXsec", HistName_CT);
 	h_DXSec_CT = MergeLastTwoBins( h_DXSec_CT );
 	TH1D* h_RelTotUnc_CT = Extract_RelUnc( h_DXSec_CT );
@@ -120,14 +123,14 @@ TH1D* Extract_RelUnc( TH1D* h )
 
 TH1D* MergeLastTwoBins( TH1D* h )
 {
-	// const Int_t nMassBin = 15;
-	// Double_t MassBinEdges[nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1200, 1500, 2000, 3000};
+	// const Int_t _nMassBin = 15;
+	// Double_t MassBinEdges[_nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1200, 1500, 2000, 3000};
 
-	const Int_t nMassBin = 13;
-	Double_t MassBinEdges[nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000};
+	const Int_t _nMassBin = 13;
+	Double_t MassBinEdges[_nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000};
 
 	TString HistName = h->GetName();
-	// TH1D* h_Merge = new TH1D(HistName, "", nMassBin, MassBinEdges);
+	// TH1D* h_Merge = new TH1D(HistName, "", _nMassBin, MassBinEdges);
 	TH1D* h_Merge = (TH1D*)h->Clone(); // -- in order to maintain attributes -- //
 	h_Merge = Rebin_MassBinEdges_Above200( h_Merge );
 
@@ -177,10 +180,10 @@ TH1D* MergeLastTwoBins( TH1D* h )
 
 TH1D* Rebin_MassBinEdges_Above200( TH1D* h )
 {
-	const Int_t nMassBin = 13;
-	Double_t MassBinEdges[nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000};
+	const Int_t _nMassBin = 13;
+	Double_t MassBinEdges[_nMassBin+1] = {200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000};
 
-	return (TH1D*)h->Rebin(nMassBin, h->GetName(), MassBinEdges);
+	return (TH1D*)h->Rebin(_nMassBin, h->GetName(), MassBinEdges);
 }
 
 Double_t QuadratureSum( Double_t a, Double_t b )
