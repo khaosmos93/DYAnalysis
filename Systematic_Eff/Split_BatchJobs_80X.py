@@ -292,13 +292,13 @@ echo "job is completed"
 
 		# -- need to be added: ttbar, diboson, ... -- #
 		xSecSumW_Others = {}
-		xSecSumW_Others["ZZ"] = [15.4, -1.0]
+		xSecSumW_Others["ZZ"] = [16.523, 998034]
 		xSecSumW_Others["ZZTo4L"] = [1.256, -1.0]
 
-		xSecSumW_Others["WW"] = [-1.0, -1.0]
-		xSecSumW_Others["WWTo2L2Nu"] = [-1.0, -1.0]
+		xSecSumW_Others["WW"] = [-1.0, 6987123]
+		xSecSumW_Others["WWTo2L2Nu"] = [12.178, 1999000]
 
-		xSecSumW_Others["WZ"] = [-1.0, -1.0]
+		xSecSumW_Others["WZ"] = [47.13, 2995828]
 		xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
 
 		xSecSumW_Others["ttbar"] = [831.76, -1.0]
