@@ -97,8 +97,7 @@ protected:
 	Bool_t IsEminusEvent( Double_t eta1, Double_t eta2 )
 	{
 		Bool_t IsEminus = kFALSE;
-		if( (fabs(eta1) > -2.4 && fabs(eta1) < -1.2) || 
-			(fabs(eta2) > -2.4 && fabs(eta2) < -1.2) )
+		if( (eta1 > -2.4 && eta1 < -1.2) || (eta2 > -2.4 && eta2 < -1.2) )
 			IsEminus = kTRUE;
 
 		return IsEminus;
