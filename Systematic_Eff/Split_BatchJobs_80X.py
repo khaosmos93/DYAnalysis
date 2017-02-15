@@ -302,7 +302,7 @@ echo "job is completed"
 		xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
 
 		xSecSumW_Others["ttbar"] = [831.76, -1.0]
-		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, -1.0]
+		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
 
 
 		if "DYPowheg" in self.Sample:
