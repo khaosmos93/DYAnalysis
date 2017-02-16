@@ -235,6 +235,12 @@ echo "job is completed"
 		elif "ttbarTo2L2Nu" == self.Sample:
 			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
 
+		elif "tW" == self.Sample:
+			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
+
+		elif "tbarW" == self.Sample:
+			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
+
 		elif self.Sample == "Data":
 			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
 			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
@@ -303,6 +309,9 @@ echo "job is completed"
 
 		xSecSumW_Others["ttbar"] = [831.76, -1.0]
 		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
+
+		xSecSumW_Others["tW"] = [35.6, 6952830]
+		xSecSumW_Others["tbarW"] = [35.6, 6933093]
 
 
 		if "DYPowheg" in self.Sample:

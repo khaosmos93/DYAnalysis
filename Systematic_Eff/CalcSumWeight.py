@@ -13,8 +13,11 @@ List_DirName = []
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZ" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WW" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZ" )
-List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
+List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
+List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
+
 
 for DirName in List_DirName:
 	logging.info( "Sample: %s" % (DirName) )
