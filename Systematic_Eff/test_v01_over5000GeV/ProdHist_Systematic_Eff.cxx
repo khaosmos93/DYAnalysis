@@ -17,6 +17,7 @@
 #include <TEfficiency.h>
 
 #include <vector>
+#include <fstream>
 
 // -- for Rochester Muon momentum correction -- //
 // #include <ZprimeAnalysis_80X/Include/rochcor80x_070616v2/RoccoR.cc>
@@ -439,6 +440,10 @@ protected:
 					IsSelected = kTRUE;
 					SelectedMuonCollection.push_back( mu1_BestPair );
 					SelectedMuonCollection.push_back( mu2_BestPair );
+
+					Double_t M = (mu1_BestPair.Momentum + mu2_BestPair.Momentum).M();
+					if( M > 5000 )
+						WriteLogFile( ntuple, mu1_BestPair, mu2_BestPair );
 				}
 
 			} // -- End of else if( nQMuons > 2 ) -- //
@@ -548,7 +553,36 @@ protected:
 	    // ANSI Control codes to go back to the
 	    // previous line and clear it.
 		cout << "]\r" << flush;
+	}
 
+	void WriteLogFile( NtupleHandle* ntuple, Muon mu1, Muon mu2 )
+	{
+		TString BasePath = GetBasePath();
+		TString FileName = BasePath + "Systematic_Eff/test_v01_over5000GeV/output.txt";
+
+		ofstream outFile(FileName.Data(), ios::app);
+		outFile << "run:lumi:event = " << ntuple->runNum << ":" << ntuple->lumiBlock << ":" << ntuple->evtNum << endl;
+		
+		outFile << "[muon1]" << endl;
+		this->WriteInfo_SelectedMuon( outFile, mu1 );
+
+		outFile << "[muon2]" << endl;
+		this->WriteInfo_SelectedMuon( outFile, mu2 );
+
+		// -- dimuon info -- //
+		Double_t M = (mu1.Momentum + mu2.Momentum).M();
+		Double_t VtxProb = -999;
+		Double_t VtxNormChi2 = 999;
+		DimuonVertexProbNormChi2_TuneP(ntuple, mu1.TuneP_pT, mu2.TuneP_pT, &VtxProb, &VtxNormChi2);
+		outFile << "M: " << M << ", VtxChi2: " << VtxNormChi2 << endl;
+		outFile << endl;
+		outFile.close();
+	}
+
+	void WriteInfo_SelectedMuon(ofstream& outFile, Muon mu )
+	{
+		outFile << "\t[Default] (pT, eta, phi, charge) = (" << mu.Default_pT << ", " << mu.Default_eta << ", " << mu.Default_phi << ", " << mu.charge << ")" << endl;
+		outFile << "\t[TuneP] (pT, eta, phi) = (" << mu.Pt << ", " << mu.eta << ", " << mu.phi << ")" << endl;
 	}
 };
 

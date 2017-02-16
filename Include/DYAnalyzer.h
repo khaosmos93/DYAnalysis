@@ -15,6 +15,15 @@
 #define Lumi_RunG 7554.454 // -- integrated luminosity for Run2016G -- //
 #define nMassBin 43
 #define nPUBin 50
+
+TString GetBasePath()
+{
+	TString BasePath = gSystem->HomeDirectory();
+	BasePath = BasePath + "/Physics/ZprimeAnalysis_80X/";
+
+	return BasePath;
+}
+
 class DYAnalyzer
 {
 public:
