@@ -33,9 +33,8 @@ public:
 	vector< TH1D* > vec_Hist;
 
 	TH1D* h_mass;
-	TH1D* h_mass_Eplus;
-	TH1D* h_mass_Eminus;
 	TH1D* h_mass_BB;
+	TH1D* h_mass_BEEE;
 
 	HistContainer( TString _Type )
 	{
@@ -47,9 +46,8 @@ public:
 	void Set_Histograms()
 	{		
 		this->h_mass = new TH1D("h_mass_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( h_mass );
-		this->h_mass_Eplus = new TH1D("h_mass_Eplus_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( h_mass_Eplus );
-		this->h_mass_Eminus = new TH1D("h_mass_Eminus_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( h_mass_Eminus );
 		this->h_mass_BB = new TH1D("h_mass_BB_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( h_mass_BB );
+		this->h_mass_BEEE = new TH1D("h_mass_BEEE_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( h_mass_BEEE );
 
 		Int_t nHist = (Int_t)vec_Hist.size();
 		for(Int_t i=0; i<nHist; i++)
@@ -63,18 +61,10 @@ public:
 		// -- total category -- //
 		h_mass->Fill( M, weight );
 
-		Bool_t IsEminus = IsEminusEvent( mu1.eta, mu2.eta ); 
-		if( IsEminus ) // -- if at least one muon is in negative endcap region -- //
-		{
-			h_mass_Eminus->Fill( M, weight );
-		}
-		else // -- if not, it should be one of BB events or Eplus event -- //
-		{
-			if( fabs(mu1.eta) < 0.9 && fabs(mu2.eta) < 0.9 ) // -- BB event -- //
-				h_mass_BB->Fill( M, weight );
-			else // -- Eplus event -- //
-				h_mass_Eplus->Fill( M, weight );
-		}
+		if( fabs(mu1.eta) < 0.9 && fabs(mu2.eta) < 0.9 ) // -- BB event -- //
+			h_mass_BB->Fill( M, weight );
+		else // -- BE + EE event -- //
+			h_mass_BEEE->Fill( M, weight );
 	}
 
 	void Save( TFile *f_output )
@@ -94,14 +84,6 @@ public:
 	}
 
 protected:
-	Bool_t IsEminusEvent( Double_t eta1, Double_t eta2 )
-	{
-		Bool_t IsEminus = kFALSE;
-		if( (eta1 > -2.4 && eta1 < -1.2) || (eta2 > -2.4 && eta2 < -1.2) )
-			IsEminus = kTRUE;
-
-		return IsEminus;
-	}
 };
 
 class HistogramProducer
