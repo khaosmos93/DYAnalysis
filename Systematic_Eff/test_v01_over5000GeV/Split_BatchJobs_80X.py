@@ -5,12 +5,11 @@ from getopt import gnu_getopt as getopt
 def usage():
     print sys.argv[0], " : split the jobs"
     print "  Mandatory options :"
-    print "   --code CODE.cxx                  C++ Code file name: should be absolute path"
+    print "   --code CODE.cxx                  C++ Code file name"
     print "   --sample SAMPLENAME    		   Sample Name"
-    print "   --njob N                9         Total number of jobs"
+    print "   --njob N                         Total number of jobs"
     print "   --lumi LUMI                      Integrated lumionsity in pb"
     print "   --isMC isMC                      MC or data"
-    print "   --outdir Dir                     Directory where outputs are stored"
     print "  Optional options :"
     print "   --queue queueName                      queue name (default: fastq)"
     sys.exit()
@@ -18,7 +17,7 @@ def usage():
 # Parse arguments
 if len(sys.argv) < 2: usage()
 try:
-    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue=", "outdir="])
+    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue="])
     opts = dict(opts)
 except:
     print "!!! Error parsing arguments"
@@ -27,14 +26,11 @@ except:
 
 class SplitJobs:
 	def __init__(self, _opts):
-		self.CodeFullPath = _opts['--code']
+		self.CodeName = _opts['--code']
 		self.Sample = _opts['--sample']
 		self.nJob = int(_opts['--njob'])
 		self.Lumi = float(_opts['--lumi'])
 		self.isMC = int(_opts['--isMC'])
-		self.OutDir = _opts['--outdir']
-
-		self.CodeName = self.CodeFullPath.split('/')[-1]
 
 		self.queue = "fastq"
 		if '--queue' in _opts:
@@ -46,7 +42,6 @@ class SplitJobs:
 
 		print "+" * 100
 		print "Create %d jobs to run %s with lumi = %lf on %s -> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, self.queue)
-		print "Output directory: %s" % (self.OutDir)
 		print "+" * 100
 
 		print self.isMC
@@ -57,19 +52,14 @@ class SplitJobs:
 		else:
 			self.NormFactor = 1
 
-		os.chdir( self.OutDir )
-		print "current directory: ", os.getcwd()
-
 	def CreateWorkSpace( self ):
 		DirName = "%s" % (self.Sample)
 		
-		print "current directory2: ", os.getcwd()
-		List_File_cwd = os.listdir( "." )
+		List_File_cwd = os.listdir(".")
 		if DirName in List_File_cwd:
 			print "%s is already exists!" % (DirName)
 			sys.exit()
 
-		print "current directory3: ", os.getcwd()
 		os.mkdir( DirName )
 
 		nROOTFile = len(self.List_ROOTFiles)
@@ -110,7 +100,7 @@ class SplitJobs:
 			f_ROOTFileList.write( "\n" )
 		f_ROOTFileList.close()
 
-		cmd_cp = "cp %s ./%s/%s" % (self.CodeFullPath, self.Sample, DirName)
+		cmd_cp = "cp %s ./%s/%s" % (self.CodeName, self.Sample, DirName)
 		# print cmd_cp
 		os.system( cmd_cp )
 
@@ -362,6 +352,6 @@ echo "job is completed"
 		return normfactor
 
 
-if __name__ == "__main__":
-	split = SplitJobs( opts )
-	split.CreateWorkSpace()
+# -- main part -- #
+split = SplitJobs( opts )
+split.CreateWorkSpace()

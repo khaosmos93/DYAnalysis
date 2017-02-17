@@ -113,6 +113,8 @@ public:
 	TString FileName_ROOTFileList;
 	TString Tag;
 
+	vector<TString> EventInfo;
+
 	HistogramProducer( Int_t _isMC, TString _FileName_ROOTFileList, Double_t _NormFactor)
 	{
 		this->isMC = _isMC;
@@ -562,12 +564,29 @@ protected:
 
 		ofstream outFile(FileName.Data(), ios::app);
 		outFile << "run:lumi:event = " << ntuple->runNum << ":" << ntuple->lumiBlock << ":" << ntuple->evtNum << endl;
-		
-		outFile << "[muon1]" << endl;
-		this->WriteInfo_SelectedMuon( outFile, mu1 );
 
-		outFile << "[muon2]" << endl;
-		this->WriteInfo_SelectedMuon( outFile, mu2 );
+		EventInfo.push_back( TString::Format("%d:%d:%d", ntuple->runNum, ntuple->lumiBlock, ntuple->evtNum ) );
+		
+		vector< Muon > MuonCollection;
+		Int_t NLeptons = ntuple->nMuon;
+		for(Int_t i_reco=0; i_reco<NLeptons; i_reco++)
+		{
+			Muon mu;
+			mu.FillFromNtuple(ntuple, i_reco);
+			mu.ConvertMomentum_TuneP();
+
+			outFile << "[muon " << i_reco << "]" << endl;
+			WriteInfo_Muon( outFile, mu );
+			
+			MuonCollection.push_back( mu );
+		}
+		outFile << endl;
+
+		outFile << "[selected muon1]" << endl;
+		this->WriteInfo_Muon( outFile, mu1 );
+
+		outFile << "[selected muon2]" << endl;
+		this->WriteInfo_Muon( outFile, mu2 );
 
 		// -- dimuon info -- //
 		Double_t M = (mu1.Momentum + mu2.Momentum).M();
@@ -575,16 +594,35 @@ protected:
 		Double_t VtxNormChi2 = 999;
 		DimuonVertexProbNormChi2_TuneP(ntuple, mu1.TuneP_pT, mu2.TuneP_pT, &VtxProb, &VtxNormChi2);
 		outFile << "M: " << M << ", VtxChi2: " << VtxNormChi2 << endl;
-		outFile << endl;
+		outFile << "===============================" << endl;
 		outFile.close();
 	}
 
-	void WriteInfo_SelectedMuon(ofstream& outFile, Muon mu )
-	{
+	void WriteInfo_Muon(ofstream& outFile, Muon mu )
+	{	
+		outFile << "\t[isTRK = " << mu.isTRK << ", isGLB = " << mu.isGLB << ", isPF = " << mu.isPF << "]" << endl;
 		outFile << "\t[Default] (pT, eta, phi, charge) = (" << mu.Default_pT << ", " << mu.Default_eta << ", " << mu.Default_phi << ", " << mu.charge << ")" << endl;
 		outFile << "\t[TuneP] (pT, eta, phi) = (" << mu.Pt << ", " << mu.eta << ", " << mu.phi << ")" << endl;
+		outFile << "\t[Inner] (pT, eta, phi) = (" << mu.Inner_pT << ", " << mu.Inner_eta << ", " << mu.Inner_phi << ")" << endl;
+		outFile << "\t[Best] (pT, eta, phi) = (" << mu.Best_pT << ", " << mu.Best_eta << ", " << mu.Best_phi << ")" << endl;
+	}
+
+	void WriteEventInfo()
+	{
+		TString BasePath = GetBasePath();
+		TString FileName = BasePath + "Systematic_Eff/test_v01_over5000GeV/events.txt";
+
+		ofstream outFile2(FileName.Data(), ios::app);
+		Int_t nEv = (Int_t)EventInfo.size();
+		for(Int_t i=0; i<nEv; i++)
+		{
+			TString eventinfo = EventInfo[i];
+			outFile2 << eventinfo << endl;
+		}
+		outFile2.close();
 	}
 };
+
 
 // -- SampleName: QCD, Diboson, WJets, DYTauTau, SingleTop, ttbar, DYPowheg -- //
 void ProdHist_Systematic_Eff(Int_t _isMC, TString _FileName_ROOTFileList, Double_t _NormFactor)
