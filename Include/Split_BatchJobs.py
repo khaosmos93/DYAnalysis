@@ -5,11 +5,12 @@ from getopt import gnu_getopt as getopt
 def usage():
     print sys.argv[0], " : split the jobs"
     print "  Mandatory options :"
-    print "   --code CODE.cxx                  C++ Code file name"
+    print "   --code CODE.cxx                  C++ Code file name: should be absolute path"
     print "   --sample SAMPLENAME    		   Sample Name"
     print "   --njob N                9         Total number of jobs"
     print "   --lumi LUMI                      Integrated lumionsity in pb"
     print "   --isMC isMC                      MC or data"
+    print "   --outdir Dir                     Directory where outputs are stored"
     print "  Optional options :"
     print "   --queue queueName                      queue name (default: fastq)"
     sys.exit()
@@ -17,7 +18,7 @@ def usage():
 # Parse arguments
 if len(sys.argv) < 2: usage()
 try:
-    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue="])
+    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue=", "outdir="])
     opts = dict(opts)
 except:
     print "!!! Error parsing arguments"
@@ -31,6 +32,7 @@ class SplitJobs:
 		self.nJob = int(_opts['--njob'])
 		self.Lumi = float(_opts['--lumi'])
 		self.isMC = int(_opts['--isMC'])
+		self.OutDir = _opts['--outdir']
 
 		self.queue = "fastq"
 		if '--queue' in _opts:
@@ -42,6 +44,7 @@ class SplitJobs:
 
 		print "+" * 100
 		print "Create %d jobs to run %s with lumi = %lf on %s -> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, self.queue)
+		print "Output directory: %s" % (self.OutDir)
 		print "+" * 100
 
 		print self.isMC
@@ -52,10 +55,12 @@ class SplitJobs:
 		else:
 			self.NormFactor = 1
 
+		os.chdir( self.OutDir )
+
 	def CreateWorkSpace( self ):
 		DirName = "%s" % (self.Sample)
 		
-		List_File_cwd = os.listdir(".")
+		List_File_cwd = os.listdir( "." )
 		if DirName in List_File_cwd:
 			print "%s is already exists!" % (DirName)
 			sys.exit()
