@@ -105,8 +105,6 @@ for Samples in List_Samples:
 	isMC = (int)(Samples[1])
 	nJob = (int)(Samples[2])
 
-	opts = dict(opts)
-
 	opts = dict()
 	opts['--code'] = CodeAbsPath
 	opts['--sample'] = SampleName
