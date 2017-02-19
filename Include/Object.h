@@ -485,6 +485,16 @@ public:
 	Int_t stationMask;
 	Int_t nMatchesRPCLayers;
 
+	TString HLTName;
+	Bool_t Flag_TrigMatched;
+
+	Muon() {};
+	
+	Muon( NtupleHandle *ntuple, Int_t index )
+	{
+		this->FillFromNtuple( ntuple, index );
+	}
+
 	void FillFromNtuple(NtupleHandle *ntuple, Int_t index)
 	{
 		Pt = ntuple->Muon_pT[index];
@@ -577,6 +587,9 @@ public:
 
 		stationMask = ntuple->Muon_stationMask[index];
 		nMatchesRPCLayers = ntuple->Muon_nMatchesRPCLayers[index];
+
+		HLTName = "";
+		Flag_TrigMatched = kFALSE;
 	}
 
 	void ConvertMomentum_TuneP()
@@ -638,6 +651,9 @@ public:
 
 					if( dR < dRMax && fabs( this->eta ) < 2.4 )
 					{
+						this->Flag_TrigMatched = kTRUE;
+						this->HLTName = HLT;
+
 						isTrigMatch = kTRUE;
 						break;
 					}
@@ -660,6 +676,9 @@ public:
 
 					if( dR < 0.3 && fabs( this->eta ) < 2.4 )
 					{
+						this->Flag_TrigMatched = kTRUE;
+						this->HLTName = HLT;
+
 						isTrigMatch = kTRUE;
 						break;
 					}
@@ -1074,6 +1093,7 @@ public:
 	Double_t Rapidity;
 	Double_t VtxProb;
 	Double_t NormVtxChi2;
+	Double_t Angle3D;
 
 	MuonPair() {};
 	MuonPair( Muon mu1, Muon mu2 )
@@ -1095,11 +1115,18 @@ public:
 
 	void Fill_DimuonVar()
 	{
-		this->Momentum = mu1.Momentum + mu2.Momentum;
+		this->Momentum = First.Momentum + Second.Momentum;
 
 		this->M = this->Momentum..M();
 		this->Pt = this->Momentum.Pt();
 		this->Rapidity = this->Momentum.Rapidity();
+
+		this->Angle3D = First.Momentum.Angle( Second.Momentum.Vect() );
+		this->Angle3D_Inner = First.Momentum_Inner.Angle( Second.Momentum_Inner.Vect() );
+
+		// -- initialization -- //
+		this->VtxProb = -999; 
+		this->NormVtxChi2 = 999;
 
 		// // -- actually, these values are almost meaningless ... -- //
 		// this->eta = this->Momentum.Eta();
@@ -1109,9 +1136,6 @@ public:
 
 	void Calc_CommonVertexVariable(NtupleHandle *ntuple)
 	{
-		this->VtxProb = -999;
-		this->NormVtxChi2 = 999;
-
 		vector<double> *PtCollection1 = ntuple->vtxTrkCkt1Pt;
 		vector<double> *PtCollection2 = ntuple->vtxTrkCkt2Pt;
 		vector<double> *VtxProbCollection = ntuple->vtxTrkProb;
@@ -1146,7 +1170,10 @@ public:
 		// -- 0) Check the existence of at least one muon matched with HLT-object -- //
 		Bool_t isHLTMatched = kFALSE;
 		if( First.isTrigMatched(ntuple, HLT) || Second.isTrigMatched(ntuple, HLT) )
+		{
+
 			isHLTMatched = kTRUE;
+		}
 
 		// -- 1) acceptance -- //
 		Bool_t isPassAcc = this->isWithinAcc( LeadPtCut, SubPtCut, LeadEtaCut, SubEtaCut );
@@ -1158,16 +1185,14 @@ public:
 		// -- 3) VtxChi2 < 20 -- //
 		this->Calc_CommonVertexVariable( ntuple );
 
-		// -- 4) 3D open angle -- //
-		TLorentzVector inner_v1 = mu1.Momentum_Inner;
-		TLorentzVector inner_v2 = mu2.Momentum_Inner;
-		Double_t Angle = mu1.Momentum.Angle( mu2.Momentum.Vect() );
+		// -- 4) 3D open angle (inner track) -- //
+		Double_t Angle = this->Angle3D_Inner;
 
 		// -- 5) Opposite sign -- //
 		Bool_t isOS = kFALSE;
 		if( mu1.charge != mu2.charge ) isOS = kTRUE;
 
-		if( isPassAcc == kTRUE && Flag_MinM == kTRUE && this->NormVtxChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE )
+		if( isPassAcc == kTRUE && Flag_MinM == kTRUE && this->NormVtxChi2 < 20 && Angle < TMath::Pi()-0.005 && isOS == kTRUE )
 			GoodPair = kTRUE;
 
 		return GoodPair;

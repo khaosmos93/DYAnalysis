@@ -26,6 +26,12 @@ TString GetBasePath()
 	return BasePath;
 }
 
+TString GetTag( TString _FileName_ROOTFileList )
+{
+	TObjArray *split = _FileName_ROOTFileList.Tokenize("-");
+	return ((TObjString*)(split->At(1)))->String();
+}
+
 class DYAnalyzer
 {
 public:
@@ -914,7 +920,7 @@ Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *
 }
 
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
+						MuonPair &SelectedPair ) // -- output: selected muon pair passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
 
@@ -957,8 +963,9 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				}
 
 				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( vec_GoodPair[0].First );
-				SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
+				SelectedPair = vec_GoodPair[0]; // -- does it properly work? -- //
+				// SelectedMuonCollection->push_back( vec_GoodPair[0].First );
+				// SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
 			}
 		}
 	} // end of if( nQMuons >= 2 ) -- //
