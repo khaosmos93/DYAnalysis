@@ -77,7 +77,7 @@ public:
 
 		// -- Rochester momentum correction -- //
 		TString DirPath_RoccoR = GetBasePath() + "Include/RochesterMomCorr_80X/rcdata.2016.v3";
-		RoccoR rmcor(DirPath_RoccoR);
+		RoccoR rmcor(DirPath_RoccoR.Data());
 
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
@@ -161,7 +161,7 @@ public:
 						PrintRecoMuonInfo( SelectedPair.First );
 						PrintRecoMuonInfo( SelectedPair.Second );
 
-						Plots->FillHistograms_MuonPair( SelectedPair, TotWeight );
+						Plots->FillHistograms_MuonPair( SelectedPair, ntuple->runNum, TotWeight );
 
 						// Int_t PU = ntuple->nPileUp;
 						// h_PU->Fill( PU, PUWeight );
