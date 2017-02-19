@@ -75,18 +75,18 @@ except:
 
 # -- SampleName, isMC, nJobs -- #
 List_Samples = []
-List_Samples.append( ["Data", 0, 20] )
-Add_DYPowheg( List_Samples )
-List_Samples.append( ["WWTo2L2Nu", 1, 1] )
-List_Samples.append( ["WZ", 1, 1] )
+# List_Samples.append( ["Data", 0, 20] )
+# Add_DYPowheg( List_Samples )
+# List_Samples.append( ["WWTo2L2Nu", 1, 1] )
+# List_Samples.append( ["WZ", 1, 1] )
 List_Samples.append( ["ZZ", 1, 1] )
-List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
-List_Samples.append( ["tW", 1, 2] )
-List_Samples.append( ["tbarW", 1, 2] )
+# List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
+# List_Samples.append( ["tW", 1, 2] )
+# List_Samples.append( ["tbarW", 1, 2] )
 
 # -- output directory -- //
 TIME = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
-OutDir = "~/Physics/ZprimeAnalysis_80X/Outputs/v%s_%s" % (TIME, MainOpts['--code'].split('.cxx')[0] )
+OutDir = "~/Physics/DYAnalysis_80X/Outputs/v%s_%s" % (TIME, MainOpts['--code'].split('.cxx')[0] )
 OutDir = os.path.expanduser( OutDir )
 os.mkdir( OutDir )
 
@@ -97,7 +97,7 @@ CodeAbsPath = os.path.abspath( MainOpts['--code'] )
 MakeScript_Sub( OutDir, List_Samples, TIME )
 MakeScript_GetOutput( OutDir, List_Samples, TIME )
 
-sys.path.append( "/home/kplee/Physics/ZprimeAnalysis_80X/Include" )
+sys.path.append( "/home/kplee/Physics/DYAnalysis_80X/Include" )
 from Split_BatchJobs import SplitJobs
 
 for Samples in List_Samples:

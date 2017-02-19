@@ -9,14 +9,23 @@ logging.info("start")
 BaseDir = "/data1/kplee/DYntuple/80X/"
 List_DirName = []
 
-# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WWTo2L2Nu" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M10to50" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
+# List_DirName.append( "DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_M200to400" )
+# List_DirName.append( "DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_M400to500" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M500to700" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M700to800" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M800to1000" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1000to1500" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1500to2000" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M2000to3000" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZ" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WW" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZ" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
-List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
-List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
+# List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
 
 
 for DirName in List_DirName:
@@ -32,7 +41,7 @@ for DirName in List_DirName:
 	nTotEvent = chain.GetEntries()
 	logging.info( "\tTotal event: %d" % (nTotEvent) )
 
-	nTotEvent = 10000
+	# nTotEvent = 10000
 
 	SumWeight = 0.0
 	for i in range( nTotEvent ):

@@ -213,6 +213,18 @@ echo "job is completed"
 			MassRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
+		if "DYMuMu" in self.Sample:
+			MassRange = self.Sample.split("_")[-1]
+			if "M50to" in MassRange: # -- ex> M50to100, M50to200 ... -- #
+				MassRange = "M50toInf"
+
+			if MassRange == "M200to400":
+				List_FullPath.append( BasePath + "DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
+			elif MassRange == "M400to500":
+				List_FullPath.append( BasePath + "DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
+			else:
+				List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
+
 		# elif "DYMuMu" in self.Sample:
 		# 	MassRange = self.Sample.split("_")[-1]
 		# 	if MassRange == "M50to100": MassRange = "M50toInf"
@@ -287,19 +299,20 @@ echo "job is completed"
 		XSecSumW_Powheg["M4500to6000"] = [4.56E-07, 100000]
 		XSecSumW_Powheg["M6000toInf"] = [2.066E-08, 100000]
 
-		# XSecSumW_DYMMaMCNLO = {}
-		# XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]
-		# XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 6311695]
-		# XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 6061181]
-		# XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 227522]
-		# XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 170955]
-		# XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 50136]
-		# XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 47833]
-		# XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 44740]
-		# XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 43496]
-		# XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 40783]
-		# XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 37176]
-		# XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 23078]
+		XSecSumW_DYMMaMCNLO = {}
+		XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 1.0]
+		xSecSumW_DYMMaMCNLO["M50to200"] = [6095.58346/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 1.0]
 
 		XSec = -1
 		SumW = -1
@@ -331,14 +344,15 @@ echo "job is completed"
 				XSec = -1
 				SumW = -1
 
-		# elif "DYMuMu" in self.Sample:
-		# 	MassRange = self.Sample.split("_")[1]
-		# 	if MassRange in XSecSumW_DYMMaMCNLO:
-		# 		XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
-		# 		SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
-		# 	else:
-		# 		XSec = -1
-		# 		SumW = -1
+		elif "DYMuMu" in self.Sample:
+			MassRange = self.Sample.split("_")[1]
+			if MassRange in XSecSumW_DYMMaMCNLO:
+				XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
+				SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
+			else:
+				XSec = -1
+				SumW = -1
+
 		elif self.Sample in xSecSumW_Others:
 			XSec = xSecSumW_Others[ self.Sample ][0]
 			SumW = xSecSumW_Others[ self.Sample ][1]
