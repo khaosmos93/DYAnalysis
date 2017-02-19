@@ -950,24 +950,24 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				if( pair_temp.isGoodMuPair( ntuple, this->HLT, this->LeadPtCut, this->SubPtCut, this->LeadEtaCut, this->SubEtaCut) )
 					vec_GoodPair.push_back( pair_temp );
 			}
+		}
 
-			Int_t nPair = (Int_t)vec_GoodPair.size();
-			if( nPair >= 1 ) // -- at least one pair pass all good pair condition -- //
+		Int_t nPair = (Int_t)vec_GoodPair.size();
+		if( nPair >= 1 ) // -- at least one pair pass all good pair condition -- //
+		{
+			// -- the pair with "smallest" vertex chi2 will be the first element -- //
+			std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_VtxChi2 );
+
+			if( nPair >= 2 )
 			{
-				// -- the pair with "smallest" vertex chi2 will be the first element -- //
-				std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_VtxChi2 );
-
-				if( nPair >= 2 )
-				{
-					for(Int_t i_pair=0; i_pair<nPair; i_pair++)
-						printf("\t[%02d pair: vertex chi2 = %lf]\n", i_pair, vec_GoodPair[i_pair].NormVtxChi2);
-				}
-
-				isPassEventSelection = kTRUE;
-				SelectedPair = vec_GoodPair[0]; // -- does it properly work? -- //
-				// SelectedMuonCollection->push_back( vec_GoodPair[0].First );
-				// SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
+				for(Int_t i_pair=0; i_pair<nPair; i_pair++)
+					printf("\t[%02d pair: vertex chi2 = %lf]\n", i_pair, vec_GoodPair[i_pair].NormVtxChi2);
 			}
+
+			isPassEventSelection = kTRUE;
+			SelectedPair = vec_GoodPair[0]; // -- does it properly work? -- //
+			// SelectedMuonCollection->push_back( vec_GoodPair[0].First );
+			// SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
 		}
 	} // end of if( nQMuons >= 2 ) -- //
 
