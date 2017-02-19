@@ -924,13 +924,13 @@ public:
                 {
                     if( HLT_trigFired[k] == 1 )
                     {
-                        isTrigger = kTRUE;
+                        isFired = kTRUE;
                         break;
                     }
                 }
             }
         }
-        return isTrigger;
+        return isFired;
     }
 
 };
