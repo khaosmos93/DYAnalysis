@@ -2,10 +2,11 @@
 // -- Author: KyoengPil Lee, 05 Dec. 2015 -- //
 #pragma once
 
-#include <ZprimeAnalysis_80X/Include/Object.h>
-#include <ZprimeAnalysis_80X/Include/NtupleHandle.h>
+#include <DYAnalysis_80X/Include/Object.h>
+#include <DYAnalysis_80X/Include/NtupleHandle.h>
 #include <fstream>
 #include <iostream>
+#include <utility>
 #include <TSystem.h>
 
 // #define Lumi 4423.577 // -- Up to Run 275125 (2016 Data), MuonPhysJSON. unit: /pb, Updated at 2016.08.08 -- //
@@ -20,7 +21,7 @@
 TString GetBasePath()
 {
 	TString BasePath = gSystem->HomeDirectory();
-	BasePath = BasePath + "/Physics/ZprimeAnalysis_80X/";
+	BasePath = BasePath + "/Physics/DYAnalysis_80X/";
 
 	return BasePath;
 }
@@ -28,7 +29,6 @@ TString GetBasePath()
 class DYAnalyzer
 {
 public:
-
 	TString HLT;
 	Double_t LeadPtCut;
 	Double_t SubPtCut;
@@ -55,13 +55,6 @@ public:
 	// -- Setup accetpance cuts -- //
 	void AssignAccThreshold(TString HLTname);
 
-	////////////////////////////
-	// -- Setup MC samples -- //
-	////////////////////////////
-	void SetupMCsamples_v20160808_80X_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20160809_80X_MoreTrigger_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20160909_80X_reHLT_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20161017_80X_addMuonStationVar_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 
 	// -- Read text file with root file list -- //
@@ -83,27 +76,16 @@ public:
 	Double_t EfficiencySF_EventWeight_HLTv4p3(Muon mu1, Muon mu2);
 	Int_t FindPtBin(Double_t Pt);
 	Int_t FindEtaBin(Double_t eta);
-
-	// -- outdated -- //
-	Double_t EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *ntuple);
-	Double_t EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple);
 	
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
 	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_Mu50(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, Bool_t& isMoreThanOneCand); // -- output: 2 muons passing event selection conditions -- //
 
+	Bool_t Flag_Acc( Double_t pt1, Double_t eta1, Double_t pt2, Double_t eta2 );
 
 	Bool_t isPassAccCondition_Muon(Muon Mu1, Muon Mu2);
-	Bool_t isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2);
-	void CompareMuon(Muon *Mu1, Muon *Mu2, Muon *leadMu, Muon *subMu);
-	void CompareGenLepton(GenLepton *genlep1, GenLepton *genlep2, GenLepton *leadgenlep, GenLepton *subgenlep);
+
 	void DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2);
 	Bool_t CheckTriggerMatching( Muon mu, NtupleHandle *ntuple );
 
@@ -111,16 +93,11 @@ public:
 	Bool_t EventSelection_Electron(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
 	Bool_t EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
 	Bool_t EventSelection_ElectronChannel(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
-	Bool_t isPassAccCondition_Electron(Electron Elec1, Electron Elec2);
-	Bool_t isPassAccCondition_GenLepton_ECALGAP(GenLepton genlep1, GenLepton genlep2);
-	void CompareElectron(Electron *Elec1, Electron *Elec2, Electron *leadElec, Electron *subElec);
 
 	// -- pre-FSR functions -- //
 	void PostToPreFSR_byDressedLepton(NtupleHandle *ntuple, GenLepton *genlep_postFSR, Double_t dRCut, GenLepton *genlep_preFSR, vector< GenOthers >* GenPhotonCollection);
 	void PostToPreFSR_byDressedLepton_AllPhotons(NtupleHandle *ntuple, GenLepton *genlep_postFSR, Double_t dRCut, GenLepton *genlep_preFSR, vector< GenOthers >* GenPhotonCollection);
 	TString DecideFSRType(GenLepton preFSR1, GenLepton preFSR2, GenLepton postFSR1, GenLepton postFSR2);
-	Double_t Calc_dR_GenLeptons( GenLepton genlep1, GenLepton genlep2 );
-	Double_t Calc_dR_GenLepton_GenOthers( GenLepton genlep1, GenOthers genlep2 );
 
 	// -- miscellaneous -- //
 	void GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon>* MuonCollection);
@@ -317,217 +294,44 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname)
 
 }
 
-void DYAnalyzer::SetupMCsamples_v20161017_80X_addMuonStationVar_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents )
+Bool_t DYAnalyzer::Flag_Acc( Double_t pt1, Double_t eta1, Double_t pt2, Double_t eta2, Bool_t ExcludeECALGap = kFALSE )
 {
-	if( Type == "Full" )
-	{
-		cout << "Please add event number information" << endl;
-		// -- Background Samples -- //
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt15to20" ); Tag->push_back( "QCD_Pt15to20" ); Xsec->push_back( 1273190000 * 0.003 ); nEvents->push_back( 4617612.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt20to30" ); Tag->push_back( "QCD_Pt20to30" ); Xsec->push_back( 558528000 * 0.0053 ); nEvents->push_back( 4335727.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt30to50" ); Tag->push_back( "QCD_Pt30to50" ); Xsec->push_back( 139803000 * 0.01182 ); nEvents->push_back( 28343191.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt50to80" ); Tag->push_back( "QCD_Pt50to80" ); Xsec->push_back( 19222500 * 0.02276 ); nEvents->push_back( 20383912.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt80to120" ); Tag->push_back( "QCD_Pt80to120" ); Xsec->push_back( 2758420 * 0.03844 ); nEvents->push_back( 13856728.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt120to170" ); Tag->push_back( "QCD_Pt120to170" ); Xsec->push_back( 469797 * 0.05362 ); nEvents->push_back( 7925911.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt170to300" ); Tag->push_back( "QCD_Pt170to300" ); Xsec->push_back( 117989 * 0.07335 ); nEvents->push_back( 8693103.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt300to470" ); Tag->push_back( "QCD_Pt300to470" ); Xsec->push_back( 7820.25 * 0.10196 ); nEvents->push_back( 16174384.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt470to600" ); Tag->push_back( "QCD_Pt470to600" ); Xsec->push_back( 645.528 * 0.12242 ); nEvents->push_back( 5927854.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt600to800" ); Tag->push_back( "QCD_Pt600to800" ); Xsec->push_back( 187.109 * 0.13412 ); nEvents->push_back( 5867994.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt800to1000" ); Tag->push_back( "QCD_Pt800to1000" ); Xsec->push_back( 32.3486 * 0.14552 ); nEvents->push_back( 5571386.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt1000toInf" ); Tag->push_back( "QCD_Pt1000toInf" ); Xsec->push_back( 10.4305 * 0.15544 ); nEvents->push_back( 3884654.0 );
+	Bool_t Flag = kFALSE;
 
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_WWTo2L2Nu" ); Tag->push_back( "WW" ); Xsec->push_back( 12.178 ); nEvents->push_back( 1996559.0 );
+	Double_t Pt_Lead = 0;
+	Double_t eta_Lead = 0;
+	Double_t Pt_Sub = 0;
+	Double_t eta_Sub = 0;
 
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 32491104.0 ); //nEvents: sum of weights
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6025.2/3.0 ); nEvents->push_back( 23260465.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 35.6 ); nEvents->push_back( 984995.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 35.6 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ttbarTo2L2Nu" ); Tag->push_back( "ttbar" ); Xsec->push_back( 87.31 ); nEvents->push_back( 104606887.0 );
-		
-		// -- signal -- //
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M50to120" ); Tag->push_back( "ZMuMu_M50to120" );  Xsec->push_back(1975);  nEvents->push_back( 2976526.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M120to200" ); Tag->push_back( "ZMuMu_M120to200" );  Xsec->push_back(19.32);  nEvents->push_back( 99998.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M200to400" ); Tag->push_back( "ZMuMu_M200to400" );  Xsec->push_back(2.731);  nEvents->push_back( 99999.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M400to800" ); Tag->push_back( "ZMuMu_M400to800" );  Xsec->push_back(0.241);  nEvents->push_back( 98999.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M800to1400" );  Tag->push_back( "ZMuMu_M800to1400" );  Xsec->push_back(0.01678);  nEvents->push_back( 96398.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M1400to2300" );  Tag->push_back( "ZMuMu_M1400to2300" );  Xsec->push_back(0.00139);  nEvents->push_back( 99998.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M2300to3500" );  Tag->push_back( "ZMuMu_M2300to3500" );  Xsec->push_back(0.00008948);  nEvents->push_back( 100000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M3500to4500" );  Tag->push_back( "ZMuMu_M3500to4500" );  Xsec->push_back(0.000004135);  nEvents->push_back( 99000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M4500to6000" );  Tag->push_back( "ZMuMu_M4500to6000" );  Xsec->push_back(4.56E-07);  nEvents->push_back( 100000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M6000toInf" );  Tag->push_back( "ZMuMu_M6000toInf" );  Xsec->push_back(2.066E-08);  nEvents->push_back( 100000.0 );
-	}
-	else if(Type == "QCD" )
+	if( pt1 > pt2 )
 	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt15to20" ); Tag->push_back( "QCD_Pt15to20" ); Xsec->push_back( 1273190000 * 0.003 ); nEvents->push_back( 4617612.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt20to30" ); Tag->push_back( "QCD_Pt20to30" ); Xsec->push_back( 558528000 * 0.0053 ); nEvents->push_back( 4335727.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt30to50" ); Tag->push_back( "QCD_Pt30to50" ); Xsec->push_back( 139803000 * 0.01182 ); nEvents->push_back( 28343191.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt50to80" ); Tag->push_back( "QCD_Pt50to80" ); Xsec->push_back( 19222500 * 0.02276 ); nEvents->push_back( 20383912.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt80to120" ); Tag->push_back( "QCD_Pt80to120" ); Xsec->push_back( 2758420 * 0.03844 ); nEvents->push_back( 13856728.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt120to170" ); Tag->push_back( "QCD_Pt120to170" ); Xsec->push_back( 469797 * 0.05362 ); nEvents->push_back( 7925911.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt170to300" ); Tag->push_back( "QCD_Pt170to300" ); Xsec->push_back( 117989 * 0.07335 ); nEvents->push_back( 8693103.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt300to470" ); Tag->push_back( "QCD_Pt300to470" ); Xsec->push_back( 7820.25 * 0.10196 ); nEvents->push_back( 16174384.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt470to600" ); Tag->push_back( "QCD_Pt470to600" ); Xsec->push_back( 645.528 * 0.12242 ); nEvents->push_back( 5927854.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt600to800" ); Tag->push_back( "QCD_Pt600to800" ); Xsec->push_back( 187.109 * 0.13412 ); nEvents->push_back( 5867994.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt800to1000" ); Tag->push_back( "QCD_Pt800to1000" ); Xsec->push_back( 32.3486 * 0.14552 ); nEvents->push_back( 5571386.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_QCD_Pt1000toInf" ); Tag->push_back( "QCD_Pt1000toInf" ); Xsec->push_back( 10.4305 * 0.15544 ); nEvents->push_back( 3884654.0 );
+		Pt_Lead = pt1;
+		eta_Lead = eta1;
+		Pt_Sub = pt2;
+		eta_Sub = eta2;
 	}
-	else if( Type == "Diboson" )
+	else
 	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_WWTo2L2Nu" ); Tag->push_back( "WW" ); Xsec->push_back( 12.178 ); nEvents->push_back( 1996559.0 );
+		Pt_Lead = pt2;
+		eta_Lead = eta2;
+		Pt_Sub = pt1;
+		eta_Sub = eta1;
 	}
-	else if( Type == "WJets")
+
+	if( Pt_Lead > this->LeadPtCut && fabs(eta_Lead) < this->LeadEtaCut &&
+		Pt_Sub > this->SubPtCut && fabs(eta_Sub) < this->SubEtaCut )
 	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 32491104.0 ); //nEvents: sum of weights
+		if( ExcludeECALGap == kTRUE )
+		{
+			if( !(fabs(eta_Lead) > 1.4442 && fabs(eta_Sub) < 1.566) )
+				Flag = kTRUE;
+		}
+		else
+			Flag = kTRUE;
 	}
-	else if( Type == "DYTauTau" )
-	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6025.2/3.0 ); nEvents->push_back( 23260465.0 ); //nEvents: sum of DYTauTau weights
-	}
-	else if( Type == "SingleTop" )
-	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 35.6 ); nEvents->push_back( 984995.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 35.6 ); nEvents->push_back( 998397.0 );
-	}
-	else if( Type == "ttbar" )
-	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_ttbarTo2L2Nu" ); Tag->push_back( "ttbar" ); Xsec->push_back( 87.31 ); nEvents->push_back( 104606887.0 );
-	}
-	else if( Type == "DYPowheg" )
-	{
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M50to120" ); Tag->push_back( "ZMuMu_M50to120" );  Xsec->push_back(1975);  nEvents->push_back( 2976526.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M120to200" ); Tag->push_back( "ZMuMu_M120to200" );  Xsec->push_back(19.32);  nEvents->push_back( 99998.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M200to400" ); Tag->push_back( "ZMuMu_M200to400" );  Xsec->push_back(2.731);  nEvents->push_back( 99999.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M400to800" ); Tag->push_back( "ZMuMu_M400to800" );  Xsec->push_back(0.241);  nEvents->push_back( 98999.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M800to1400" );  Tag->push_back( "ZMuMu_M800to1400" );  Xsec->push_back(0.01678);  nEvents->push_back( 96398.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M1400to2300" );  Tag->push_back( "ZMuMu_M1400to2300" );  Xsec->push_back(0.00139);  nEvents->push_back( 99998.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M2300to3500" );  Tag->push_back( "ZMuMu_M2300to3500" );  Xsec->push_back(0.00008948);  nEvents->push_back( 100000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M3500to4500" );  Tag->push_back( "ZMuMu_M3500to4500" );  Xsec->push_back(0.000004135);  nEvents->push_back( 99000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M4500to6000" );  Tag->push_back( "ZMuMu_M4500to6000" );  Xsec->push_back(4.56E-07);  nEvents->push_back( 100000.0 );
-		ntupleDirectory->push_back( "DYntuple_v20161017_80X_MINIAODv2_addMuonStationVar_reHLT_ZMuMuPowheg_M6000toInf" );  Tag->push_back( "ZMuMu_M6000toInf" );  Xsec->push_back(2.066E-08);  nEvents->push_back( 100000.0 );
-	}
+
+	return Flag;
 }
-
-void DYAnalyzer::SetupMCsamples_v20160909_80X_reHLT_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents )
-{
-	if( Type == "Full_M50" )
-	{
-		// cout << "Please add event number information" << endl;
-		// -- Background Samples -- //
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WW" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993203 );
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 32491104.0 ); //nEvents: sum of weights
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7471235.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 23260465.0 ); //nEvents: sum of DYTauTau weights
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 984995.0 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ttbar" ); Tag->push_back( "ttbar" ); Xsec->push_back( 831.76 ); nEvents->push_back( 92925663.0 );
-		
-		// -- signal -- //
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYMuMu_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7509978.0 ); //nEvents: sum of weights within 10<M<50
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_DYLL_M50toInf" ); Tag->push_back( "DYMuMu_M50toInf" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 23243292.0 );
-	}
-
-	if( Type == "Full_Powheg" )
-	{
-		cout << "Please add event number information in SetupMCsamples_v20160809_80X_MoreTrigger_MiniAODv2" << endl;
-		// -- Background Samples -- //
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WW" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993203 );
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 32491104.0 ); //nEvents: sum of weights
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7471235.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 23260465.0 ); //nEvents: sum of DYTauTau weights
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 984995.0 );
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ttbar" ); Tag->push_back( "ttbar" ); Xsec->push_back( 831.76 ); nEvents->push_back( 92925663.0 );
-		
-		// -- signal -- //
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M50to120" ); Tag->push_back( "ZMuMu_M50to120" );  Xsec->push_back(1975);  nEvents->push_back(2976526.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M120to200" ); Tag->push_back( "ZMuMu_M120to200" );  Xsec->push_back(19.32);  nEvents->push_back(99998.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M200to400" ); Tag->push_back( "ZMuMu_M200to400" );  Xsec->push_back(2.731);  nEvents->push_back(99999.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M400to800" ); Tag->push_back( "ZMuMu_M400to800" );  Xsec->push_back(0.241);  nEvents->push_back(98999.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M800to1400" );  Tag->push_back( "ZMuMu_M800to1400" );  Xsec->push_back(0.01678);  nEvents->push_back(96398.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M1400to2300" );  Tag->push_back( "ZMuMu_M1400to2300" );  Xsec->push_back(0.00139);  nEvents->push_back(99998.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M2300to3500" );  Tag->push_back( "ZMuMu_M2300to3500" );  Xsec->push_back(0.00008948);  nEvents->push_back(100000.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M3500to4500" );  Tag->push_back( "ZMuMu_M3500to4500" );  Xsec->push_back(0.000004135);  nEvents->push_back(99000.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M4500to6000" );  Tag->push_back( "ZMuMu_M4500to6000" );  Xsec->push_back(4.56E-07);  nEvents->push_back(100000.0);
-		ntupleDirectory->push_back( "DYntuple_v20160909_80X_MINIAODv2_reHLT_ZMuMuPowheg_M6000toInf" );  Tag->push_back( "ZMuMu_M6000toInf" );  Xsec->push_back(2.066E-08);  nEvents->push_back(100000.0);
-	}
-}
-
-void DYAnalyzer::SetupMCsamples_v20160809_80X_MoreTrigger_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents )
-{
-	if( Type == "Full" )
-	{
-		// cout << "Please add event number information" << endl;
-		// -- Background Samples -- //
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WW" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993203 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 6776626.0 ); //nEvents: sum of weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7471235.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 6407748.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 984995.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ttbar" ); Tag->push_back( "ttbar" ); Xsec->push_back( 831.76 ); nEvents->push_back( 182122678.0 );
-		
-		// -- signal -- //
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYMuMu_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7509978.0 ); //nEvents: sum of weights within 10<M<50
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M50toInf" ); Tag->push_back( "DYMuMu_M50toInf" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 6409849.0 );
-	}
-
-	if( Type == "Full_M50" )
-	{
-		// cout << "Please add event number information" << endl;
-		// -- Background Samples -- //
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WW" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993203 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 6776626.0 ); //nEvents: sum of weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7471235.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 6407748.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 984995.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ttbar" ); Tag->push_back( "ttbar" ); Xsec->push_back( 831.76 ); nEvents->push_back( 182122678.0 );
-		
-		// -- signal -- //
-		// ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYMuMu_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7509978.0 ); //nEvents: sum of weights within 10<M<50
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M50toInf" ); Tag->push_back( "DYMuMu_M50toInf" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 6409849.0 );
-	}
-
-	if( Type == "Full_Powheg" )
-	{
-		cout << "Please add event number information in SetupMCsamples_v20160809_80X_MoreTrigger_MiniAODv2" << endl;
-		// -- Background Samples -- //
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ZZ" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 989304 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WZ" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999994 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WW" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993203 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_WJets" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 6776626.0 ); //nEvents: sum of weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M10to50" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7471235.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_DYLL_M50toInf" ); Tag->push_back( "DYTauTau" ); Xsec->push_back( 6104/3.0 ); nEvents->push_back( 6407748.0 ); //nEvents: sum of DYTauTau weights
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tbarW" ); Tag->push_back( "tbarW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 984995.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ST_tW" ); Tag->push_back( "tW" ); Xsec->push_back( 38.09 ); nEvents->push_back( 998397.0 );
-		ntupleDirectory->push_back( "DYntuple_v20160809_80X_MINIAODv2_MoreTrigger_ttbar" ); Tag->push_back( "ttbar" ); Xsec->push_back( 831.76 ); nEvents->push_back( 182122678.0 );
-		
-		// -- signal -- //
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M50to120" ); Tag->push_back( "ZMuMu_M50to120" );  Xsec->push_back(1975);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M120to200" ); Tag->push_back( "ZMuMu_M120to200" );  Xsec->push_back(19.32);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M200to400" ); Tag->push_back( "ZMuMu_M200to400" );  Xsec->push_back(2.731);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M400to800" ); Tag->push_back( "ZMuMu_M400to800" );  Xsec->push_back(0.241);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M800to1400" );  Tag->push_back( "ZMuMu_M800to1400" );  Xsec->push_back(0.01678);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M1400to2300" );  Tag->push_back( "ZMuMu_M1400to2300" );  Xsec->push_back(0.00139);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M2300to3500" );  Tag->push_back( "ZMuMu_M2300to3500" );  Xsec->push_back(0.00008948);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M3500to4500" );  Tag->push_back( "ZMuMu_M3500to4500" );  Xsec->push_back(0.000004135);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M4500to6000" );  Tag->push_back( "ZMuMu_M4500to6000" );  Xsec->push_back(4.56E-07);  nEvents->push_back(0.0);
-		ntupleDirectory->push_back( "DYntuple_v20160908_80X_MINIAODv2_MoreTrigger_ZMuMuPowheg_M6000toInf" );  Tag->push_back( "ZMuMu_M6000toInf" );  Xsec->push_back(2.066E-08);  nEvents->push_back(0.0);
-	}
-}
-
 
 
 Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple)
@@ -690,10 +494,10 @@ void DYAnalyzer::SetupPileUpReWeighting( Bool_t isMC, TString FileName )
 	}
 	
 	// -- Only for the MC -- //
-	TString FilePath = "~/Physics/ZprimeAnalysis_80X/CommonCodes/Pileup/" + FileName;
+	TString FilePath = GetBasePath()+"CommonCodes/Pileup/" + FileName;
 	printf( "[Setup the pileup reweighting values from: %s]\n", FilePath.Data() );
 
-	TFile *f = new TFile("~/Physics/ZprimeAnalysis_80X/CommonCodes/Pileup/" + FileName);
+	TFile *f = new TFile(GetBasePath()+"CommonCodes/Pileup/" + FileName);
 	f->cd();
 	TH1D *h_weight = (TH1D*)f->Get("h_PUReWeights");
 	if( h_weight == NULL )
@@ -1109,652 +913,58 @@ Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *
 	return weight;
 }
 
-Double_t DYAnalyzer::EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple)
-{
-	Double_t weight = -999;
-
-	// -- Muon1 -- //
-	Double_t Pt1 = mu1.Pt;
-	Double_t eta1 = mu1.eta;
-
-	Int_t ptbin1 = FindPtBin( Pt1 );
-	Int_t etabin1 = FindEtaBin( eta1 );
-
-	if( ptbin1 == 9999 || etabin1 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin1, etabin1);
-		return -999;
-	}
-
-	Double_t Eff_muon1_data = Eff_RecoID_data[etabin1][ptbin1] * Eff_Iso_data[etabin1][ptbin1];
-	Double_t Eff_muon1_MC = Eff_RecoID_MC[etabin1][ptbin1] * Eff_Iso_MC[etabin1][ptbin1];
-
-	// -- Muon2 -- //
-	Double_t Pt2 = mu2.Pt;
-	Double_t eta2 = mu2.eta;
-
-	Int_t ptbin2 = FindPtBin( Pt2 );
-	Int_t etabin2 = FindEtaBin( eta2 );
-
-	if( ptbin2 == 9999 || etabin2 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin2, etabin2);
-		return -999;
-	}
-	Double_t Eff_muon2_data = Eff_RecoID_data[etabin2][ptbin2] * Eff_Iso_data[etabin2][ptbin2];
-	Double_t Eff_muon2_MC = Eff_RecoID_MC[etabin2][ptbin2] * Eff_Iso_MC[etabin2][ptbin2];
-
-	Double_t Eff_data_all = Eff_muon1_data * Eff_muon2_data;
-	Double_t Eff_MC_all = Eff_muon1_MC * Eff_muon2_MC;
-
-	weight = Eff_data_all / Eff_MC_all;
-
-	return weight;
-}
-
-Bool_t DYAnalyzer::CheckTriggerMatching( Muon mu, NtupleHandle *ntuple )
-{
-	Bool_t isTriggerMatched = kFALSE;
-
-	if( HLT == "HLT_IsoMu24_v* || HLT_IsoTkMu24_v*" )
-	{
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu24_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu24_v*") )
-			isTriggerMatched = kTRUE;
-	}
-	else if( HLT == "HLT_IsoMu27_v* || HLT_IsoTkMu27_v*" )
-	{
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu27_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu27_v*") )
-			isTriggerMatched = kTRUE;
-	}
-	else if( HLT == "HLT_Mu50_v* || HLT_TkMu50_v*" )
-	{
-		if( mu.isTrigMatched(ntuple, "HLT_Mu50_v*") || mu.isTrigMatched(ntuple, "HLT_TkMu50_v*") )
-			isTriggerMatched = kTRUE;
-	}
-	else if( !HLT.Contains("||") )
-	{
-		if( mu.isTrigMatched(ntuple, HLT) )
-			isTriggerMatched = kTRUE;
-	}
-
-	return isTriggerMatched;
-}
-
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
 						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
 
-	//Collect qualified muons among muons
+	// -- Collect qualified muons among muons -- //
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
 	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
-	        QMuonCollection.push_back( MuonCollection[j] );
-	}
-
-	// -- Check the existence of at least one muon matched with HLT-object -- //
-	Bool_t isExistHLTMatchedMuon = kFALSE;
-	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
-	{
-		Muon mu = QMuonCollection[i_mu];
-		if( this->CheckTriggerMatching(mu, ntuple) )
-		{
-			isExistHLTMatchedMuon = kTRUE;
-			break;
-		}
-	}
-
-	if( isExistHLTMatchedMuon == kTRUE )
-	{
-		Int_t nQMuons = (Int_t)QMuonCollection.size();
-		if( nQMuons == 2)
-		{
-			Muon recolep1 = QMuonCollection[0];
-			Muon recolep2 = QMuonCollection[1];
-
-			// -- Check the Accpetance -- //
-			Bool_t isPassAcc = kFALSE;
-			isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-			Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-			Double_t VtxProb = -999;
-			Double_t VtxNormChi2 = 999;
-			DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-			TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-			TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-			// -- 3D open angle -- //
-			Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-			Bool_t isOS = kFALSE;
-			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
-
-			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-			{
-				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( recolep1 );
-				SelectedMuonCollection->push_back( recolep2 );
-			}
-		}
-		else if( nQMuons > 2 )
-		{
-			Double_t VtxProb_BestPair = -1;
-			Double_t VtxNormChi2_BestPair = 999;
-			Muon mu1_BestPair;
-			Muon mu2_BestPair;
-
-			for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-			{
-				Muon Mu = QMuonCollection[i_mu];
-
-				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( this->CheckTriggerMatching(Mu, ntuple) )
-				{
-					// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-					// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-					for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-					{
-						Muon Mu_jth = QMuonCollection[j_mu];
-
-						if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-						{
-							// -- Check that this pair is within acceptance -- //
-							Bool_t isPassAcc = kFALSE;
-							isPassAcc = isPassAccCondition_Muon(Mu, Mu_jth);
-
-							if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
-							{
-								Double_t VtxProb_temp = -999;
-								Double_t VtxNormChi2_temp = 999;
-								DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
-
-								// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
-								if( VtxNormChi2_temp < VtxNormChi2_BestPair )
-								{
-									VtxNormChi2_BestPair = VtxNormChi2_temp;
-									mu1_BestPair = Mu;
-									mu2_BestPair = Mu_jth;
-								}
-							}
-						}
-					} // -- end of the loop for j_mu (finding for second muon)
-				}
-			} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-			if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
-			{
-				TLorentzVector reco_v1 = mu1_BestPair.Momentum;
-				TLorentzVector reco_v2 = mu2_BestPair.Momentum;
-				Double_t reco_M = (reco_v1 + reco_v2).M();
-
-				// -- 3D open angle is calculated using inner track information -- //
-				// -- 3D open angle -- //
-				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
-
-				Bool_t isOS = kFALSE;
-				if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
-
-				if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-				{
-					isPassEventSelection = kTRUE;
-					SelectedMuonCollection->push_back( mu1_BestPair );
-					SelectedMuonCollection->push_back( mu2_BestPair );
-				}
-			}
-
-		} // -- End of else if( nQMuons > 2 ) -- //
-
-	} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-	return isPassEventSelection;
-}
-
-// -- Test using the trigger without isolation condition: HLT_Mu50_v* -- //
-Bool_t DYAnalyzer::EventSelection_Mu50(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > QMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
-	        QMuonCollection.push_back( MuonCollection[j] );
-	}
-
-	// -- Check the existence of at least one muon matched with HLT-object -- //
-	Bool_t isExistHLTMatchedMuon = kFALSE;
-	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
-	{
-		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, HLT) )
-		{
-			isExistHLTMatchedMuon = kTRUE;
-			break;
-		}
-	}
-
-	if( isExistHLTMatchedMuon == kTRUE )
-	{
-		Int_t nQMuons = (Int_t)QMuonCollection.size();
-		if( nQMuons == 2)
-		{
-			Muon recolep1 = QMuonCollection[0];
-			Muon recolep2 = QMuonCollection[1];
-
-			// -- Check the Accpetance -- //
-			Bool_t isPassAcc = kFALSE;
-			isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-			Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-			Double_t VtxProb = -999;
-			Double_t VtxNormChi2 = 999;
-			DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-			TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-			TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-			// -- 3D open angle -- //
-			Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
-			{
-				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( recolep1 );
-				SelectedMuonCollection->push_back( recolep2 );
-			}
-		}
-		else if( nQMuons > 2 )
-		{
-			Double_t VtxProb_BestPair = -1;
-			Double_t VtxNormChi2_BestPair = 999;
-			Muon mu1_BestPair;
-			Muon mu2_BestPair;
-
-			for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-			{
-				Muon Mu = QMuonCollection[i_mu];
-
-				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, HLT) )
-				{
-					// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-					// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-					for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-					{
-						Muon Mu_jth = QMuonCollection[j_mu];
-
-						if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-						{
-							// -- Check that this pair is within acceptance -- //
-							Bool_t isPassAcc = kFALSE;
-							isPassAcc = isPassAccCondition_Muon(Mu, Mu_jth);
-
-							if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
-							{
-								Double_t VtxProb_temp = -999;
-								Double_t VtxNormChi2_temp = 999;
-								DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
-
-								// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
-								if( VtxNormChi2_temp < VtxNormChi2_BestPair )
-								{
-									VtxNormChi2_BestPair = VtxNormChi2_temp;
-									mu1_BestPair = Mu;
-									mu2_BestPair = Mu_jth;
-								}
-							}
-						}
-					} // -- end of the loop for j_mu (finding for second muon)
-				}
-			} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-			if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
-			{
-				TLorentzVector reco_v1 = mu1_BestPair.Momentum;
-				TLorentzVector reco_v2 = mu2_BestPair.Momentum;
-				Double_t reco_M = (reco_v1 + reco_v2).M();
-
-				// -- 3D open angle is calculated using inner track information -- //
-				// -- 3D open angle -- //
-				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
-
-				if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
-				{
-					isPassEventSelection = kTRUE;
-					SelectedMuonCollection->push_back( mu1_BestPair );
-					SelectedMuonCollection->push_back( mu2_BestPair );
-				}
-			}
-
-		} // -- End of else if( nQMuons > 2 ) -- //
-
-	} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-	return isPassEventSelection;
-}
-
-
-Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > QMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
-	        QMuonCollection.push_back( MuonCollection[j] );
-	}
-
-	// -- Check the existence of at least one muon matched with HLT-object -- //
-	Bool_t isExistHLTMatchedMuon = kFALSE;
-	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
-	{
-		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
-		{
-			isExistHLTMatchedMuon = kTRUE;
-			break;
-		}
-	}
-
-	if( isExistHLTMatchedMuon == kTRUE )
-	{
-		Int_t nQMuons = (Int_t)QMuonCollection.size();
-		if( nQMuons == 2)
-		{
-			Muon recolep1 = QMuonCollection[0];
-			Muon recolep2 = QMuonCollection[1];
-
-			// -- Check the Accpetance -- //
-			Bool_t isPassAcc = kFALSE;
-			isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-			Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-			Double_t VtxProb = -999;
-			Double_t VtxNormChi2 = 999;
-			DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-			TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-			TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-			// -- 3D open angle -- //
-			Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-			// if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && Angle < TMath::Pi() - 0.005 )
-			{
-				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( recolep1 );
-				SelectedMuonCollection->push_back( recolep2 );
-			}
-		}
-		else if( nQMuons > 2 )
-		{
-			Double_t VtxProb_BestPair = -1;
-			Double_t VtxNormChi2_BestPair = 999;
-			Muon mu1_BestPair;
-			Muon mu2_BestPair;
-
-			for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-			{
-				Muon Mu = QMuonCollection[i_mu];
-
-				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || Mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
-				{
-					// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-					// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-					for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-					{
-						Muon Mu_jth = QMuonCollection[j_mu];
-
-						if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-						{
-							// -- Check that this pair is within acceptance -- //
-							Bool_t isPassAcc = kFALSE;
-							isPassAcc = isPassAccCondition_Muon(Mu, Mu_jth);
-
-							if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
-							{
-								Double_t VtxProb_temp = -999;
-								Double_t VtxNormChi2_temp = 999;
-								DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
-
-								// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
-								if( VtxNormChi2_temp < VtxNormChi2_BestPair )
-								{
-									VtxNormChi2_BestPair = VtxNormChi2_temp;
-									mu1_BestPair = Mu;
-									mu2_BestPair = Mu_jth;
-								}
-							}
-						}
-					} // -- end of the loop for j_mu (finding for second muon)
-				}
-			} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-			if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
-			{
-				TLorentzVector reco_v1 = mu1_BestPair.Momentum;
-				TLorentzVector reco_v2 = mu2_BestPair.Momentum;
-				Double_t reco_M = (reco_v1 + reco_v2).M();
-
-				// -- 3D open angle is calculated using inner track information -- //
-				// -- 3D open angle -- //
-				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
-
-				// if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
-				if( reco_M > 10 && Angle < TMath::Pi() - 0.005 )
-				{
-					isPassEventSelection = kTRUE;
-					SelectedMuonCollection->push_back( mu1_BestPair );
-					SelectedMuonCollection->push_back( mu2_BestPair );
-				}
-			}
-
-		} // -- End of else if( nQMuons > 2 ) -- //
-
-	} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-	return isPassEventSelection;
-}
-
-// -- Event selection used for differential Z cross section measurement @ 13TeV -- // 
-Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > QMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].trkiso < 0.10) // -- Iso should be changed with PFIso(dBeta) in order to be same selection with Z-diff x-section measurement
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
 	Int_t nQMuons = (Int_t)QMuonCollection.size();
-	if( nQMuons == 2)
+	if( nQMuons >= 2 ) // -- at least more than or equal to 2 qualified muons in a event -- // 
 	{
-		Muon recolep1 = QMuonCollection[0];
-		Muon recolep2 = QMuonCollection[1];
-
-		// -- Check the Accpetance -- //
-		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-		// -- Opposite sign condition -- //
-		Bool_t isOppositeSign = kFALSE;
-		if( recolep1.charge != recolep2.charge )
-			isOppositeSign = kTRUE;
-
-		Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-		if( reco_M > 60 && reco_M < 120 && isPassAcc == kTRUE && isOppositeSign == kTRUE )
+		// -- find all qualified dimuon pairs -- //
+		vector< MuonPair > vec_GoodPair;
+		for(Int_t i_mu=0; i_mu<nQMuons-1; i_mu++)
 		{
-			isPassEventSelection = kTRUE;
-			SelectedMuonCollection->push_back( recolep1 );
-			SelectedMuonCollection->push_back( recolep2 );
-		}
-	}
-	else if( nQMuons > 2 )
-	{
-		// -- More then 2 Qualified Muon: Select the muons with highest pT -- // 
-		Double_t Pt_leading = 0;
-		Muon LeadingMuon;
-		Double_t i_leading = 0;
-		for(Int_t i_mu1 = 0; i_mu1 < nQMuons; i_mu1++)
-		{
-			Muon Mu = QMuonCollection[i_mu1];
-
-			// printf("%dth Muon: Pt = %.3lf\n", i_mu1, Mu.Pt);
-
-			if( Mu.Pt > Pt_leading )
+			for(Int_t j_mu=i_mu+1; j_mu<nQMuons; j_mu++)
 			{
-				Pt_leading = Mu.Pt;
-				LeadingMuon	= Mu;
-				i_leading = i_mu1;
+				Muon mu1 = QMuonCollection[i_mu];
+				Muon mu2 = QMuonCollection[j_mu];
+
+				MuonPair pair_temp( mu1, mu2 );
+
+				if( pair_temp.isGoodMuonPair( ntuple, this->HLT, this->LeadPtCut, this->SubPtCut, this->LeadEtaCut, this->SubEtaCut) )
+					vec_GoodPair.push_back( pair_temp );
+			}
+
+			Int_t nPair = (Int_t)vec_GoodPair.size();
+			if( nPair >= 1 ) // -- at least one pair pass all good pair condition -- //
+			{
+				// -- the pair with "smallest" vertex chi2 will be the first element -- //
+				std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_VtxChi2 );
+
+				if( nPair >= 2 )
+				{
+					for(Int_t i_pair=0; i_pair<nPair; i_pair++)
+						printf("\t[%02d pair: vertex chi2 = %lf]\n", i_pair, vec_GoodPair[i_pair].NormVtxChi2);
+				}
+
+				isPassEventSelection = kTRUE;
+				SelectedMuonCollection->push_back( vec_GoodPair[0].First );
+				SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
 			}
 		}
-
-		Double_t Pt_sub = 0;
-		Muon SubMuon;
-		for(Int_t i_mu2=0; i_mu2 < nQMuons; i_mu2++)
-		{
-			if( i_mu2 == i_leading ) continue;
-
-			Muon Mu = QMuonCollection[i_mu2];
-
-			if( Mu.Pt > Pt_sub )
-			{
-				Pt_sub = Mu.Pt;
-				SubMuon	= Mu;
-			}
-		}
-
-		// printf("\t(Pt_leading, Pt_sub) = (%.3lf, %.3lf)\n", LeadingMuon.Pt, SubMuon.Pt);
-
-		// -- Check the Accpetance -- //
-		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Muon(LeadingMuon, SubMuon);
-
-		// -- Opposite sign condition -- //
-		Bool_t isOppositeSign = kFALSE;
-		if( LeadingMuon.charge != SubMuon.charge )
-			isOppositeSign = kTRUE;
-
-		Double_t reco_M = (LeadingMuon.Momentum + SubMuon.Momentum).M();
-
-		if( reco_M > 60 && reco_M < 120 && isPassAcc == kTRUE && isOppositeSign == kTRUE )
-		{
-			isPassEventSelection = kTRUE;
-			SelectedMuonCollection->push_back( LeadingMuon );
-			SelectedMuonCollection->push_back( SubMuon );
-		}
-
-	} // -- End of else if( nQMuons > 2 ) -- //
+	} // end of if( nQMuons >= 2 ) -- //
 
 	return isPassEventSelection;
 }
-
-Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
-{
-	Bool_t isPassAcc = kFALSE;
-	Muon leadMu, subMu;
-	CompareMuon(&Mu1, &Mu2, &leadMu, &subMu);
-	if( leadMu.Pt > LeadPtCut && fabs(leadMu.eta) < LeadEtaCut && 
-		subMu.Pt  > SubPtCut  && fabs(subMu.eta)  < SubEtaCut )
-		isPassAcc = kTRUE;
-
-	return isPassAcc;
-}
-
-Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2)
-{
-	Bool_t isPassAcc = kFALSE;
-
-	GenLepton leadGenLep, subGenLep;
-	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
-	
-	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut &&
-		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut )
-		isPassAcc = 1;
-
-	return isPassAcc;
-}
-
-void DYAnalyzer::CompareMuon(Muon *Mu1, Muon *Mu2, Muon *leadMu, Muon *subMu)
-{
-    if( Mu1->Pt > Mu2->Pt )
-    {
-        *leadMu = *Mu1;
-        *subMu = *Mu2;
-    }
-    else
-    {
-        *leadMu = *Mu2;
-        *subMu = *Mu1;
-    }
-}
-
-void DYAnalyzer::CompareGenLepton(GenLepton *genlep1, GenLepton *genlep2, GenLepton *leadgenlep, GenLepton *subgenlep)
-{
-	if( genlep1->Pt > genlep2->Pt )
-	{
-		*leadgenlep = *genlep1;
-		*subgenlep = *genlep2;
-	}
-	else
-	{
-		*leadgenlep = *genlep2;
-		*subgenlep = *genlep1;
-	}
-}
-
-void DYAnalyzer::DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2)
-{
-	vector<double> *PtCollection1 = ntuple->vtxTrkCkt1Pt;
-	vector<double> *PtCollection2 = ntuple->vtxTrkCkt2Pt;
-	vector<double> *VtxProbCollection = ntuple->vtxTrkProb;
-
-	Int_t NPt1 = (Int_t)PtCollection1->size();
-	Int_t NPt2 = (Int_t)PtCollection2->size();
-	Int_t NProb = (Int_t)VtxProbCollection->size();
-
-	if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
-		cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
-
-	// cout << "Pt1: " << Pt1 << " Pt2: " << Pt2 << endl;
-
-	for(Int_t i=0; i<NProb; i++)
-	{
-		// cout << "\tPtCollection1->at("<< i << "): " << PtCollection1->at(i) << " PtCollection2->at("<< i << "): " << PtCollection2->at(i) << endl;
-		if( ( PtCollection1->at(i) == Pt1 && PtCollection2->at(i) == Pt2 )  || ( PtCollection1->at(i) == Pt2 && PtCollection2->at(i) == Pt1 ) )
-		{
-			*VtxProb = VtxProbCollection->at(i);
-			*VtxNormChi2 = ntuple->vtxTrkChi2->at(i) / ntuple->vtxTrkNdof->at(i);
-			break;
-		}
-	}
-
-	return;
-}
-
-
 
 // -- Event selecton for the electron channel (test) -- //
 Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection, NtupleHandle *ntuple, // -- input: All electrons in a event & NtupleHandle -- //
@@ -1782,7 +992,7 @@ Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection
 		Electron recolep2 = QElectronCollection[1];
 
 		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Electron(recolep1, recolep2);
+		isPassAcc = this->Flag_Acc( recolep1.Pt, recolep1.eta, recolep2.Pt, recolep2.eta, kTRUE );
 
 		Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
 
@@ -1824,7 +1034,7 @@ Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCol
 		Electron recolep2 = QElectronCollection[1];
 
 		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Electron(recolep1, recolep2);
+		isPassAcc = this->Flag_Acc( recolep1.Pt, recolep1.eta, recolep2.Pt, recolep2.eta, kTRUE );
 
 		Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
 
@@ -1839,88 +1049,6 @@ Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCol
 
 }
 
-// -- Event selecton for the electron channel (2016.02.11) -- //
-Bool_t DYAnalyzer::EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, NtupleHandle *ntuple, // -- input: All electrons in a event & NtupleHandle -- //
-						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	// -- Electron ID -- //
-	vector< Electron > QElectronCollection;
-	for(Int_t j=0; j<(int)ElectronCollection.size(); j++)
-	{
-		Electron elec = ElectronCollection[j];
-		// cout << "elec.passConvVeto: " << elec.passConvVeto << endl;
-		if( elec.isMediumElectron_Spring25ns_minus_PFIso() && elec.ecalDriven == 1 
-			&& elec.Pt > SubPtCut && fabs(elec.etaSC) < SubEtaCut && !( fabs(elec.etaSC) > 1.4442 && fabs(elec.etaSC) < 1.566 ) )
-			QElectronCollection.push_back( ElectronCollection[j] );
-	}
-
-	Int_t nQElectrons = (Int_t)QElectronCollection.size();
-
-	// cout << "# qualified electrons: " << nQElectrons << endl;
-
-	if( nQElectrons == 2 )
-	{
-		Electron recolep1 = QElectronCollection[0];
-		Electron recolep2 = QElectronCollection[1];
-
-		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Electron(recolep1, recolep2);
-
-		Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-		if( reco_M > 10 && isPassAcc == kTRUE )
-		{
-			isPassEventSelection = kTRUE;
-			SelectedElectronCollection->push_back( recolep1 );
-			SelectedElectronCollection->push_back( recolep2 );
-		}
-	}
-	return isPassEventSelection;
-
-}
-
-Bool_t DYAnalyzer::isPassAccCondition_Electron(Electron Elec1, Electron Elec2)
-{
-	Bool_t isPassAcc = kFALSE;
-	Electron leadElec, subElec;
-	CompareElectron(&Elec1, &Elec2, &leadElec, &subElec);
-	if( leadElec.Pt > LeadPtCut && fabs(leadElec.etaSC) < LeadEtaCut && !( fabs(leadElec.etaSC) > 1.4442 && fabs(leadElec.etaSC) < 1.566 ) &&
-		subElec.Pt  > SubPtCut  && fabs(subElec.etaSC)  < SubEtaCut && !( fabs(subElec.etaSC) > 1.4442 && fabs(subElec.etaSC) < 1.566 ) )
-		isPassAcc = kTRUE;
-
-	return isPassAcc;
-}
-
-
-Bool_t DYAnalyzer::isPassAccCondition_GenLepton_ECALGAP(GenLepton genlep1, GenLepton genlep2)
-{
-	Bool_t isPassAcc = kFALSE;
-
-	GenLepton leadGenLep, subGenLep;
-	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
-	
-	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut && !( fabs(leadGenLep.eta) > 1.4442 && fabs(leadGenLep.eta) < 1.566 ) &&
-		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut && !( fabs(subGenLep.eta) > 1.4442 && fabs(subGenLep.eta) < 1.566 ) )
-		isPassAcc = 1;
-
-	return isPassAcc;
-}
-
-void DYAnalyzer::CompareElectron(Electron *Elec1, Electron *Elec2, Electron *leadElec, Electron *subElec)
-{
-    if( Elec1->Pt > Elec2->Pt )
-    {
-        *leadElec = *Elec1;
-        *subElec = *Elec2;
-    }
-    else
-    {
-        *leadElec = *Elec2;
-        *subElec = *Elec1;
-    }
-}
 
 void DYAnalyzer::PostToPreFSR_byDressedLepton(NtupleHandle *ntuple, GenLepton *genlep_postFSR, Double_t dRCut, GenLepton *genlep_preFSR, vector< GenOthers >* GenPhotonCollection)
 {
@@ -1939,7 +1067,7 @@ void DYAnalyzer::PostToPreFSR_byDressedLepton(NtupleHandle *ntuple, GenLepton *g
 		if( fabs(genlep.ID) == 22 && fabs(genlep.Mother) == 13)
 		{
 			
-			Double_t dR = Calc_dR_GenLepton_GenOthers(*genlep_postFSR, genlep);
+			Double_t dR = genlep_postFSR->Momentum.DeltaR( genlep.Momentum );
 
 			// -- Sum of all photon's momentum near the post-FSR muon -- //
 			if( dR < dRCut )
@@ -1979,7 +1107,7 @@ void DYAnalyzer::PostToPreFSR_byDressedLepton_AllPhotons(NtupleHandle *ntuple, G
 		if( fabs(genlep.ID) == 22 )
 		{
 			
-			Double_t dR = Calc_dR_GenLepton_GenOthers(*genlep_postFSR, genlep);
+			Double_t dR = genlep_postFSR->Momentum.DeltaR( genlep.Momentum );
 
 			// -- Sum of all photon's momentum near the post-FSR muon -- //
 			if( dR < dRCut )
@@ -2006,10 +1134,10 @@ TString DYAnalyzer::DecideFSRType(GenLepton preFSR1, GenLepton preFSR2, GenLepto
 	TString FSRType = "";
 
 	Bool_t isPassAcc_preFSREvent = kFALSE;
-	isPassAcc_preFSREvent = isPassAccCondition_GenLepton(preFSR1, preFSR2);
+	isPassAcc_preFSREvent = Flag_Acc( preFSR1.Pt, preFSR1.eta, preFSR2.Pt, preFSR2.eta );
 
 	Bool_t isPassAcc_postFSREvent = kFALSE;
-	isPassAcc_postFSREvent = isPassAccCondition_GenLepton(postFSR1, postFSR2);
+	isPassAcc_postFSREvent = Flag_Acc( postFSR1.Pt, postFSR1.eta, postFSR2.Pt, postFSR2.eta );
 
 
 	if( isPassAcc_preFSREvent == kFALSE && isPassAcc_postFSREvent == kTRUE )
@@ -2030,36 +1158,6 @@ TString DYAnalyzer::DecideFSRType(GenLepton preFSR1, GenLepton preFSR2, GenLepto
 	}
 
 	return FSRType;
-}
-
-Double_t DYAnalyzer::Calc_dR_GenLeptons( GenLepton genlep1, GenLepton genlep2 )
-{
-	Double_t eta1 = genlep1.eta;
-	Double_t phi1 = genlep1.phi;
-
-	Double_t eta2 = genlep2.eta;
-	Double_t phi2 = genlep2.phi;
-
-	Double_t diff_eta = eta1 - eta2;
-	Double_t diff_phi = phi1 - phi2;
-
-	Double_t dR = sqrt( diff_eta * diff_eta + diff_phi * diff_phi );
-	return dR;
-}
-
-Double_t DYAnalyzer::Calc_dR_GenLepton_GenOthers( GenLepton genlep1, GenOthers genlep2 )
-{
-	Double_t eta1 = genlep1.eta;
-	Double_t phi1 = genlep1.phi;
-
-	Double_t eta2 = genlep2.eta;
-	Double_t phi2 = genlep2.phi;
-
-	Double_t diff_eta = eta1 - eta2;
-	Double_t diff_phi = phi1 - phi2;
-
-	Double_t dR = sqrt( diff_eta * diff_eta + diff_phi * diff_phi );
-	return dR;
 }
 
 void DYAnalyzer::GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon>* MuonCollection)
@@ -2107,9 +1205,8 @@ void DYAnalyzer::GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon
 	//Give Acceptance Cuts
 	if( GenLeptonCollection.size() >= 2 )
 	{
-		GenLepton leadGenLep, subGenLep;
-		CompareGenLepton(&GenLeptonCollection[0], &GenLeptonCollection[1], &leadGenLep, &subGenLep);
-		if( !(leadGenLep.Pt > LeadPtCut && subGenLep.Pt > SubPtCut && abs(leadGenLep.eta) < LeadEtaCut && abs(subGenLep.eta) < SubEtaCut) )
+		if( !(this->Flag_Acc( GenLeptonCollection[0].Pt, GenLeptonCollection[0].eta, 
+			GenLeptonCollection[1].Pt, GenLeptonCollection[1].eta )) )
 			GenLeptonCollection.clear();
 	}
 
@@ -2159,20 +1256,6 @@ void DYAnalyzer::GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon
 	return;
 }
 
-void DYAnalyzer::ConvertToTunePInfo( Muon &mu )
-{
-	// -- Use TuneP information -- //
-	mu.Pt = mu.TuneP_pT;
-	mu.eta = mu.TuneP_eta;
-	mu.phi = mu.TuneP_phi;
-
-	Double_t Px = mu.TuneP_Px;
-	Double_t Py = mu.TuneP_Py;
-	Double_t Pz = mu.TuneP_Pz;
-	Double_t E = sqrt( Px*Px + Py*Py + Pz*Pz + M_Mu*M_Mu );
-	mu.Momentum.SetPxPyPzE( Px, Py, Pz, E );
-}
-
 void DYAnalyzer::PrintOutDoubleMuInfo( Muon mu1, Muon mu2 )
 {
 	printf("\t[Muon1] (pT, eta, phi, charge) = (%10.5lf, %10.5lf, %10.5lf, %.1d)\n", mu1.Pt, mu1.eta, mu1.phi, mu1.charge);
@@ -2181,325 +1264,6 @@ void DYAnalyzer::PrintOutDoubleMuInfo( Muon mu1, Muon mu2 )
 	printf("\t\tDilepton Mass: %10.5lf\n", reco_M);
 
 }
-
-Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > PassingMuonCollection;
-	vector< Muon > FailingMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() )
-	    {
-	    	if( MuonCollection[j].trkiso < 0.10 )
-	    		PassingMuonCollection.push_back( MuonCollection[j] );
-	    	else
-	    		FailingMuonCollection.push_back( MuonCollection[j] );
-	    }
-	}
-
-	Int_t nFailMuon = (Int_t)FailingMuonCollection.size();
-
-	if( nFailMuon >= 2 ) // -- Dijet events: contains more than 2 failing muons regardless of # passing muons -- // 
-	{
-		if( nFailMuon == 2 )
-		{
-			Muon recolep1 = FailingMuonCollection[0];
-			Muon recolep2 = FailingMuonCollection[1];
-
-			// -- Check the Accpetance -- //
-			Bool_t isPassAcc = kFALSE;
-			isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-			Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-			Double_t VtxProb = -999;
-			Double_t VtxNormChi2 = 999;
-			DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-			TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-			TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-			// -- 3D open angle -- //
-			Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-			Bool_t isOS = kFALSE;
-			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
-
-			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-			{
-				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( recolep1 );
-				SelectedMuonCollection->push_back( recolep2 );
-			}
-
-		} // -- end of if( nFailMuon == 2 ) -- //
-		else // -- # failing muons > 2 -- // 
-		{
-			Double_t VtxProb_BestPair = -1;
-			Double_t VtxNormChi2_BestPair = 999;
-			Muon mu1_BestPair;
-			Muon mu2_BestPair;
-
-			for(Int_t i_mu=0; i_mu<nFailMuon; i_mu++)
-			{
-				Muon Mu = FailingMuonCollection[i_mu];
-
-				// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-				for(Int_t j_mu=0; j_mu<nFailMuon; j_mu++)
-				{
-					Muon Mu_jth = FailingMuonCollection[j_mu];
-
-					if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-					{
-						// -- Check that this pair is within acceptance -- //
-						Bool_t isPassAcc = kFALSE;
-						isPassAcc = isPassAccCondition_Muon(Mu, Mu_jth);
-
-						if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
-						{
-							Double_t VtxProb_temp = -999;
-							Double_t VtxNormChi2_temp = 999;
-							DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
-
-							// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
-							if( VtxNormChi2_temp < VtxNormChi2_BestPair )
-							{
-								VtxNormChi2_BestPair = VtxNormChi2_temp;
-								mu1_BestPair = Mu;
-								mu2_BestPair = Mu_jth;
-							}
-						}
-					}
-				} // -- end of the loop for j_mu (finding for second muon)
-			} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-			if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
-			{
-				TLorentzVector reco_v1 = mu1_BestPair.Momentum;
-				TLorentzVector reco_v2 = mu2_BestPair.Momentum;
-				Double_t reco_M = (reco_v1 + reco_v2).M();
-
-				// -- 3D open angle is calculated using inner track information -- //
-				// -- 3D open angle -- //
-				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
-
-				Bool_t isOS = kFALSE;
-				if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
-
-				if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-				{
-					isPassEventSelection = kTRUE;
-					SelectedMuonCollection->push_back( mu1_BestPair );
-					SelectedMuonCollection->push_back( mu2_BestPair );
-				}
-			}
-
-		} // -- end of (# failing muons > 2) case -- //
-
-	} // -- end of if( nFailMuon >= 2 ) -- //
-
-	return isPassEventSelection;
-}
-
-Bool_t DYAnalyzer::EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > PassingMuonCollection;
-	vector< Muon > FailingMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() )
-	    {
-	    	if( MuonCollection[j].trkiso < 0.10 )
-	    		PassingMuonCollection.push_back( MuonCollection[j] );
-	    	else
-	    		FailingMuonCollection.push_back( MuonCollection[j] );
-	    }
-	}
-
-	Int_t nFailMuon = (Int_t)FailingMuonCollection.size();
-	Int_t nPassMuon = (Int_t)PassingMuonCollection.size();
-
-	if( nFailMuon == 1 && nPassMuon == 1) // -- W+Jets events: exactly (# pass muon , # fail muon ) = (1, 1) -- //
-	{
-		Muon recolep1 = PassingMuonCollection[0]; // -- first one: passing muon -- //
-		Muon recolep2 = FailingMuonCollection[1]; // -- second one: failing muon -- //
-
-		// -- Check the Accpetance -- //
-		Bool_t isPassAcc = kFALSE;
-		isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-		Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-		Double_t VtxProb = -999;
-		Double_t VtxNormChi2 = 999;
-		DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-		TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-		TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-		// -- 3D open angle -- //
-		Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-		Bool_t isOS = kFALSE;
-		if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
-
-		// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-		if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-		{
-			isPassEventSelection = kTRUE;
-			SelectedMuonCollection->push_back( recolep1 ); // -- first one: passing muon -- //
-			SelectedMuonCollection->push_back( recolep2 ); // -- second one: failing muon -- //
-		}
-	}
-
-	return isPassEventSelection;
-}
-
-Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection, Bool_t& isMoreThanOneCand) // -- output: 2 muons passing event selection conditions -- //
-{
-	Bool_t isPassEventSelection = kFALSE;
-	isMoreThanOneCand = kFALSE;
-
-	//Collect qualified muons among muons
-	vector< Muon > QMuonCollection;
-	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
-	        QMuonCollection.push_back( MuonCollection[j] );
-	}
-
-	// -- Check the existence of at least one muon matched with HLT-object -- //
-	Bool_t isExistHLTMatchedMuon = kFALSE;
-	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
-	{
-		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
-		{
-			isExistHLTMatchedMuon = kTRUE;
-			break;
-		}
-	}
-
-	if( isExistHLTMatchedMuon == kTRUE )
-	{
-		Int_t nQMuons = (Int_t)QMuonCollection.size();
-		if( nQMuons == 2)
-		{
-			Muon recolep1 = QMuonCollection[0];
-			Muon recolep2 = QMuonCollection[1];
-
-			// -- Check the Accpetance -- //
-			Bool_t isPassAcc = kFALSE;
-			isPassAcc = isPassAccCondition_Muon(recolep1, recolep2);
-
-			Double_t reco_M = (recolep1.Momentum + recolep2.Momentum).M();
-
-			Double_t VtxProb = -999;
-			Double_t VtxNormChi2 = 999;
-			DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
-
-			TLorentzVector inner_v1 = recolep1.Momentum_Inner;
-			TLorentzVector inner_v2 = recolep2.Momentum_Inner;
-
-			// -- 3D open angle -- //
-			Double_t Angle = recolep1.Momentum.Angle( recolep2.Momentum.Vect() );
-
-			Bool_t isOS = kFALSE;
-			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
-
-			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-			{
-				isPassEventSelection = kTRUE;
-				SelectedMuonCollection->push_back( recolep1 );
-				SelectedMuonCollection->push_back( recolep2 );
-			}
-		}
-		else if( nQMuons > 2 )
-		{
-			isMoreThanOneCand = kTRUE;
-			Double_t VtxProb_BestPair = -1;
-			Double_t VtxNormChi2_BestPair = 999;
-			Muon mu1_BestPair;
-			Muon mu2_BestPair;
-
-			for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-			{
-				Muon Mu = QMuonCollection[i_mu];
-
-				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || Mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
-				{
-					// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-					// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-					for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-					{
-						Muon Mu_jth = QMuonCollection[j_mu];
-
-						if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-						{
-							// -- Check that this pair is within acceptance -- //
-							Bool_t isPassAcc = kFALSE;
-							isPassAcc = isPassAccCondition_Muon(Mu, Mu_jth);
-
-							if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
-							{
-								Double_t VtxProb_temp = -999;
-								Double_t VtxNormChi2_temp = 999;
-								DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
-
-								// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
-								if( VtxNormChi2_temp < VtxNormChi2_BestPair )
-								{
-									VtxNormChi2_BestPair = VtxNormChi2_temp;
-									mu1_BestPair = Mu;
-									mu2_BestPair = Mu_jth;
-								}
-							}
-						}
-					} // -- end of the loop for j_mu (finding for second muon)
-				}
-			} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-			if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
-			{
-				TLorentzVector reco_v1 = mu1_BestPair.Momentum;
-				TLorentzVector reco_v2 = mu2_BestPair.Momentum;
-				Double_t reco_M = (reco_v1 + reco_v2).M();
-
-				// -- 3D open angle is calculated using inner track information -- //
-				// -- 3D open angle -- //
-				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
-
-				Bool_t isOS = kFALSE;
-				if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
-
-				if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
-				{
-					isPassEventSelection = kTRUE;
-					SelectedMuonCollection->push_back( mu1_BestPair );
-					SelectedMuonCollection->push_back( mu2_BestPair );
-				}
-			}
-
-		} // -- End of else if( nQMuons > 2 ) -- //
-
-	} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-	return isPassEventSelection;
-}
-
 
 ////////////////////////////
 // -- useful functions -- //

@@ -10,7 +10,7 @@
 #include <TLorentzVector.h>
 
 //customized header files
-#include <ZprimeAnalysis_80X/Include/NtupleHandle.h>
+#include <DYAnalysis_80X/Include/NtupleHandle.h>
 
 #define M_Mu 0.1056583715 // -- GeV -- //
 #define M_Elec 0.000510998 // -- GeV -- //
@@ -609,64 +609,64 @@ public:
 		this->Momentum = v;
 	}
 
-	Bool_t isTrigMatched(NtupleHandle *nh, TString HLT)
+	Bool_t isTrigMatched(NtupleHandle *ntuple, TString HLT, Double_t dRMax = 0.3 )
 	{
-		vector<string> *hlt_trigName = nh->HLT_trigName;
-		Int_t hlt_ntrig = nh->HLT_ntrig;
+		Bool_t isTrigMatch = kFALSE;
 
-		Bool_t isTrigMatch = false;
-		for( Int_t k = 0; k < hlt_ntrig; k++ )
+		vector<string> *hlt_trigName = ntuple->HLT_trigName;
+		Int_t hlt_ntrig = ntuple->HLT_ntrig;
+
+		if( HLT.Contains("||") )
 		{
-			if( (hlt_trigName->at((unsigned int)k)) == HLT )
-			{
-				Double_t Lepton_eta = this->eta;
-				Double_t Lepton_phi = this->phi;
-				Double_t Trig_eta = nh->HLT_trigEta[k];
-				Double_t Trig_phi = nh->HLT_trigPhi[k];
+			TString HLT1 = "";
+			TString HLT2 = "";
+			ntuple->ORTriggerList( HLT, HLT1, HLT2 );
 
-				Double_t dR = sqrt( (Lepton_eta - Trig_eta)*(Lepton_eta - Trig_eta) + (Lepton_phi - Trig_phi)*(Lepton_phi - Trig_phi) );
-				if( dR < 0.3 && fabs( Lepton_eta ) < 2.4 )
+			if( HLT1 == "" && HLT2 == "" ) return kFALSE;
+
+			for( Int_t k = 0; k < hlt_ntrig; k++ )
+			{
+				if( (hlt_trigName->at((unsigned int)k)) == HLT1 || (hlt_trigName->at((unsigned int)k)) == HLT2 )
 				{
-					isTrigMatch = true;
-					break;
+					TLorentzVector vec_TrigObj;
+					Double_t Trig_Pt = ntuple->HLT_trigPt[k];
+					Double_t Trig_eta = ntuple->HLT_trigEta[k];
+					Double_t Trig_phi = ntuple->HLT_trigPhi[k];
+					vec_TrigObj.SetPtEtaPhiM( Trig_Pt, Trig_eta, Trig_phi, M_Mu );
+
+					Double_t dR = this->Momentum.DeltaR( vec_TrigObj );
+
+					if( dR < dRMax && fabs( this->eta ) < 2.4 )
+					{
+						isTrigMatch = kTRUE;
+						break;
+					}
 				}
 			}
 		}
-		return isTrigMatch;
-	}
-
-	Bool_t isTrigMatched_dR0p2(NtupleHandle *nh, TString HLT)
-	{
-		vector<string> *hlt_trigName = nh->HLT_trigName;
-		Int_t hlt_ntrig = nh->HLT_ntrig;
-
-		Bool_t isTrigMatch = false;
-		for( Int_t k = 0; k < hlt_ntrig; k++ )
+		else // -- not OR trigger -- //
 		{
-			if( (hlt_trigName->at((unsigned int)k)) == HLT )
+			for( Int_t k = 0; k < hlt_ntrig; k++ )
 			{
-				// Double_t Lepton_eta = this->eta;
-				// Double_t Lepton_phi = this->phi;
-				// Double_t Trig_eta = nh->HLT_trigEta[k];
-				// Double_t Trig_phi = nh->HLT_trigPhi[k];
-
-				// Double_t dR = sqrt( (Lepton_eta - Trig_eta)*(Lepton_eta - Trig_eta) + (Lepton_phi - Trig_phi)*(Lepton_phi - Trig_phi) );
-
-				TLorentzVector vec_TrigObj;
-				Double_t Trig_Pt = nh->HLT_trigPt[k];
-				Double_t Trig_eta = nh->HLT_trigEta[k];
-				Double_t Trig_phi = nh->HLT_trigPhi[k];
-				vec_TrigObj.SetPtEtaPhiM( Trig_Pt, Trig_eta, Trig_phi, M_Mu );
-
-				Double_t dR = this->Momentum.DeltaR( vec_TrigObj );
-				// if( dR < 0.2 && fabs( this->eta ) < 2.4 )
-				if( dR < 0.2 )
+				if( (hlt_trigName->at((unsigned int)k)) == HLT )
 				{
-					isTrigMatch = true;
-					break;
+					TLorentzVector vec_TrigObj;
+					Double_t Trig_Pt = ntuple->HLT_trigPt[k];
+					Double_t Trig_eta = ntuple->HLT_trigEta[k];
+					Double_t Trig_phi = ntuple->HLT_trigPhi[k];
+					vec_TrigObj.SetPtEtaPhiM( Trig_Pt, Trig_eta, Trig_phi, M_Mu );
+
+					Double_t dR = this->Momentum.DeltaR( vec_TrigObj );
+
+					if( dR < 0.3 && fabs( this->eta ) < 2.4 )
+					{
+						isTrigMatch = kTRUE;
+						break;
+					}
 				}
 			}
 		}
+
 		return isTrigMatch;
 	}
 
@@ -1062,8 +1062,129 @@ public:
 		}
 		return 0;
 	}
-
 };
+
+class MuonPair : public Object
+{
+public:
+	Muon First;
+	Muon Second;
+
+	Double_t M;
+	Double_t Rapidity;
+	Double_t VtxProb;
+	Double_t NormVtxChi2;
+
+	MuonPair() {};
+	MuonPair( Muon mu1, Muon mu2 )
+	{
+		// -- first: leading muon, secound: sub-leading muon -- //
+		if( mu1.Pt > mu2.Pt )
+		{
+			First = mu1;
+			Second = mu2;
+		}
+		else
+		{
+			First = mu2;
+			Second = mu1;
+		}
+
+		this->Fill_DimuonVar();
+	}
+
+	void Fill_DimuonVar()
+	{
+		this->Momentum = mu1.Momentum + mu2.Momentum;
+
+		this->M = this->Momentum..M();
+		this->Pt = this->Momentum.Pt();
+		this->Rapidity = this->Momentum.Rapidity();
+
+		// // -- actually, these values are almost meaningless ... -- //
+		// this->eta = this->Momentum.Eta();
+		// this->phi = this->Momentum.Phi();
+		// this->Et = this->Momentum.Et();
+	}
+
+	void Calc_CommonVertexVariable(NtupleHandle *ntuple)
+	{
+		this->VtxProb = -999;
+		this->NormVtxChi2 = 999;
+
+		vector<double> *PtCollection1 = ntuple->vtxTrkCkt1Pt;
+		vector<double> *PtCollection2 = ntuple->vtxTrkCkt2Pt;
+		vector<double> *VtxProbCollection = ntuple->vtxTrkProb;
+
+		Int_t NPt1 = (Int_t)PtCollection1->size();
+		Int_t NPt2 = (Int_t)PtCollection2->size();
+		Int_t NProb = (Int_t)VtxProbCollection->size();
+
+		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
+			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
+
+		// -- inner pT values are used -- //
+		Double_t Pt1 = First.Inner_pT;
+		Double_t Pt2 = Second.Inner_pT;
+		for(Int_t i=0; i<NProb; i++)
+		{
+			// cout << "\tPtCollection1->at("<< i << "): " << PtCollection1->at(i) << " PtCollection2->at("<< i << "): " << PtCollection2->at(i) << endl;
+			if( ( PtCollection1->at(i) == Pt1 && PtCollection2->at(i) == Pt2 )  || ( PtCollection1->at(i) == Pt2 && PtCollection2->at(i) == Pt1 ) )
+			{
+				this->VtxProb = VtxProbCollection->at(i);
+				this->NormVtxChi2 = ntuple->vtxTrkChi2->at(i) / ntuple->vtxTrkNdof->at(i);
+				break;
+			}
+		}
+	}
+
+	Bool_t isGoodMuonPair( NtupleHandle *ntuple, TString HLT, 
+						   Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
+	{
+		Bool_t GoodPair = kFALSE;
+
+		// -- 0) Check the existence of at least one muon matched with HLT-object -- //
+		Bool_t isHLTMatched = kFALSE;
+		if( First.isTrigMatched(ntuple, HLT) || Second.isTrigMatched(ntuple, HLT) )
+			isHLTMatched = kTRUE;
+
+		// -- 1) acceptance -- //
+		Bool_t isPassAcc = this->isWithinAcc( LeadPtCut, SubPtCut, LeadEtaCut, SubEtaCut );
+
+		// -- 2) reco_M > 15 GeV -- //
+		Double_t reco_M = (mu1.Momentum + mu2.Momentum).M();
+		Bool_t Flag_MinM = reco_M > 15 ? kTRUE : kFALSE;
+
+		// -- 3) VtxChi2 < 20 -- //
+		this->Calc_CommonVertexVariable( ntuple );
+
+		// -- 4) 3D open angle -- //
+		TLorentzVector inner_v1 = mu1.Momentum_Inner;
+		TLorentzVector inner_v2 = mu2.Momentum_Inner;
+		Double_t Angle = mu1.Momentum.Angle( mu2.Momentum.Vect() );
+
+		// -- 5) Opposite sign -- //
+		Bool_t isOS = kFALSE;
+		if( mu1.charge != mu2.charge ) isOS = kTRUE;
+
+		if( isPassAcc == kTRUE && Flag_MinM == kTRUE && this->NormVtxChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE )
+			GoodPair = kTRUE;
+
+		return GoodPair;
+	}
+
+	Bool_t isWithinAcc( Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
+	{
+		Bool_t Flag = kFALSE;
+
+		// -- first: leading, second: sub-leading -- //
+		if( First.Pt > LeadPtCut && fabs(First.eta) < LeadEtaCut && 
+			Second.Pt > SubPtCut && fabs(Second.eta) < SubEtaCut )
+				Flag = kTRUE;
+
+		return Flag;
+	}
+}
 
 class Photon : public Object
 {
@@ -1200,5 +1321,11 @@ public:
 
 };
 
+
+Bool_t ComparePair_VtxChi2( MuonPair pair1, MuonPair pair2 )
+{
+	// -- the pair with "smallest" vertex chi2 will be the first element -- //
+	return pair1.NormVtxChi2 < pair2.NormVtxChi2; 
+}
 
 

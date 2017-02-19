@@ -861,65 +861,61 @@ public:
         chain->GetEntry(i);
     }
 
-    Bool_t isTriggered(TString HLT)
+    void ORTriggerList( TString HLT, TString &HLT1, TString &HLT2 )
     {
-        Bool_t isTrigger = false;
         if( HLT == "HLT_IsoMu20_v* || HLT_IsoTkMu20_v*" )
         {
-            for( Int_t k = 0; k < HLT_ntrig; k++ )
-            {
-                if( (HLT_trigName->at((unsigned int)k)) == "HLT_IsoMu20_v*" || (HLT_trigName->at((unsigned int)k)) == "HLT_IsoTkMu20_v*" )
-                {
-                    if( HLT_trigFired[k] == 1 )
-                    {
-                        isTrigger = true;
-                        break;
-                    }
-                }
-            }
-        }
-        else if( HLT == "HLT_IsoMu27_v* || HLT_IsoTkMu27_v*" )
-        {
-            for( Int_t k = 0; k < HLT_ntrig; k++ )
-            {
-                if( (HLT_trigName->at((unsigned int)k)) == "HLT_IsoMu27_v*" || (HLT_trigName->at((unsigned int)k)) == "HLT_IsoTkMu27_v*" )
-                {
-                    if( HLT_trigFired[k] == 1 )
-                    {
-                        isTrigger = true;
-                        break;
-                    }
-                }
-            }
+            HLT1 = "HLT_IsoMu20_v*";
+            HLT2 = "HLT_IsoTkMu20_v*";
         }
         else if( HLT == "HLT_IsoMu24_v* || HLT_IsoTkMu24_v*" )
         {
-            for( Int_t k = 0; k < HLT_ntrig; k++ )
-            {
-                if( (HLT_trigName->at((unsigned int)k)) == "HLT_IsoMu24_v*" || (HLT_trigName->at((unsigned int)k)) == "HLT_IsoTkMu24_v*" )
-                {
-                    if( HLT_trigFired[k] == 1 )
-                    {
-                        isTrigger = true;
-                        break;
-                    }
-                }
-            }
+            HLT1 = "HLT_IsoMu24_v*";
+            HLT2 = "HLT_IsoTkMu24_v*";
+        }
+        else if( HLT == "HLT_IsoMu27_v* || HLT_IsoTkMu27_v*" )
+        {
+            HLT1 = "HLT_IsoMu27_v*";
+            HLT2 = "HLT_IsoTkMu27_v*";
         }
         else if( HLT == "HLT_Mu50_v* || HLT_TkMu50_v*" )
         {
-            for( Int_t k = 0; k < HLT_ntrig; k++ )
+            HLT1 = "HLT_Mu50_v*";
+            HLT2 = "HLT_TkMu50_v*";
+        }
+        else
+            printf("[HLT = %s is not registered! ... it should be checked!]\n", HLT.Data() );
+    }
+
+    Bool_t isTriggered_ORTrigger( TString HLT )
+    {
+        Bool_t isFired = kFALSE;
+
+        TString HLT1 = "";
+        TString HLT2 = "";
+        this->ORTriggerList( HLT, HLT1, HLT2 );
+
+        for( Int_t k = 0; k < HLT_ntrig; k++ )
+        {
+            if( (HLT_trigName->at((unsigned int)k)) == HLT1 || (HLT_trigName->at((unsigned int)k)) == HLT2 )
             {
-                if( (HLT_trigName->at((unsigned int)k)) == "HLT_Mu50_v*" || (HLT_trigName->at((unsigned int)k)) == "HLT_TkMu50_v*" )
+                if( HLT_trigFired[k] == 1 )
                 {
-                    if( HLT_trigFired[k] == 1 )
-                    {
-                        isTrigger = true;
-                        break;
-                    }
+                    isFired = kTRUE;
+                    break;
                 }
             }
         }
+
+        return isFired;
+    }
+
+    Bool_t isTriggered(TString HLT)
+    {
+        Bool_t isFired = kFALSE;
+
+        if( HLT.Contains("||") )
+            isFired = this->isTriggered_ORTrigger( HLT );
         else
         {
             for( Int_t k = 0; k < HLT_ntrig; k++ )
@@ -928,13 +924,12 @@ public:
                 {
                     if( HLT_trigFired[k] == 1 )
                     {
-                        isTrigger = true;
+                        isTrigger = kTRUE;
                         break;
                     }
                 }
             }
         }
-
         return isTrigger;
     }
 

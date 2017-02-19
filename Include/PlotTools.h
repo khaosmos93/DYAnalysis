@@ -391,11 +391,12 @@ void SetCanvas_Ratio( TCanvas*& c, TString CanvasName, TPad*& TopPad, TPad*& Bot
 		TopPad->SetLogy();
 
 	c->cd();
-	BottomPad = new TPad( "BottomPad", "BottomPad", 0.01, 0.01, 0.99, 0.28 );
+	BottomPad = new TPad( "BottomPad", "BottomPad", 0.01, 0.01, 0.99, 0.29 );
 	BottomPad->Draw();
 	BottomPad->cd();
 	BottomPad->SetGridx();
 	BottomPad->SetGridy();
+	BottomPad->SetTopMargin(0.05);
 	BottomPad->SetBottomMargin(0.4);
 	BottomPad->SetRightMargin(0.045);
 	BottomPad->SetLeftMargin(0.13);
@@ -412,23 +413,23 @@ void DrawLine( TF1*& f_line, Int_t color = kRed )
 	f_line->Draw("PSAME");
 }
 
-void Latex_Preliminary( TLatex &latex, Double_t Lumi  )
+void Latex_Preliminary( TLatex &latex, Double_t lumi  )
 {
-	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", Lumi)+" fb^{-1} (13 TeV)}}");
+	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (13 TeV)}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
-void Latex_Preliminary( TLatex &latex, Double_t Lumi, Int_t E_CM  )
+void Latex_Preliminary( TLatex &latex, Double_t lumi, Int_t E_CM  )
 {
-	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", Lumi, E_CM)+"}}");
+	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
 void Latex_Preliminary_NoDataInfo( TLatex &latex )
 {
-	// latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", Lumi, E_CM)+"}}");
+	// latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
@@ -556,12 +557,37 @@ void Print_Histogram( TH1D* h )
 	printf("\n\n");
 }
 
+void Print_Graph( TGraphAsymmErrors* g )
+{
+	TString GraphName = g->GetName();
+	printf("[GraphName: %s]\n", GraphName.Data());
+	Int_t nPoint = g->GetN();
+	for(Int_t i=0; i<nPoint; i++)
+	{
+		Double_t x, y;
+		g->GetPoint(i, x, y);
+
+		Double_t xErrLow = g->GetErrorXlow(i);
+		Double_t xErrHigh = g->GetErrorXhigh(i);
+		Double_t LowerEdge = x - xErrLow;
+		Double_t UpperEdge = x + xErrHigh;
+
+		Double_t yErrLow = g->GetErrorYlow(i);
+		Double_t yRelErrLow = yErrLow / y;
+		Double_t yErrHigh = g->GetErrorYhigh(i);
+		Double_t yRelErrHigh = yErrHigh / y;
+
+		printf( "%02d point: [%6.1lf, %6.1lf] (value, errorLow, errorHigh) = (%lf, %lf (%7.3lf %%), %lf (%7.3lf %%))\n", 
+			     i, LowerEdge, UpperEdge, y, yErrLow, yRelErrLow*100, yErrHigh, yRelErrHigh*100 );
+	}
+	printf("\n\n");
+}
+
 void SetLegend( TLegend *& legend, Double_t xMin = 0.75, Double_t yMin = 0.75, Double_t xMax = 0.95, Double_t yMax = 0.95 )
 {
 	legend = new TLegend( xMin, yMin, xMax, yMax );
 	legend->SetFillStyle(0);
 	legend->SetBorderSize(0);
-	legend->SetTextFont(62);
 }
 
 TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
