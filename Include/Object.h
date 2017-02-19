@@ -1094,6 +1094,9 @@ public:
 	Double_t VtxProb;
 	Double_t NormVtxChi2;
 	Double_t Angle3D;
+	Double_t Angle3D_Inner;
+
+	Bool_t isOS;
 
 	MuonPair() {};
 	MuonPair( Muon mu1, Muon mu2 )
@@ -1117,7 +1120,7 @@ public:
 	{
 		this->Momentum = First.Momentum + Second.Momentum;
 
-		this->M = this->Momentum..M();
+		this->M = this->Momentum.M();
 		this->Pt = this->Momentum.Pt();
 		this->Rapidity = this->Momentum.Rapidity();
 
@@ -1127,6 +1130,8 @@ public:
 		// -- initialization -- //
 		this->VtxProb = -999; 
 		this->NormVtxChi2 = 999;
+
+		this->isOS = First.charge != Second.charge ? kTRUE : kFALSE;
 
 		// // -- actually, these values are almost meaningless ... -- //
 		// this->eta = this->Momentum.Eta();
@@ -1148,8 +1153,8 @@ public:
 			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
 
 		// -- inner pT values are used -- //
-		Double_t Pt1 = First.Inner_pT;
-		Double_t Pt2 = Second.Inner_pT;
+		Double_t Pt1 = this->First.Inner_pT;
+		Double_t Pt2 = this->Second.Inner_pT;
 		for(Int_t i=0; i<NProb; i++)
 		{
 			// cout << "\tPtCollection1->at("<< i << "): " << PtCollection1->at(i) << " PtCollection2->at("<< i << "): " << PtCollection2->at(i) << endl;
@@ -1167,32 +1172,23 @@ public:
 	{
 		Bool_t GoodPair = kFALSE;
 
-		// -- 0) Check the existence of at least one muon matched with HLT-object -- //
+		// -- Check the existence of at least one muon matched with HLT-object -- //
 		Bool_t isHLTMatched = kFALSE;
-		if( First.isTrigMatched(ntuple, HLT) || Second.isTrigMatched(ntuple, HLT) )
-		{
-
+		if( this->First.isTrigMatched(ntuple, HLT) || this->Second.isTrigMatched(ntuple, HLT) )
 			isHLTMatched = kTRUE;
-		}
 
-		// -- 1) acceptance -- //
+		// -- acceptance -- //
 		Bool_t isPassAcc = this->isWithinAcc( LeadPtCut, SubPtCut, LeadEtaCut, SubEtaCut );
 
-		// -- 2) reco_M > 15 GeV -- //
-		Double_t reco_M = (mu1.Momentum + mu2.Momentum).M();
-		Bool_t Flag_MinM = reco_M > 15 ? kTRUE : kFALSE;
-
-		// -- 3) VtxChi2 < 20 -- //
+		// -- common vertex -- //
 		this->Calc_CommonVertexVariable( ntuple );
 
-		// -- 4) 3D open angle (inner track) -- //
-		Double_t Angle = this->Angle3D_Inner;
-
-		// -- 5) Opposite sign -- //
-		Bool_t isOS = kFALSE;
-		if( mu1.charge != mu2.charge ) isOS = kTRUE;
-
-		if( isPassAcc == kTRUE && Flag_MinM == kTRUE && this->NormVtxChi2 < 20 && Angle < TMath::Pi()-0.005 && isOS == kTRUE )
+		if( isPassAcc == kTRUE && // -- acceptance -- //
+			this->M > 15 && // -- minimum mass -- //
+			this->NormVtxChi2 < 20 &&  // -- vertex chi2 < 20 -- //
+			this->Angle3D_Inner < TMath::Pi()-0.005 &&  // -- 3D open angle -- //
+			this->isOS == kTRUE // -- opposite sign -- //
+			) 
 			GoodPair = kTRUE;
 
 		return GoodPair;
@@ -1203,13 +1199,13 @@ public:
 		Bool_t Flag = kFALSE;
 
 		// -- first: leading, second: sub-leading -- //
-		if( First.Pt > LeadPtCut && fabs(First.eta) < LeadEtaCut && 
-			Second.Pt > SubPtCut && fabs(Second.eta) < SubEtaCut )
+		if( this->First.Pt > LeadPtCut && fabs(this->First.eta) < LeadEtaCut && 
+			this->Second.Pt > SubPtCut && fabs(this->Second.eta) < SubEtaCut )
 				Flag = kTRUE;
 
 		return Flag;
 	}
-}
+};
 
 class Photon : public Object
 {

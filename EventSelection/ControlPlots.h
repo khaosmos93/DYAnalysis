@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "DYAnalysis_80X/CommonCodes/DYAnalyzer.h"
+#include "DYAnalysis_80X/Include/DYAnalyzer.h"
 
 class ControlPlots
 {

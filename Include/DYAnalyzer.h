@@ -78,6 +78,7 @@ public:
 	/////////////////////////////////////////
 	void SetupEfficiencyScaleFactor();
 	void SetupEfficiencyScaleFactor(TString ROOTFileName);
+	Double_t EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *ntuple);
 	Double_t EfficiencySF_EventWeight_HLTv4p2(Muon mu1, Muon mu2);
 	Double_t EfficiencySF_EventWeight_HLTv4p3(Muon mu1, Muon mu2);
 	Int_t FindPtBin(Double_t Pt);
@@ -86,9 +87,9 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
+	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, MuonPair &SelectedPair);
 
-	Bool_t Flag_Acc( Double_t pt1, Double_t eta1, Double_t pt2, Double_t eta2 );
+	Bool_t Flag_Acc( Double_t pt1, Double_t eta1, Double_t pt2, Double_t eta2, Bool_t ExcludeECALGap );
 
 	Bool_t isPassAccCondition_Muon(Muon Mu1, Muon Mu2);
 
