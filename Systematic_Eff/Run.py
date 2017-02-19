@@ -105,14 +105,6 @@ for Samples in List_Samples:
 	isMC = (int)(Samples[1])
 	nJob = (int)(Samples[2])
 
-	argument = " --code %s --sample %s --njob %d --lumi %.3lf --isMC %d --outdir %s" % (CodeAbsPath, SampleName, nJob, (float)(MainOpts['--lumi']), isMC, OutDir )
-
-	if '--queue' in MainOpts:
-		argument = argument + " --queue %s" % (MainOpts['--queue'])
-
-	# print argument
-
-	opts, args = getopt(argument, 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue=", "outdir="])
 	opts = dict(opts)
 
 	opts = dict()
@@ -124,8 +116,6 @@ for Samples in List_Samples:
 	opts['--outdir'] = OutDir
 	if '--queue' in MainOpts:
 		opts['--queue'] = MainOpts['--queue']
-
-	# print opts
 
 	split = SplitJobs( opts )
 	split.CreateWorkSpace()
