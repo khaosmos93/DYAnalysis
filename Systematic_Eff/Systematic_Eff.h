@@ -1,5 +1,12 @@
 #include <DYAnalysis_76X/Include/PlotTools.h>
 
+TH1D* Rebin_Mass( TH1D* h_before )
+{
+	const Int_t _nMassBin = 7;
+	Double_t _MassBinEdges[_nMassBin+1] = {60, 120, 200, 400, 600, 800, 1000, 2500};
+
+	return (TH1D*)h_before->Rebin(_nMassBin, h_before->GetName(), _MassBinEdges);
+}
 
 // -- AN2016_391_v5, Table 11 -- //
 Double_t SF_Zpeak( TString region )
@@ -16,6 +23,63 @@ Double_t SF_Zpeak( TString region )
 		printf("No corresponding scale factor is available! ... it is set as -1\n");
 
 	return SF;
+}
+
+TH1D* BackgroundSubtraction( TH1D* h_data, TString region )
+{
+	// -- dibosons -- //
+	TString HistName = h_data->GetName();
+
+	TH1D* h_WW = Get_Hist("ROOTFile_WWTo2L2Nu.root", HistName );
+	TH1D* h_WZ = Get_Hist("ROOTFile_WZ.root", HistName );
+	TH1D* h_ZZ = Get_Hist("ROOTFile_ZZ.root", HistName );
+
+	TH1D* h_diboson = (TH1D*)h_WW->Clone(); h_diboson->Sumw2();
+	h_diboson->Add( h_WZ );
+	h_diboson->Add( h_ZZ );
+
+
+	// -- ttbar + tW + tbarW -- //
+	TH1D* h_ttbar = Get_Hist( "ROOTFile_ttbarTo2L2Nu.root", HistName);
+	TH1D* h_tW = Get_Hist( "ROOTFile_tW.root", HistName );
+	TH1D* h_tbarW = Get_Hist( "ROOTFile_tbarW.root", HistName );
+
+	TH1D* h_top = (TH1D*)h_ttbar->Clone(); h_top->Sumw2();
+	h_top->Add( h_tW );
+	h_top->Add( h_tbarW );
+
+	// -- rebin -- //
+	h_diboson = Rebin_Mass( h_diboson );
+	h_top = Rebin_Mass( h_top );
+
+	// -- apply SF -- //
+	Double_t SF = SF_Zpeak( region );
+	printf("SF = %lf is applied\n", SF);
+	h_diboson->Scale( SF );
+	h_top->Scale( SF );
+
+	// -- background subtraction -- //
+	TH1D* h_data_BkgSub = (TH1D*)h_data->Clone(); h_data_BkgSub->Sumw2();
+
+	h_data_BkgSub->Add( h_diboson, -1 );
+	h_data_BkgSub->Add( h_top, -1 );
+
+	return h_data_BkgSub;
+}
+
+void Latex_Info( TLatex &latex, TString Type, TString region )
+{
+	TString TStr_Type = "";
+	if( Type == "DEN" ) TStr_Type = "Denominator";
+	if( Type == "NUM" ) TStr_Type = "Numerator";
+
+	TString TStr_Region = "";
+	if( region == "BB" ) TStr_Region = "BB";
+	if( region == "BEEE" ) TStr_Region = "BE+EE";
+	if( region == "All" ) TStr_Region = "All";
+
+	latex.DrawLatexNDC(0.15, 0.91, "#font[42]{#scale[0.8]{"+TStr_Region+"}}");
+	latex.DrawLatexNDC(0.15, 0.88, "#font[42]{#scale[0.6]{"+TStr_Type+"}}");
 }
 
 class PlotTools_Mass
@@ -145,7 +209,7 @@ public:
 
 		TLatex latex;
 		Latex_Preliminary( latex, 35.9, 13 );
-		this->Latex_Info( latex, Type, region );
+		Latex_Info( latex, Type, region );
 
 		c->cd();
 		BottomPad->cd();
@@ -162,70 +226,171 @@ public:
 	}
 
 protected:
-	void Latex_Info( TLatex &latex, TString Type, TString region )
-	{
-		TString TStr_Type = "";
-		if( Type == "DEN" ) TStr_Type = "Denominator";
-		if( Type == "NUM" ) TStr_Type = "Numerator";
-
-		TString TStr_Region = "";
-		if( region == "BB" ) TStr_Region = "BB";
-		if( region == "BEEE" ) TStr_Region = "BE+EE";
-		if( region == "All" ) TStr_Region = "All";
-
-		latex.DrawLatexNDC(0.15, 0.91, "#font[42]{#scale[0.8]{"+TStr_Region+"}}");
-		latex.DrawLatexNDC(0.15, 0.88, "#font[42]{#scale[0.6]{"+TStr_Type+"}}");
-	}
 };
 
+void DrawCanvas_DEN_vs_NUM( TString Type, TString region, TH1D* h_DEN, TH1D* h_NUM )
+{
+	HistInfo *Hist_DEN = new HistInfo( kBlue, "Denomiantor" );
+	Hist_DEN->Set_Histogram( h_DEN );
+	Hist_DEN->Set();
 
-// class CalcTool_Eff
-// {
-// public:
-// 	TFile *f_output;
-	
-// 	CalcTool_Eff( TFile* _f_output )
-// 	{
-// 		(TH1D*)f_output = _f_output;
-// 	}
+	HistInfo *Hist_NUM = new HistInfo( kGreen+2, "Numerator" );
+	Hist_NUM->Set_Histogram( h_NUM );
+	Hist_NUM->Set();
+	Hist_NUM->Calc_RatioHist_Denominator( Hist_DEN->h );
 
-// 	void DrawCanvas_Eff_Data_vs_MC( TString region );
-// 	{
+	TString CanvasName = TString::Format("c_DEN_vs_NUM_%s_%s", Type.Data(), region.Data());
+	TCanvas *c; TPad *TopPad; TPad *BottomPad;
+	SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
 
-// 	}
+	c->cd();
+	TopPad->cd();
 
-// 	void EfficiencyGraph( TString Type, TString region )
-// 	{
-// 		if( Type == "Data" )
-// 		{
+	Hist_DEN->h->Draw("EPSAME");
+	Hist_NUM->h->Draw("EPSAME");
 
-// 		}
+	SetHistFormat_TopPad( Hist_DEN->h, "Entries per bin" );
 
-// 		TString HistName = "h_mass_"+
-// 		TString HistName_DEN = HistName+"_Nminus1_"+Type+"_"+CutName;
-// 		TString HistName_NUM = HistName+"_N_"+Type+"_"+CutName;
-// 		printf("[NUMerator, DENinator] = [%s, %s]\n", HistName_NUM.Data(), HistName_DEN.Data() );
+	TLegend *legend;
+	SetLegend( legend );
+	legend->AddEntry( Hist_DEN->h, Hist_DEN->LegendName );
+	legend->AddEntry( Hist_NUM->h, Hist_NUM->LegendName );
+	legend->Draw();
 
-// 		TH1D* h_DEN = (TH1D*)this->f_input->Get( HistName_DEN )->Clone();
-// 		TH1D* h_NUM = (TH1D*)this->f_input->Get( HistName_NUM )->Clone();
+	TLatex latex;
+	if( Type == "Data" )
+		Latex_Preliminary( latex, 35.9, 13 );
+	else if( Type == "MC" )
+		Latex_Simulation( latex );
+	Latex_Info( latex, Type, region );
 
-// 		const Int_t nMassBin = 8;
-// 		Double_t MassBinEdges[nMassBin+1] = {50, 120, 200, 400, 600, 800, 1000, 1500, 3000};
+	c->cd();
+	BottomPad->cd();
 
-// 		h_DEN = (TH1D*)h_DEN->Rebin(nMassBin, h_DEN->GetName(), MassBinEdges);
-// 		h_NUM = (TH1D*)h_NUM->Rebin(nMassBin, h_NUM->GetName(), MassBinEdges);
+	Hist_NUM->h_ratio->Draw("EPSAME");
+	SetHistFormat_BottomPad( Hist_NUM->h_ratio, "m [GeV]", "NUM/DEN", 0.95, 1.05);
 
-// 		// -- TEfficiency -- //
-// 		TEfficiency *TEff = new TEfficiency(*h_NUM, *h_DEN);
+	TF1 *f_line;
+	DrawLine( f_line );
 
-// 		TString TEffName = MakeGraphName( HistName, CutName );
-// 		TEffName.ReplaceAll("g_", "TEff_");
-// 		TEff->SetName( TEffName );
+	c->SaveAs(".pdf");
+}
 
-// 		TString GraphName = MakeGraphName( HistName, CutName );
-// 		TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)TEff->CreateGraph()->Clone( GraphName );
+void RemoveUnderOverFlow( TH1D* h )
+{
+	h->SetBinContent(0, 1);
+	h->SetBinError(0, 1);
+	h->SetBinContent( h->GetNbinsX()+1, 1);
+	h->SetBinError( h->GetNbinsX()+1, 1);
+}
 
-// 	}
+
+TGraphAsymmErrors* EfficiencyGraph( TString Type, TString region )
+{
+	TString HistName = "h_mass_"+region;
+	if( region == "All" )
+		HistName = "h_mass";
+
+	TString HistName_DEN = HistName + "_DEN";
+	TString HistName_NUM = HistName + "_NUM";
+	printf("[Numerator, Denominator] = [%s, %s]\n", HistName_NUM.Data(), HistName_DEN.Data() );
+
+	TString FileName = "";
+	if( Type == "Data" )
+		FileName = "ROOTFile_Data.root";
+	else if( Type == "MC" )
+		FileName = "ROOTFile_DYPowheg.root";
+
+	TFile *f_input = TFile::Open(FileName); f_input->cd();
+	TH1D* h_DEN = Get_Hist( FileName, HistName_DEN );
+	TH1D* h_NUM = Get_Hist( FileName, HistName_NUM );
+
+	h_DEN = Rebin_Mass( h_DEN );
+	h_NUM = Rebin_Mass( h_NUM );
+
+	if( Type == "Data" )
+	{
+		h_DEN = BackgroundSubtraction( h_DEN, region );
+		h_NUM = BackgroundSubtraction( h_NUM, region );
+	}
+
+	DrawCanvas_DEN_vs_NUM( Type, region, h_DEN, h_NUM );
+
+	RemoveUnderOverFlow( h_DEN );
+	RemoveUnderOverFlow( h_NUM );
+
+	// -- TEfficiency -- //
+	TEfficiency *TEff = new TEfficiency(*h_NUM, *h_DEN);
+
+	TString GraphName = TString::Format("g_%s_%s", Type.Data(), region.Data());
+	TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)TEff->CreateGraph()->Clone(GraphName);
+
+	return g_Eff;
+}
 
 
-// };
+
+
+
+
+void DrawCanvas_Eff_Data_vs_MC( TString region, TGraphAsymmErrors* g_data, TGraphAsymmErrors *g_MC )
+{
+	GraphInfo *Graph_MC = new GraphInfo( kRed, "MC (DY)" );
+	Graph_MC->Set_Graph( g_MC );
+
+	GraphInfo *Graph_data = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+	Graph_data->Set_Graph( g_data );
+	Graph_data->Calc_RatioGraph_Denominator( Graph_MC->g );
+
+	TCanvas *c; TPad *TopPad; TPad *BottomPad;
+	TString CanvasName = TString::Format("c_Eff_Data_vs_MC_%s", region.Data());
+	SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad );
+
+	c->cd();
+	TopPad->cd();
+
+	Graph_MC->DrawGraph( "APSAME" );
+	Graph_data->DrawGraph( "PSAME" );
+
+	SetGraphFormat_TopPad( Graph_MC->g, "Efficiency" );
+	Graph_MC->g->GetYaxis()->SetRangeUser( 0.83, 1.05 );
+
+	Graph_MC->g->SetMarkerSize(1.5);
+	Graph_data->g->SetMarkerSize(1.5);
+
+	TLegend *legend;
+	SetLegend( legend, 0.15, 0.30, 0.45, 0.45);
+
+	legend->AddEntry( Graph_data->g, Graph_data->LegendName );
+	legend->AddEntry( Graph_MC->g, Graph_MC->LegendName );
+
+	legend->Draw();
+
+	TLatex latex;
+	Latex_Preliminary( latex, 35.9, 13 );
+	Latex_Info( latex, "", region );
+
+	c->cd();
+	BottomPad->cd();
+
+	Graph_data->g_ratio->Draw("APSAME");
+	SetGraphFormat_BottomPad( Graph_data->g_ratio, "m [GeV]", "Data/MC", 0.8, 1.05 );
+
+	Graph_data->g_ratio->SetMarkerSize(1.5);
+
+	TF1 *f_line;
+	DrawLine( f_line );
+
+	c->SaveAs(".pdf");
+
+	Print_Graph( Graph_data->g_ratio );
+}
+
+
+
+
+
+
+
+
+

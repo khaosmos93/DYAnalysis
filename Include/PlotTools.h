@@ -561,6 +561,7 @@ void SetLegend( TLegend *& legend, Double_t xMin = 0.75, Double_t yMin = 0.75, D
 	legend = new TLegend( xMin, yMin, xMax, yMax );
 	legend->SetFillStyle(0);
 	legend->SetBorderSize(0);
+	legend->SetTextFont(62);
 }
 
 TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
