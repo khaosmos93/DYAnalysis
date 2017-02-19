@@ -958,16 +958,14 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 			// -- the pair with "smallest" vertex chi2 will be the first element -- //
 			std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_VtxChi2 );
 
-			if( nPair >= 2 )
-			{
-				for(Int_t i_pair=0; i_pair<nPair; i_pair++)
-					printf("\t[%02d pair: vertex chi2 = %lf]\n", i_pair, vec_GoodPair[i_pair].NormVtxChi2);
-			}
+			// if( nPair >= 2 )
+			// {
+			// 	for(Int_t i_pair=0; i_pair<nPair; i_pair++)
+			// 		printf("\t[%02d pair: vertex chi2 = %lf]\n", i_pair, vec_GoodPair[i_pair].NormVtxChi2);
+			// }
 
 			isPassEventSelection = kTRUE;
-			SelectedPair = vec_GoodPair[0]; // -- does it properly work? -- //
-			// SelectedMuonCollection->push_back( vec_GoodPair[0].First );
-			// SelectedMuonCollection->push_back( vec_GoodPair[0].Second );
+			SelectedPair = vec_GoodPair[0];
 		}
 	} // end of if( nQMuons >= 2 ) -- //
 

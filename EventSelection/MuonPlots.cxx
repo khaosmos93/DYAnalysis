@@ -157,9 +157,9 @@ public:
 
 					if( isPassEventSelection == kTRUE )
 					{
-						printf("\t[Pass event selection condition]\n");
-						PrintRecoMuonInfo( SelectedPair.First );
-						PrintRecoMuonInfo( SelectedPair.Second );
+						// printf("\t[Pass event selection condition]\n");
+						// PrintRecoMuonInfo( SelectedPair.First );
+						// PrintRecoMuonInfo( SelectedPair.Second );
 
 						Plots->FillHistograms_MuPair( SelectedPair, ntuple->runNum, TotWeight );
 

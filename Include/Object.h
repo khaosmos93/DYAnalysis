@@ -1174,7 +1174,9 @@ public:
 
 		// -- Check the existence of at least one muon matched with HLT-object -- //
 		Bool_t isHLTMatched = kFALSE;
-		if( this->First.isTrigMatched(ntuple, HLT) || this->Second.isTrigMatched(ntuple, HLT) )
+		Bool_t isMatched_First = this->First.isTrigMatched(ntuple, HLT);
+		Bool_t isMatched_Second = this->Second.isTrigMatched(ntuple, HLT);
+		if( isMatched_First || isMatched_Second )
 			isHLTMatched = kTRUE;
 
 		// -- acceptance -- //
