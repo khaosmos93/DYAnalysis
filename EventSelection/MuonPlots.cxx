@@ -24,7 +24,7 @@
 #include "DYAnalysis_80X/Include/RochesterMomCorr_80X/RoccoR.cc"
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include "/DYAnalysis_80X/Include/DYAnalyzer.h"
+#include "DYAnalysis_80X/Include/DYAnalyzer.h"
 #include "ControlPlots.h"
 
 class HistogramProducer
