@@ -130,7 +130,7 @@ public:
 		h_diRap = new TH1D("h_diRap"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
 		h_mass_BB = new TH1D("h_mass_BB"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_BB );
-		h_mass_EE = new TH1D("h_mass_EE"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_EE );
+		h_mass_BE = new TH1D("h_mass_BE"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_BE );
 		h_mass_EE = new TH1D("h_mass_EE"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_EE );
 
 		h_mass_RunBtoF = new TH1D("h_mass_RunBtoF"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_RunBtoF );
