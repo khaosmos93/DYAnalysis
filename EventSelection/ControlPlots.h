@@ -323,7 +323,7 @@ public:
 		h_RelTrkIso->Fill( recolep.trkiso, weight );
 	}
 
-	void FillHistograms_MuonPair(MuonPair pair, Int_t runNum, Double_t weight)
+	void FillHistograms_MuPair(MuPair pair, Int_t runNum, Double_t weight)
 	{
 		this->FillHistograms_SingleMu(pair.First, weight);
 		this->FillHistograms_SingleMu(pair.Second, weight);

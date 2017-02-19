@@ -87,7 +87,7 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, MuonPair &SelectedPair);
+	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, MuPair &SelectedPair);
 
 	Bool_t Flag_Acc( Double_t pt1, Double_t eta1, Double_t pt2, Double_t eta2, Bool_t ExcludeECALGap );
 
@@ -921,7 +921,7 @@ Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *
 }
 
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						MuonPair &SelectedPair ) // -- output: selected muon pair passing event selection conditions -- //
+						MuPair &SelectedPair ) // -- output: selected muon pair passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
 
@@ -937,7 +937,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	if( nQMuons >= 2 ) // -- at least more than or equal to 2 qualified muons in a event -- // 
 	{
 		// -- find all qualified dimuon pairs -- //
-		vector< MuonPair > vec_GoodPair;
+		vector< MuPair > vec_GoodPair;
 		for(Int_t i_mu=0; i_mu<nQMuons-1; i_mu++)
 		{
 			for(Int_t j_mu=i_mu+1; j_mu<nQMuons; j_mu++)
@@ -945,9 +945,9 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				Muon mu1 = QMuonCollection[i_mu];
 				Muon mu2 = QMuonCollection[j_mu];
 
-				MuonPair pair_temp( mu1, mu2 );
+				MuPair pair_temp( mu1, mu2 );
 
-				if( pair_temp.isGoodMuonPair( ntuple, this->HLT, this->LeadPtCut, this->SubPtCut, this->LeadEtaCut, this->SubEtaCut) )
+				if( pair_temp.isGoodMuPair( ntuple, this->HLT, this->LeadPtCut, this->SubPtCut, this->LeadEtaCut, this->SubEtaCut) )
 					vec_GoodPair.push_back( pair_temp );
 			}
 

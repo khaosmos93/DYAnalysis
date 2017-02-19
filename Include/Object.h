@@ -1083,7 +1083,7 @@ public:
 	}
 };
 
-class MuonPair : public Object
+class MuPair : public Object
 {
 public:
 	Muon First;
@@ -1098,8 +1098,8 @@ public:
 
 	Bool_t isOS;
 
-	MuonPair() {};
-	MuonPair( Muon mu1, Muon mu2 )
+	MuPair() {};
+	MuPair( Muon mu1, Muon mu2 )
 	{
 		// -- first: leading muon, secound: sub-leading muon -- //
 		if( mu1.Pt > mu2.Pt )
@@ -1167,7 +1167,7 @@ public:
 		}
 	}
 
-	Bool_t isGoodMuonPair( NtupleHandle *ntuple, TString HLT, 
+	Bool_t isGoodMuPair( NtupleHandle *ntuple, TString HLT, 
 						   Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
 	{
 		Bool_t GoodPair = kFALSE;
@@ -1343,7 +1343,7 @@ public:
 };
 
 
-Bool_t ComparePair_VtxChi2( MuonPair pair1, MuonPair pair2 )
+Bool_t ComparePair_VtxChi2( MuPair pair1, MuPair pair2 )
 {
 	// -- the pair with "smallest" vertex chi2 will be the first element -- //
 	return pair1.NormVtxChi2 < pair2.NormVtxChi2; 

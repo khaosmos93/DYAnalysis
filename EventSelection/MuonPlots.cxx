@@ -152,7 +152,7 @@ public:
 					}
 
 					// -- Event Selection -- //
-					MuonPair SelectedPair;
+					MuPair SelectedPair;
 					Bool_t isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, SelectedPair);
 
 					if( isPassEventSelection == kTRUE )
@@ -161,7 +161,7 @@ public:
 						PrintRecoMuonInfo( SelectedPair.First );
 						PrintRecoMuonInfo( SelectedPair.Second );
 
-						Plots->FillHistograms_MuonPair( SelectedPair, ntuple->runNum, TotWeight );
+						Plots->FillHistograms_MuPair( SelectedPair, ntuple->runNum, TotWeight );
 
 						// Int_t PU = ntuple->nPileUp;
 						// h_PU->Fill( PU, PUWeight );
