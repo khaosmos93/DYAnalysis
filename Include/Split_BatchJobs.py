@@ -303,7 +303,7 @@ echo "job is completed"
 		XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 1.0]
 		XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 1.0]
 		XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 1.0]
-		xSecSumW_DYMMaMCNLO["M50to200"] = [6095.58346/3.0, 1.0]
+		XSecSumW_DYMMaMCNLO["M50to200"] = [6095.58346/3.0, 1.0]
 		XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 1.0]
 		XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 1.0]
 		XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 1.0]
