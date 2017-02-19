@@ -239,6 +239,7 @@ protected:
 	Bool_t isMuon_DEN( Muon mu )
 	{
 		if( mu.isTRK == 1
+			&& mu.isGLB == 1
 			&& (mu.AbsTrkIso / mu.Inner_pT) < 0.1
 			&& mu.TuneP_pT > 53
 			)

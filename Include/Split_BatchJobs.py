@@ -58,18 +58,16 @@ class SplitJobs:
 			self.NormFactor = 1
 
 		os.chdir( self.OutDir )
-		print "current directory: ", os.getcwd()
+
 
 	def CreateWorkSpace( self ):
 		DirName = "%s" % (self.Sample)
 		
-		print "current directory2: ", os.getcwd()
 		List_File_cwd = os.listdir( "." )
 		if DirName in List_File_cwd:
 			print "%s is already exists!" % (DirName)
 			sys.exit()
 
-		print "current directory3: ", os.getcwd()
 		os.mkdir( DirName )
 
 		nROOTFile = len(self.List_ROOTFiles)

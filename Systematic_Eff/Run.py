@@ -27,7 +27,7 @@ def Add_DYPowheg( _List_Samples ):
 	_List_Samples.append( ["DYPowheg_M6000toInf", 1, 1] )
 
 def MakeScript_Sub(_OutDir, _List_Samples, _TIME):
-	f = open("./script_qsub_ALL_%s.sh" % (_TIME), "w")
+	f = open("./script_qsub_ALL.sh", "w")
 	f.write( "#!bin/bash\n" )
 	f.write( "cwd2=$(pwd)\n\n" )
 	f.write( "cd %s\n" % (_OutDir) )
@@ -42,10 +42,10 @@ def MakeScript_Sub(_OutDir, _List_Samples, _TIME):
 	f.write( 'echo "full submission is finished"\n' )
 	f.close()
 
-	print "source script_qsub_ALL_%s.sh" % (_TIME)
+	print "source script_qsub_ALL.sh"
 
 def MakeScript_GetOutput(_OutDir, _List_Samples, _TIME):
-	f = open("./script_GetOutput_%s.sh" % (_TIME), "w")
+	f = open("./script_GetOutput.sh", "w")
 	f.write( "#!bin/bash\n" )
 	f.write( "cwd2=$(pwd)\n\n" )
 	f.write( "cd %s\n" % (_OutDir) )
@@ -75,14 +75,14 @@ except:
 
 # -- SampleName, isMC, nJobs -- #
 List_Samples = []
-# List_Samples.append( ["Data", 0, 20] )
-# Add_DYPowheg( List_Samples )
+List_Samples.append( ["Data", 0, 20] )
+Add_DYPowheg( List_Samples )
 List_Samples.append( ["WWTo2L2Nu", 1, 1] )
 List_Samples.append( ["WZ", 1, 1] )
 List_Samples.append( ["ZZ", 1, 1] )
-# List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
-# List_Samples.append( ["tW", 1, 2] )
-# List_Samples.append( ["tbarW", 1, 2] )
+List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
+List_Samples.append( ["tW", 1, 2] )
+List_Samples.append( ["tbarW", 1, 2] )
 
 # -- output directory -- //
 TIME = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
@@ -110,7 +110,7 @@ for Samples in List_Samples:
 	if '--queue' in MainOpts:
 		argument = argument + " --queue %s" % (MainOpts['--queue'])
 
-	print argument
+	# print argument
 
 	opts, args = getopt(argument, 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue=", "outdir="])
 	opts = dict(opts)
@@ -125,7 +125,7 @@ for Samples in List_Samples:
 	if '--queue' in MainOpts:
 		opts['--queue'] = MainOpts['--queue']
 
-	print opts
+	# print opts
 
 	split = SplitJobs( opts )
 	split.CreateWorkSpace()
