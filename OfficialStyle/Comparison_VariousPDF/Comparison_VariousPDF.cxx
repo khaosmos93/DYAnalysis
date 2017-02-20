@@ -33,7 +33,7 @@ Double_t small = 0.000001; // -- margin between Pads -- //
 Double_t yTitleSize_pixel = 15;
 Double_t yTitleOffset = 0.35;
 
-Double_t yLabelSize_pixel = 20;
+Double_t yLabelSize_pixel = 19;
 Double_t yLabelOffset_pixel = 1;
 
 // Double_t xTickWidth = 0.1;
@@ -63,18 +63,22 @@ void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistIn
 	// X_axis->SetTickLength( xTickWidth );
 
 	TAxis *Y_axis = Hist_Theory->h_ratio->GetYaxis();
-	Double_t ratio_Min = 0.3;
-	Double_t ratio_Max = 1.7;
-	Y_axis->SetTitle( "Data/"+Hist_Theory->LegendName );
+	Double_t ratio_Min = 0.51;
+	Double_t ratio_Max = 1.49;
+	Y_axis->SetTitle( Hist_Theory->LegendName+"/Data" );
 	Y_axis->CenterTitle();
 	Y_axis->SetTitleOffset( 0.45 );
 	Y_axis->SetTitleSize( yTitleSize_pixel / (Pad->GetWh()*Pad->GetAbsHNDC()) );
 	// Y_axis->SetTitleOffset( yTitleOffset_pixel / (Pad->GetWh()*Pad->GetAbsHNDC()) );
 	Y_axis->SetTitleOffset( yTitleOffset );
 
+	Y_axis->SetLabelOffset(0.005);
 	Y_axis->SetLabelSize( yLabelSize_pixel / (Pad->GetWh()*Pad->GetAbsHNDC()) );
 	Y_axis->SetRangeUser( ratio_Min, ratio_Max );
-	Y_axis->SetNdivisions( 503 );
+	Y_axis->SetNdivisions( 505 );
+	// Hist_Theory->h_ratio->SetMinimum( 0.45 );
+	// Hist_Theory->h_ratio->SetMaximum( 1.55 );
+	// Y_axis->SetRangeUser( 0.45, 1.55 );
 
 	TLegend *legend;
 	if( isLast )
@@ -124,7 +128,7 @@ void Comparison_VariousPDF()
 	HistInfo *Hist_NNPDF = new HistInfo( color_NNPDF, "NNPDF 3.0" );
 	Hist_NNPDF->Set_FileName_ObjectName( FileName, HistName_NNPDF );
 	Hist_NNPDF->Set();
-	Hist_NNPDF->Calc_RatioHist_Numerator( Hist_Data_TotUnc->h );
+	Hist_NNPDF->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
 
 	TH1D* h_NNPDF_RelUnc = Get_Hist( FileName, HistName_NNPDF_RelUnc );
 	AssignErrors( Hist_NNPDF->h_ratio, h_NNPDF_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -140,7 +144,7 @@ void Comparison_VariousPDF()
 	HistInfo *Hist_CT = new HistInfo( color_CT, "CT14" );
 	Hist_CT->Set_FileName_ObjectName( FileName, HistName_CT );
 	Hist_CT->Set();
-	Hist_CT->Calc_RatioHist_Numerator( Hist_Data_TotUnc->h );
+	Hist_CT->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
 
 	TH1D* h_CT_RelUnc = Get_Hist( FileName, HistName_CT_RelUnc );
 	AssignErrors( Hist_CT->h_ratio, h_CT_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -152,7 +156,7 @@ void Comparison_VariousPDF()
 	HistInfo *Hist_MMHT = new HistInfo( color_MMHT, "MMHT2014" );
 	Hist_MMHT->Set_FileName_ObjectName( FileName, HistName_MMHT );
 	Hist_MMHT->Set();
-	Hist_MMHT->Calc_RatioHist_Numerator( Hist_Data_TotUnc->h );
+	Hist_MMHT->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
 
 	TH1D* h_MMHT_RelUnc = Get_Hist( FileName, HistName_MMHT_RelUnc );
 	AssignErrors( Hist_MMHT->h_ratio, h_MMHT_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -164,7 +168,7 @@ void Comparison_VariousPDF()
 	HistInfo *Hist_HERAPDF = new HistInfo( color_HERAPDF, "HERAPDF15" );
 	Hist_HERAPDF->Set_FileName_ObjectName( FileName, HistName_HERAPDF );
 	Hist_HERAPDF->Set();
-	Hist_HERAPDF->Calc_RatioHist_Numerator( Hist_Data_TotUnc->h );
+	Hist_HERAPDF->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
 
 	TH1D* h_HERAPDF_RelUnc = Get_Hist( FileName, HistName_HERAPDF_RelUnc );
 	AssignErrors( Hist_HERAPDF->h_ratio, h_HERAPDF_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -176,7 +180,7 @@ void Comparison_VariousPDF()
 	HistInfo *Hist_ABM = new HistInfo( color_ABM, "ABM12LHC" );
 	Hist_ABM->Set_FileName_ObjectName( FileName, HistName_ABM );
 	Hist_ABM->Set();
-	Hist_ABM->Calc_RatioHist_Numerator( Hist_Data_TotUnc->h );
+	Hist_ABM->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
 
 	TH1D* h_ABM_RelUnc = Get_Hist( FileName, HistName_ABM_RelUnc );
 	AssignErrors( Hist_ABM->h_ratio, h_ABM_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //

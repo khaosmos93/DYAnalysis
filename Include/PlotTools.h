@@ -391,11 +391,12 @@ void SetCanvas_Ratio( TCanvas*& c, TString CanvasName, TPad*& TopPad, TPad*& Bot
 		TopPad->SetLogy();
 
 	c->cd();
-	BottomPad = new TPad( "BottomPad", "BottomPad", 0.01, 0.01, 0.99, 0.28 );
+	BottomPad = new TPad( "BottomPad", "BottomPad", 0.01, 0.01, 0.99, 0.29 );
 	BottomPad->Draw();
 	BottomPad->cd();
 	BottomPad->SetGridx();
 	BottomPad->SetGridy();
+	BottomPad->SetTopMargin(0.05);
 	BottomPad->SetBottomMargin(0.4);
 	BottomPad->SetRightMargin(0.045);
 	BottomPad->SetLeftMargin(0.13);
@@ -552,6 +553,32 @@ void Print_Histogram( TH1D* h )
 
 		printf( "%02d bin: [%6.1lf, %6.1lf] (value, error) = (%lf, %lf (%7.3lf %%))\n", 
 			     i_bin, LowerEdge, UpperEdge, value, errorAbs, errorRel*100 );
+	}
+	printf("\n\n");
+}
+
+void Print_Graph( TGraphAsymmErrors* g )
+{
+	TString GraphName = g->GetName();
+	printf("[GraphName: %s]\n", GraphName.Data());
+	Int_t nPoint = g->GetN();
+	for(Int_t i=0; i<nPoint; i++)
+	{
+		Double_t x, y;
+		g->GetPoint(i, x, y);
+
+		Double_t xErrLow = g->GetErrorXlow(i);
+		Double_t xErrHigh = g->GetErrorXhigh(i);
+		Double_t LowerEdge = x - xErrLow;
+		Double_t UpperEdge = x + xErrHigh;
+
+		Double_t yErrLow = g->GetErrorYlow(i);
+		Double_t yRelErrLow = yErrLow / y;
+		Double_t yErrHigh = g->GetErrorYhigh(i);
+		Double_t yRelErrHigh = yErrHigh / y;
+
+		printf( "%02d point: [%6.1lf, %6.1lf] (value, errorLow, errorHigh) = (%lf, %lf (%7.3lf %%), %lf (%7.3lf %%))\n", 
+			     i, LowerEdge, UpperEdge, y, yErrLow, yRelErrLow*100, yErrHigh, yRelErrHigh*100 );
 	}
 	printf("\n\n");
 }
