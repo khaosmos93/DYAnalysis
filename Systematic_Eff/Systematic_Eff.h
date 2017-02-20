@@ -25,7 +25,67 @@ Double_t SF_Zpeak( TString region )
 	return SF;
 }
 
-TH1D* BackgroundSubtraction( TH1D* h_data, TString region )
+Double_t nEvent_Zpeak(TH1D* h )
+{
+	Double_t nEv_Zpeak = 0;
+	Int_t nBin = h->GetNbinsX();
+	for(Int_t i=0; i<nBin; i++)
+	{
+		Int_t i_bin = i+1;
+		Double_t BinCenter = h->GetBinCenter(i_bin);
+		if( BinCenter > 60 && BinCenter < 120 )
+			nEv_Zpeak = nEv_Zpeak + h->GetBinContent(i_bin);
+	}
+
+	return nEv_Zpeak;
+}
+
+Double_t SF_Zpeak_DirectlyExtracted( TString Type, TString region )
+{
+	TString HistName = TString::Format( "h_mass_%s_%s", region.Data(), Type.Data() );
+	if( region == "All" )
+		HistName = TString::Format( "h_mass_%s", Type.Data() );
+
+	TH1D* h_data = Get_Hist( "ROOTFile_Data.root", HistName );	
+
+	// -- DY -- //
+	TH1D* h_DY = Get_Hist( "ROOTFile_DYPowheg.root", HistName );
+
+	// -- ttbar + tW + tbarW -- //
+	TH1D* h_ttbar = Get_Hist( "ROOTFile_ttbarTo2L2Nu.root", HistName);
+	TH1D* h_tW = Get_Hist( "ROOTFile_tW.root", HistName );
+	TH1D* h_tbarW = Get_Hist( "ROOTFile_tbarW.root", HistName );
+
+	TH1D* h_top = (TH1D*)h_ttbar->Clone(); h_top->Sumw2();
+	h_top->Add( h_tW );
+	h_top->Add( h_tbarW );
+
+	// -- dibosons -- //
+	TH1D* h_WW = Get_Hist("ROOTFile_WWTo2L2Nu.root", HistName );
+	TH1D* h_WZ = Get_Hist("ROOTFile_WZ.root", HistName );
+	TH1D* h_ZZ = Get_Hist("ROOTFile_ZZ.root", HistName );
+
+	TH1D* h_diboson = (TH1D*)h_WW->Clone(); h_diboson->Sumw2();
+	h_diboson->Add( h_WZ );
+	h_diboson->Add( h_ZZ );
+
+	// -- total MC (for ratio) -- //
+	TH1D* h_totMC = (TH1D*)h_DY->Clone("h_totMC"); h_totMC->Sumw2();
+	h_totMC->Add( h_top );
+	h_totMC->Add( h_diboson );
+
+	Double_t nEvent_Data = nEvent_Zpeak( h_data );
+	Double_t nEvent_MC = nEvent_Zpeak( h_totMC );
+	Double_t SF = nEvent_Data / nEvent_MC;
+
+	printf( "[%s, %s]\n", Type.Data(), region.Data() );
+	printf( "[# events in Zpeak: (data, MC) = (%.0lf, %.0lf)] -> SF = %lf\n", nEvent_Data, nEvent_MC, SF );
+
+	return SF;
+}
+
+
+TH1D* BackgroundSubtraction( TH1D* h_data, TString DENNUM, TString region )
 {
 	// -- dibosons -- //
 	TString HistName = h_data->GetName();
@@ -53,7 +113,8 @@ TH1D* BackgroundSubtraction( TH1D* h_data, TString region )
 	h_top = Rebin_Mass( h_top );
 
 	// -- apply SF -- //
-	Double_t SF = SF_Zpeak( region );
+	// Double_t SF = SF_Zpeak( region );
+	Double_t SF = SF_Zpeak_DirectlyExtracted( DENNUM, region );
 	printf("SF = %lf is applied\n", SF);
 	h_diboson->Scale( SF );
 	h_top->Scale( SF );
@@ -157,13 +218,23 @@ public:
 
 		// -- rebin -- //
 		Int_t RebinSize = 50;
+		TString YTitle = TString::Format("Events / %.0d GeV", RebinSize);
 		Hist_data->h->Rebin( RebinSize );
 		Hist_DY->h->Rebin( RebinSize );
 		Hist_top->h->Rebin( RebinSize );
 		Hist_diboson->h->Rebin( RebinSize );
+		Double_t xMin = 50;
+
+		// TString YTitle = "Entries per bin";
+		// Hist_data->h = Rebin_Mass( Hist_data->h );
+		// Hist_DY->h = Rebin_Mass( Hist_DY->h );
+		// Hist_top->h = Rebin_Mass( Hist_top->h );
+		// Hist_diboson->h = Rebin_Mass( Hist_diboson->h );
+		// Double_t xMin = 60;
 
 		// -- apply scale factor (data/MC @ Z-peak) -- //
-		Double_t SF = SF_Zpeak( region );
+		// Double_t SF = SF_Zpeak( region );
+		Double_t SF = SF_Zpeak_DirectlyExtracted( Type, region );
 		Hist_DY->h->Scale( SF );
 		Hist_top->h->Scale( SF );
 		Hist_diboson->h->Scale( SF );
@@ -194,8 +265,8 @@ public:
 		Hist_data->h->Draw("EPsame");
 		h_format->Draw("axissame");
 
-		SetHistFormat_TopPad( h_format, TString::Format("Events / %.0d GeV", RebinSize) );
-		h_format->GetXaxis()->SetRangeUser(50, 2500);
+		SetHistFormat_TopPad( h_format,  YTitle);
+		h_format->GetXaxis()->SetRangeUser(xMin, 2500);
 		h_format->GetYaxis()->SetRangeUser(1e-3, 1e7);
 
 		TLegend *legend;
@@ -217,7 +288,9 @@ public:
 		h_ratio->Divide( Hist_data->h, h_totMC );
 		h_ratio->Draw("EPSAME");
 		SetHistFormat_BottomPad( h_ratio, "m [GeV]", "Data/MC", 0, 2.5);
-		h_ratio->GetXaxis()->SetRangeUser(50, 2500);
+		h_ratio->GetXaxis()->SetRangeUser(xMin, 2500);
+
+		Print_Histogram( h_ratio );
 
 		TF1 *f_line;
 		DrawLine( f_line );
@@ -310,8 +383,13 @@ TGraphAsymmErrors* EfficiencyGraph( TString Type, TString region )
 
 	if( Type == "Data" )
 	{
-		h_DEN = BackgroundSubtraction( h_DEN, region );
-		h_NUM = BackgroundSubtraction( h_NUM, region );
+		h_DEN = BackgroundSubtraction( h_DEN, "DEN", region );
+		h_NUM = BackgroundSubtraction( h_NUM, "NUM", region );
+	}
+	if( Type == "MC" )
+	{
+		h_DEN->Scale( SF_Zpeak_DirectlyExtracted( "DEN", region ) );
+		h_NUM->Scale( SF_Zpeak_DirectlyExtracted( "NUM", region ) );
 	}
 
 	DrawCanvas_DEN_vs_NUM( Type, region, h_DEN, h_NUM );
@@ -327,11 +405,6 @@ TGraphAsymmErrors* EfficiencyGraph( TString Type, TString region )
 
 	return g_Eff;
 }
-
-
-
-
-
 
 void DrawCanvas_Eff_Data_vs_MC( TString region, TGraphAsymmErrors* g_data, TGraphAsymmErrors *g_MC )
 {
