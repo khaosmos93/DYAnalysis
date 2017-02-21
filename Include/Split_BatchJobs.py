@@ -259,6 +259,18 @@ echo "job is completed"
 			List_FullPath.append( BasePath + "DYntuple_v20170117_80X_AddZprimeVar_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
 			List_FullPath.append( BasePath + "DYntuple_v20170118_80X_AddZprimeVar_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
+		elif self.Sample == "DataRunBtoF":
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+
+		elif self.Sample == "DataRunGtoH":
+			List_FullPath.append( BasePath + "DYntuple_v20170117_80X_AddZprimeVar_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170118_80X_AddZprimeVar_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+
 		List_ROOTFiles = []
 		for fullpath in List_FullPath:
 			FileList = os.listdir( fullpath )
