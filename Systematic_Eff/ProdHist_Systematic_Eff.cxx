@@ -495,7 +495,8 @@ protected:
 		// if( mu1.charge != mu2.charge ) isOS = kTRUE;
 
 		// if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE )
-		if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 )
+		// if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 )
+		if( reco_M > 50 && isPassAcc == kTRUE && Angle < TMath::Pi()-0.02 )
 			GoodPair = kTRUE;
 
 		return GoodPair;
