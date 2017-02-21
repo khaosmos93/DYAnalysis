@@ -604,6 +604,18 @@ TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
 	return h_temp;
 }
 
+TGraphAsymmErrors* Get_Graph(TString FileName, TString GraphName, TString GraphName_New = "" )
+{
+	TFile *f_input = TFile::Open( FileName );
+	TGraphAsymmErrors* g_temp = (TGraphAsymmErrors*)f_input->Get(GraphName)->Clone();
+	if( GraphName_New != "" )
+		g_temp->SetName( GraphName_New );
+
+	f_input->Close();
+
+	return g_temp;
+}
+
 TH1D* QuadSum_NoError( TH1D* h1, TH1D* h2 )
 {
 	TH1D* h_QuadSum = (TH1D*)h1->Clone( "h_QuadSum" );
@@ -625,6 +637,14 @@ TH1D* QuadSum_NoError( TH1D* h1, TH1D* h2 )
 
 void AssignErrors( TH1D* h_cv, TH1D* h_RelUnc, Bool_t isPercent = kFALSE )
 {
+	if( h_cv->GetNbinsX() != h_RelUnc->GetNbinsX() )
+	{
+		printf("# bins for central value and relative uncertainty histograms are not same! .. %d != %d\n", 
+			h_cv->GetNbinsX(), h_RelUnc->GetNbinsX() );
+
+		return;
+	}
+
 	Int_t nBin = h_cv->GetNbinsX();
 	for(Int_t i=0; i<nBin; i++)
 	{
@@ -714,4 +734,51 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 	}
 
 	return h_temp;
+}
+
+TH1D* Extract_RelUnc( TH1D* h, TString HistName = "", Bool_t ConvertToPercent = kFALSE )
+{
+	TH1D* h_RelUnc = (TH1D*)h->Clone();
+	if( HistName != "" )
+		h_RelUnc->SetName(HistName);
+
+	Int_t nBin = h->GetNbinsX();
+	for(Int_t i=0; i<nBin; i++)
+	{
+		Int_t i_bin = i+1;
+
+		Double_t value = h->GetBinContent(i_bin);
+		Double_t error = h->GetBinError(i_bin);
+
+		Double_t RelUnc = error / value;
+		if( ConvertToPercent )
+			RelUnc = RelUnc * 100;
+
+		h_RelUnc->SetBinContent(i_bin, RelUnc );
+		h_RelUnc->SetBinError(i_bin, 0);
+	}
+
+	return h_RelUnc;
+}
+
+TH1D* ConvertHist_AbsToRel( TH1D* h_CenV, TH1D* h_AbsUnc, Bool_t ConvertToPercent = kFALSE )
+{
+	TH1D* h_RelUnc = (TH1D*)h_AbsUnc->Clone();
+
+	Int_t nBin = h_CenV->GetNbinsX();
+	for(Int_t i=0; i<nBin; i++)
+	{
+		Int_t i_bin = i+1;
+
+		Double_t CenV = h_CenV->GetBinContent(i_bin);
+		Double_t AbsUnc = h_AbsUnc->GetBinContent(i_bin);
+		Double_t RelUnc = AbsUnc / CenV;
+		if( ConvertToPercent )
+			RelUnc = RelUnc * 100;
+
+		h_RelUnc->SetBinContent(i_bin, RelUnc );
+		h_RelUnc->SetBinError(i_bin, 0);
+	}
+
+	return h_RelUnc;
 }
