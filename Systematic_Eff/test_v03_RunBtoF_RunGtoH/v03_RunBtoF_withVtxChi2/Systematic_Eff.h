@@ -426,7 +426,7 @@ void DrawCanvas_Eff_Data_vs_MC( TString region, TGraphAsymmErrors* g_data, TGrap
 	Graph_data->DrawGraph( "PSAME" );
 
 	SetGraphFormat_TopPad( Graph_MC->g, "Efficiency" );
-	Graph_MC->g->GetYaxis()->SetRangeUser( 0.5, 1.05 );
+	Graph_MC->g->GetYaxis()->SetRangeUser( 0.83, 1.05 );
 
 	Graph_MC->g->SetMarkerSize(1.5);
 	Graph_data->g->SetMarkerSize(1.5);
