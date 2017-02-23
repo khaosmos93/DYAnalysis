@@ -46,7 +46,7 @@ Double_t SF_Zpeak_DirectlyExtracted( TString Type, TString region )
 	if( region == "All" )
 		HistName = TString::Format( "h_mass_%s", Type.Data() );
 
-	TH1D* h_data = Get_Hist( "ROOTFile_Data.root", HistName );	
+	TH1D* h_data = Get_Hist( "ROOTFile_DataRunGtoH.root", HistName );	
 
 	// -- DY -- //
 	TH1D* h_DY = Get_Hist( "ROOTFile_DYPowheg.root", HistName );
@@ -177,7 +177,7 @@ public:
 		if( region == "All" )
 			HistName = TString::Format("h_mass_%s", Type.Data());
 
-		TH1D* h_data = Get_Hist( "ROOTFile_Data.root", HistName );
+		TH1D* h_data = Get_Hist( "ROOTFile_DataRunGtoH.root", HistName );
 		HistInfo *Hist_data = new HistInfo( kBlack, "Data" );
 		Hist_data->Set_Histogram( h_data );
 		Hist_data->Set();
@@ -279,7 +279,7 @@ public:
 		legend->Draw();
 
 		TLatex latex;
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, 16.1, 13 );
 		Latex_Info( latex, Type, region );
 
 		c->cd();
@@ -332,7 +332,7 @@ void DrawCanvas_DEN_vs_NUM( TString Type, TString region, TH1D* h_DEN, TH1D* h_N
 
 	TLatex latex;
 	if( Type == "Data" )
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, 16.1, 13 );
 	else if( Type == "MC" )
 		Latex_Simulation( latex );
 	Latex_Info( latex, Type, region );
@@ -370,7 +370,7 @@ TGraphAsymmErrors* EfficiencyGraph( TString Type, TString region )
 
 	TString FileName = "";
 	if( Type == "Data" )
-		FileName = "ROOTFile_Data.root";
+		FileName = "ROOTFile_DataRunGtoH.root";
 	else if( Type == "MC" )
 		FileName = "ROOTFile_DYPowheg.root";
 
@@ -411,7 +411,7 @@ void DrawCanvas_Eff_Data_vs_MC( TString region, TGraphAsymmErrors* g_data, TGrap
 	GraphInfo *Graph_MC = new GraphInfo( kRed, "MC (DY)" );
 	Graph_MC->Set_Graph( g_MC );
 
-	GraphInfo *Graph_data = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+	GraphInfo *Graph_data = new GraphInfo( kBlack, "Data, RunG-H (Bkg.Sub.)" );
 	Graph_data->Set_Graph( g_data );
 	Graph_data->Calc_RatioGraph_Denominator( Graph_MC->g );
 
@@ -440,7 +440,7 @@ void DrawCanvas_Eff_Data_vs_MC( TString region, TGraphAsymmErrors* g_data, TGrap
 	legend->Draw();
 
 	TLatex latex;
-	Latex_Preliminary( latex, 35.9, 13 );
+	Latex_Preliminary( latex, 16.1, 13 );
 	Latex_Info( latex, "", region );
 
 	c->cd();
