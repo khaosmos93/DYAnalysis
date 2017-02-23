@@ -1,7 +1,7 @@
 #!bin/bash
 cwd2=$(pwd)
 
-cd /home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170222_045320_ProdHist_Systematic_Eff
+cd /home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170224_022830_ProdHist_Systematic_Eff
 cd DataRunBtoF; source qsub_all.sh
 cd ../
 cd DYPowheg_M50to120; source qsub_all.sh
