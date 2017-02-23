@@ -129,6 +129,13 @@ public:
 		HistContainer *Hist_DEN = new HistContainer( "DEN" );
 		HistContainer *Hist_NUM = new HistContainer( "NUM" );
 
+		// -- only for the data -- //
+		HistContainer *Hist_DEN_RunBtoF = new HistContainer( "DEN_RunBtoF" );
+		HistContainer *Hist_NUM_RunBtoF = new HistContainer( "NUM_RunBtoF" );
+
+		HistContainer *Hist_DEN_RunGtoH = new HistContainer( "DEN_RunGtoH" );
+		HistContainer *Hist_NUM_RunGtoH = new HistContainer( "NUM_RunGtoH" );
+
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
 
@@ -202,6 +209,14 @@ public:
 						Muon mu1 = SelectedMuonCollection_DEN[0];
 						Muon mu2 = SelectedMuonCollection_DEN[1];
 						Hist_DEN->Fill( mu1, mu2, TotWeight);
+
+						if( !isMC ) // -- data -- //
+						{
+							if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
+								Hist_DEN_RunBtoF->Fill( mu1, mu2, TotWeight );
+							else
+								Hist_DEN_RunGtoH->Fill( mu1, mu2, TotWeight );
+						}
 					}
 
 					vector< Muon > SelectedMuonCollection_NUM;
@@ -211,6 +226,14 @@ public:
 						Muon mu1 = SelectedMuonCollection_NUM[0];
 						Muon mu2 = SelectedMuonCollection_NUM[1];
 						Hist_NUM->Fill( mu1, mu2, TotWeight);
+
+						if( !isMC ) // -- data -- //
+						{
+							if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
+								Hist_NUM_RunBtoF->Fill( mu1, mu2, TotWeight );
+							else
+								Hist_NUM_RunGtoH->Fill( mu1, mu2, TotWeight );
+						}
 					}
 
 				} // -- end of if( ntuple->isTriggered( analyzer->HLT ) ) -- //
@@ -223,6 +246,15 @@ public:
 
 		Hist_DEN->Save( f_output );
 		Hist_NUM->Save( f_output );
+
+		if( !isMC )
+		{
+			Hist_DEN_RunBtoF->Save( f_output );
+			Hist_NUM_RunBtoF->Save( f_output );
+
+			Hist_DEN_RunGtoH->Save( f_output );
+			Hist_NUM_RunGtoH->Save( f_output );
+		}
 
 		Double_t TotalRunTime = totaltime.CpuTime();
 		cout << "\tTotal RunTime(" << this->Tag << "): " << TotalRunTime << " seconds\n" << endl;
