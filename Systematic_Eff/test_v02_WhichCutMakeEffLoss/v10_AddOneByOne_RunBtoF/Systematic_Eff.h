@@ -116,7 +116,7 @@ public:
 		legend->Draw();
 
 		TLatex latex;
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, 19.7, 13 );
 		Latex_Info( latex, "", this->Region );
 
 		c->cd();
@@ -256,7 +256,7 @@ protected:
 		legend->Draw();
 
 		TLatex latex;
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, 19.7, 13 );
 		Latex_Info( latex, Type, region );
 
 		c->cd();
@@ -414,7 +414,7 @@ protected:
 
 		TLatex latex;
 		if( Type == "Data" )
-			Latex_Preliminary( latex, 35.9, 13 );
+			Latex_Preliminary( latex, 19.7, 13 );
 		else if( Type == "MC" )
 			Latex_Simulation( latex );
 		Latex_Info( latex, Type, region );
@@ -476,7 +476,7 @@ void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region
 
 	TLatex latex;
 	if( DataType == "Data" )
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, 19.7, 13 );
 	else
 		Latex_Simulation( latex );
 
