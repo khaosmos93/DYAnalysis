@@ -124,6 +124,7 @@ public:
 		ntuple->TurnOnBranches_Muon();
 		if( this->isMC )
 			ntuple->TurnOnBranches_GenLepton();
+		ntuple->Ready();
 
 		HistContainer *Hist_DEN = new HistContainer( "DEN" );
 		HistContainer *Hist_NUM = new HistContainer( "NUM" );
