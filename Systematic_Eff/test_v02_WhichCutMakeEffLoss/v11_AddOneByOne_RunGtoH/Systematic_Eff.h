@@ -321,7 +321,7 @@ protected:
 		h_DEN = this->Rebin_Mass( h_DEN );
 		h_NUM = this->Rebin_Mass( h_NUM );
 
-		// DrawCanvas_DEN_vs_NUM( Type, this->Region, h_DEN, h_NUM );
+		DrawCanvas_DEN_vs_NUM( Type, this->Region, h_DEN, h_NUM );
 
 		this->RemoveUnderOverFlow( h_DEN );
 		this->RemoveUnderOverFlow( h_NUM );
@@ -394,7 +394,7 @@ protected:
 		Hist_NUM->Set();
 		Hist_NUM->Calc_RatioHist_Denominator( Hist_DEN->h );
 
-		TString CanvasName = TString::Format("c_DEN_vs_NUM_%s_%s", Type.Data(), region.Data());
+		TString CanvasName = TString::Format("c_DEN_vs_NUM_%s_%s_%s", Type.Data(), region.Data(), this->NUMStr.Data());
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
 		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
 
@@ -423,12 +423,33 @@ protected:
 		BottomPad->cd();
 
 		Hist_NUM->h_ratio->Draw("EPSAME");
-		SetHistFormat_BottomPad( Hist_NUM->h_ratio, "m [GeV]", "NUM/DEN", 0.95, 1.05);
+		SetHistFormat_BottomPad( Hist_NUM->h_ratio, "m [GeV]", "NUM/DEN", 0.91, 1.09);
 
 		TF1 *f_line;
 		DrawLine( f_line );
 
 		c->SaveAs(".pdf");
+
+		Int_t nBin = Hist_NUM->h_ratio->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+
+			Double_t value = Hist_NUM->h_ratio->GetBinContent(i_bin);
+
+			if( value > 1 )
+			{
+				printf("======================================================================================\n");
+				printf("[DEN/NUM = %lf > 1 ... correct it to force NUM to have same value with DEN]\n", value);
+				printf("======================================================================================\n");
+
+				Double_t DEN = h_DEN->GetBinContent(i_bin);
+				Double_t Err_DEN = h_DEN->GetBinError(i_bin);
+
+				h_NUM->SetBinContent(i_bin, DEN);
+				h_NUM->SetBinError(i_bin, Err_DEN);
+			}
+		}
 	}
 };
 
