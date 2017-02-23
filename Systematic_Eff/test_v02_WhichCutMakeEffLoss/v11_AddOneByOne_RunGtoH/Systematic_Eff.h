@@ -87,7 +87,7 @@ public:
 		GraphInfo *Graph_MC = new GraphInfo( kRed, "MC (DY)" );
 		Graph_MC->Set_Graph( this->g_MC );
 
-		GraphInfo *Graph_data = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+		GraphInfo *Graph_data = new GraphInfo( kBlack, "Data, RunG-H (Bkg.Sub.)" );
 		Graph_data->Set_Graph( this->g_data );
 		Graph_data->Calc_RatioGraph_Denominator( Graph_MC->g );
 
@@ -154,7 +154,7 @@ protected:
 		if( region == "All" )
 			HistName = TString::Format("h_mass_%s", Type.Data());
 
-		TH1D* h_data = Get_Hist( "ROOTFile_Data.root", HistName );
+		TH1D* h_data = Get_Hist( "ROOTFile_DataRunGtoH.root", HistName );
 		HistInfo *Hist_data = new HistInfo( kBlack, "Data" );
 		Hist_data->Set_Histogram( h_data );
 		Hist_data->Set();
