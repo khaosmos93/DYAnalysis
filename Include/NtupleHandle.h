@@ -316,6 +316,12 @@ public:
         chain->SetBranchAddress("evtNum", &evtNum);
     	chain->SetBranchAddress("nPileUp", &nPileUp);
 
+        chain->AddBranchToCache("nVertices", 1);
+        chain->AddBranchToCache("runNum", 1);
+        chain->AddBranchToCache("lumiBlock", 1);
+        chain->AddBranchToCache("evtNum", 1);
+        chain->AddBranchToCache("nPileUp", 1);
+
     	// -- Trigger Information -- //
     	chain->SetBranchStatus("HLT_trigName", 1);
     	chain->SetBranchStatus("HLT_ntrig", 1);
@@ -331,10 +337,22 @@ public:
     	chain->SetBranchAddress("HLT_trigEta", &HLT_trigEta);
     	chain->SetBranchAddress("HLT_trigPhi", &HLT_trigPhi);
 
+        chain->AddBranchToCache("HLT_trigName", 1);
+        chain->AddBranchToCache("HLT_ntrig", 1);
+        chain->AddBranchToCache("HLT_trigFired", 1);
+        chain->AddBranchToCache("HLT_trigPt", 1);
+        chain->AddBranchToCache("HLT_trigEta", 1);
+        chain->AddBranchToCache("HLT_trigPhi", 1);
+
 
     	// this->TurnOnBranches_GenLepton();
     	// this->TurnOnBranches_Muon();
 
+    }
+
+    void Ready()
+    {
+        chain->StopCacheLearningPhase();
     }
 
     void TurnOnBranches_GenLepton()
@@ -391,6 +409,32 @@ public:
     	chain->SetBranchAddress("GENLepton_fromHardProcessBeforeFSR", &GenLepton_fromHardProcessBeforeFSR);
     	chain->SetBranchAddress("GENLepton_fromHardProcessDecayed", &GenLepton_fromHardProcessDecayed);
     	chain->SetBranchAddress("GENLepton_fromHardProcessFinalState", &GenLepton_fromHardProcessFinalState);
+
+        chain->AddBranchToCache("GENnPair", 1);
+        chain->AddBranchToCache("GENEvt_weight", 1);
+        chain->AddBranchToCache("GENLepton_Px", 1);
+        chain->AddBranchToCache("GENLepton_Py", 1);
+        chain->AddBranchToCache("GENLepton_Pz", 1);
+        chain->AddBranchToCache("GENLepton_mother", 1);
+        chain->AddBranchToCache("GENLepton_pT", 1);
+        chain->AddBranchToCache("GENLepton_eta", 1);
+        chain->AddBranchToCache("GENLepton_phi", 1);
+        chain->AddBranchToCache("GENLepton_charge", 1);
+        chain->AddBranchToCache("GENLepton_status", 1);
+        chain->AddBranchToCache("GENLepton_ID", 1);
+        chain->AddBranchToCache("GENLepton_isPrompt", 1);
+        chain->AddBranchToCache("GENLepton_isPromptFinalState", 1);
+        chain->AddBranchToCache("GENLepton_isTauDecayProduct", 1);
+        chain->AddBranchToCache("GENLepton_isPromptTauDecayProduct", 1);
+        chain->AddBranchToCache("GENLepton_isDirectPromptTauDecayProductFinalState", 1);
+        chain->AddBranchToCache("GENLepton_isHardProcess", 1);
+        chain->AddBranchToCache("GENLepton_isLastCopy", 1);
+        chain->AddBranchToCache("GENLepton_isLastCopyBeforeFSR", 1);
+        chain->AddBranchToCache("GENLepton_isPromptDecayed", 1);
+        chain->AddBranchToCache("GENLepton_isDecayedLeptonHadron", 1);
+        chain->AddBranchToCache("GENLepton_fromHardProcessBeforeFSR", 1);
+        chain->AddBranchToCache("GENLepton_fromHardProcessDecayed", 1);
+        chain->AddBranchToCache("GENLepton_fromHardProcessFinalState", 1);
     }
 
     void TurnOnBranches_GenOthers()
@@ -444,6 +488,31 @@ public:
         chain->SetBranchAddress("GenOthers_fromHardProcessBeforeFSR", &GenOthers_fromHardProcessBeforeFSR);
         chain->SetBranchAddress("GenOthers_fromHardProcessDecayed", &GenOthers_fromHardProcessDecayed);
         chain->SetBranchAddress("GenOthers_fromHardProcessFinalState", &GenOthers_fromHardProcessFinalState);
+
+        chain->AddBranchToCache("nGenOthers", 1);
+        chain->AddBranchToCache("GenOthers_Px", 1);
+        chain->AddBranchToCache("GenOthers_Py", 1);
+        chain->AddBranchToCache("GenOthers_Pz", 1);
+        chain->AddBranchToCache("GenOthers_mother", 1);
+        chain->AddBranchToCache("GenOthers_pT", 1);
+        chain->AddBranchToCache("GenOthers_eta", 1);
+        chain->AddBranchToCache("GenOthers_phi", 1);
+        chain->AddBranchToCache("GenOthers_charge", 1);
+        chain->AddBranchToCache("GenOthers_status", 1);
+        chain->AddBranchToCache("GenOthers_ID", 1);
+        chain->AddBranchToCache("GenOthers_isPrompt", 1);
+        chain->AddBranchToCache("GenOthers_isPromptFinalState", 1);
+        chain->AddBranchToCache("GenOthers_isTauDecayProduct", 1);
+        chain->AddBranchToCache("GenOthers_isPromptTauDecayProduct", 1);
+        chain->AddBranchToCache("GenOthers_isDirectPromptTauDecayProductFinalState", 1);
+        chain->AddBranchToCache("GenOthers_isHardProcess", 1);
+        chain->AddBranchToCache("GenOthers_isLastCopy", 1);
+        chain->AddBranchToCache("GenOthers_isLastCopyBeforeFSR", 1);
+        chain->AddBranchToCache("GenOthers_isPromptDecayed", 1);
+        chain->AddBranchToCache("GenOthers_isDecayedLeptonHadron", 1);
+        chain->AddBranchToCache("GenOthers_fromHardProcessBeforeFSR", 1);
+        chain->AddBranchToCache("GenOthers_fromHardProcessDecayed", 1);
+        chain->AddBranchToCache("GenOthers_fromHardProcessFinalState", 1);
     }
 
     void TurnOnBranches_Muon()
@@ -451,7 +520,8 @@ public:
     	// chain->SetBranchStatus("Muon_*", 1);
 
         // -- # branches to be turned on is critical to the speed of the code: 
-        // -- Usage of * is strongly not recommended! ... It would be better to exactly write down all branches to be used -- //
+        // -- Usage of * is strongly not recommended! 
+        // -- It would be better to exactly write down all branches to be used -- //
     	chain->SetBranchStatus("isPFmuon", 1);
     	chain->SetBranchStatus("isGLBmuon", 1);
         chain->SetBranchStatus("isTRKmuon", 1);
@@ -654,6 +724,108 @@ public:
         chain->SetBranchAddress("Muon_stationMask", &Muon_stationMask);
         chain->SetBranchAddress("Muon_nMatchesRPCLayers", &Muon_nMatchesRPCLayers);
 
+        chain->AddBranchToCache("isPFmuon", 1);
+        chain->AddBranchToCache("isGLBmuon", 1);
+        chain->AddBranchToCache("isTRKmuon", 1);
+        chain->AddBranchToCache("CosAngle", 1);
+        chain->AddBranchToCache("vtxTrkChi2", 1);
+        chain->AddBranchToCache("vtxTrkProb", 1);
+        chain->AddBranchToCache("vtxTrkNdof", 1);
+        chain->AddBranchToCache("vtxTrkCkt1Pt", 1);
+        chain->AddBranchToCache("vtxTrkCkt2Pt", 1);
+        chain->AddBranchToCache("vtxTrkDiEChi2", 1);
+        chain->AddBranchToCache("vtxTrkDiEProb", 1);
+        chain->AddBranchToCache("vtxTrkDiENdof", 1);
+        chain->AddBranchToCache("vtxTrkDiE1Pt", 1);
+        chain->AddBranchToCache("vtxTrkDiE2Pt", 1);
+        chain->AddBranchToCache("vtxTrkEMuChi2", 1);
+        chain->AddBranchToCache("vtxTrkEMuProb", 1);
+        chain->AddBranchToCache("vtxTrkEMuNdof", 1);
+        chain->AddBranchToCache("vtxTrkEMu1Pt", 1);
+        chain->AddBranchToCache("vtxTrkEMu2Pt", 1);
+
+        chain->AddBranchToCache("CosAngle_TuneP", 1);
+        chain->AddBranchToCache("vtxTrk1Pt_TuneP", 1);
+        chain->AddBranchToCache("vtxTrk2Pt_TuneP", 1);
+        chain->AddBranchToCache("vtxTrkChi2_TuneP", 1);
+        chain->AddBranchToCache("vtxTrkNdof_TuneP", 1);
+        chain->AddBranchToCache("vtxTrkProb_TuneP", 1);
+
+        chain->AddBranchToCache("nMuon", 1);
+        chain->AddBranchToCache("Muon_pT", 1);
+        chain->AddBranchToCache("Muon_eta", 1);
+        chain->AddBranchToCache("Muon_phi", 1);
+        chain->AddBranchToCache("Muon_muonType", 1);
+        chain->AddBranchToCache("Muon_chi2dof", 1);
+        chain->AddBranchToCache("Muon_muonHits", 1);
+        chain->AddBranchToCache("Muon_nSegments", 1);
+        chain->AddBranchToCache("Muon_nMatches", 1);
+        chain->AddBranchToCache("Muon_trackerLayers", 1);
+
+        // chain->AddBranchToCache("Muon_trackerHitsGLB", 1);
+        chain->AddBranchToCache("Muon_pixelHitsGLB", 1);
+        chain->AddBranchToCache("Muon_trackerLayersGLB", 1);
+
+        chain->AddBranchToCache("Muon_pixelHits", 1);
+        chain->AddBranchToCache("Muon_dxyVTX", 1);
+        chain->AddBranchToCache("Muon_dzVTX", 1);
+        chain->AddBranchToCache("Muon_trkiso", 1);
+        
+        chain->AddBranchToCache("Muon_Px", 1);
+        chain->AddBranchToCache("Muon_Py", 1);
+        chain->AddBranchToCache("Muon_Pz", 1);
+
+        chain->AddBranchToCache("Muon_dB", 1);
+        
+        chain->AddBranchToCache("Muon_charge", 1);
+        
+        chain->AddBranchToCache("Muon_PfChargedHadronIsoR04", 1);
+        chain->AddBranchToCache("Muon_PfNeutralHadronIsoR04" ,1);
+        chain->AddBranchToCache("Muon_PfGammaIsoR04", 1);
+
+        chain->AddBranchToCache("Muon_Best_pT", 1);
+        chain->AddBranchToCache("Muon_Best_pTError", 1);
+        chain->AddBranchToCache("Muon_Best_Px", 1);
+        chain->AddBranchToCache("Muon_Best_Py", 1);
+        chain->AddBranchToCache("Muon_Best_Pz", 1);
+        chain->AddBranchToCache("Muon_Best_eta", 1);
+        chain->AddBranchToCache("Muon_Best_phi", 1);
+
+        chain->AddBranchToCache("Muon_Inner_pT", 1);
+        chain->AddBranchToCache("Muon_Inner_pTError", 1);
+        chain->AddBranchToCache("Muon_Inner_eta", 1);
+        chain->AddBranchToCache("Muon_Inner_phi", 1);
+        chain->AddBranchToCache("Muon_Inner_Px", 1);
+        chain->AddBranchToCache("Muon_Inner_Py", 1);
+        chain->AddBranchToCache("Muon_Inner_Pz", 1);
+
+        chain->AddBranchToCache("Muon_Outer_pT", 1);
+        chain->AddBranchToCache("Muon_Outer_pTError", 1);
+        chain->AddBranchToCache("Muon_Outer_Px", 1);
+        chain->AddBranchToCache("Muon_Outer_Py", 1);
+        chain->AddBranchToCache("Muon_Outer_Pz", 1);
+        chain->AddBranchToCache("Muon_Outer_eta", 1);
+        chain->AddBranchToCache("Muon_Outer_phi", 1);
+
+        chain->AddBranchToCache("Muon_GLB_pT", 1);
+        chain->AddBranchToCache("Muon_GLB_pTError", 1);
+        chain->AddBranchToCache("Muon_GLB_Px", 1);
+        chain->AddBranchToCache("Muon_GLB_Py", 1);
+        chain->AddBranchToCache("Muon_GLB_Pz", 1);
+        chain->AddBranchToCache("Muon_GLB_eta", 1);
+        chain->AddBranchToCache("Muon_GLB_phi", 1);
+
+        chain->AddBranchToCache("Muon_TuneP_pT", 1);
+        chain->AddBranchToCache("Muon_TuneP_pTError", 1);
+        chain->AddBranchToCache("Muon_TuneP_eta", 1);
+        chain->AddBranchToCache("Muon_TuneP_phi", 1);
+        chain->AddBranchToCache("Muon_TuneP_Px", 1);
+        chain->AddBranchToCache("Muon_TuneP_Py", 1);
+        chain->AddBranchToCache("Muon_TuneP_Pz", 1);
+
+        chain->AddBranchToCache("Muon_stationMask", 1);
+        chain->AddBranchToCache("Muon_nMatchesRPCLayers", 1);
+
     }
 
     void TurnOnBranches_Electron()
@@ -755,6 +927,55 @@ public:
     	chain->SetBranchAddress("Electron_r9", &Electron_r9);
     	chain->SetBranchAddress("Electron_ecalDriven", &Electron_ecalDriven);
         chain->SetBranchAddress("Electron_passConvVeto", &Electron_passConvVeto);
+
+        chain->AddBranchToCache("Nelectrons", 1);
+        chain->AddBranchToCache("Electron_Energy", 1);
+        chain->AddBranchToCache("Electron_pT", 1);
+        chain->AddBranchToCache("Electron_eta", 1);
+        chain->AddBranchToCache("Electron_phi", 1);
+        chain->AddBranchToCache("Electron_charge", 1);
+        chain->AddBranchToCache("Electron_gsfpT", 1);
+        chain->AddBranchToCache("Electron_gsfPx", 1);
+        chain->AddBranchToCache("Electron_gsfPy", 1);
+        chain->AddBranchToCache("Electron_gsfPz", 1);
+        chain->AddBranchToCache("Electron_gsfEta", 1);
+        chain->AddBranchToCache("Electron_gsfPhi", 1);
+        chain->AddBranchToCache("Electron_gsfCharge", 1);
+        chain->AddBranchToCache("Electron_etaSC", 1);
+        chain->AddBranchToCache("Electron_phiSC", 1);
+        chain->AddBranchToCache("Electron_etaWidth", 1);
+        chain->AddBranchToCache("Electron_phiWidth", 1);
+        chain->AddBranchToCache("Electron_dEtaIn", 1);
+        chain->AddBranchToCache("Electron_dPhiIn", 1);
+        chain->AddBranchToCache("Electron_sigmaIEtaIEta", 1);
+        chain->AddBranchToCache("Electron_HoverE", 1);
+        chain->AddBranchToCache("Electron_fbrem", 1);
+        chain->AddBranchToCache("Electron_eOverP", 1);
+        chain->AddBranchToCache("Electron_InvEminusInvP", 1);
+        chain->AddBranchToCache("Electron_dxyVTX", 1);
+        chain->AddBranchToCache("Electron_dzVTX", 1);
+        chain->AddBranchToCache("Electron_dxy", 1);
+        chain->AddBranchToCache("Electron_dz", 1);
+        chain->AddBranchToCache("Electron_dxyBS", 1);
+        chain->AddBranchToCache("Electron_dzBS", 1);
+        chain->AddBranchToCache("Electron_chIso03", 1);
+        chain->AddBranchToCache("Electron_nhIso03", 1);
+        chain->AddBranchToCache("Electron_phIso03", 1);
+        chain->AddBranchToCache("Electron_ChIso03FromPU", 1);
+
+        chain->AddBranchToCache("Electron_mHits", 1);
+        chain->AddBranchToCache("Electron_EnergySC", 1);
+        chain->AddBranchToCache("Electron_preEnergySC", 1);
+        chain->AddBranchToCache("Electron_rawEnergySC", 1);
+        chain->AddBranchToCache("Electron_etSC", 1);
+        chain->AddBranchToCache("Electron_E15", 1);
+        chain->AddBranchToCache("Electron_E25", 1);
+        chain->AddBranchToCache("Electron_E55", 1);
+        chain->AddBranchToCache("Electron_RelPFIso_dBeta", 1);
+        chain->AddBranchToCache("Electron_RelPFIso_Rho", 1);
+        chain->AddBranchToCache("Electron_r9", 1);
+        chain->AddBranchToCache("Electron_ecalDriven", 1);
+        chain->AddBranchToCache("Electron_passConvVeto", 1);
 
     }
 
