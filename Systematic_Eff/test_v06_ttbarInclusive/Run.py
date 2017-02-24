@@ -80,7 +80,7 @@ Add_DYPowheg( List_Samples )
 List_Samples.append( ["WWTo2L2Nu", 1, 1] )
 List_Samples.append( ["WZ", 1, 1] )
 List_Samples.append( ["ZZ", 1, 1] )
-List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
+List_Samples.append( ["ttbar", 1, 20] )
 List_Samples.append( ["tW", 1, 2] )
 List_Samples.append( ["tbarW", 1, 2] )
 

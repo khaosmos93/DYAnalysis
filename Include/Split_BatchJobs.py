@@ -327,7 +327,7 @@ echo "job is completed"
 		xSecSumW_Others["WZ"] = [47.13, 2995828]
 		xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
 
-		xSecSumW_Others["ttbar"] = [831.76, -1]
+		xSecSumW_Others["ttbar"] = [831.76, 77229334+76175894]
 		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
 
 		xSecSumW_Others["tW"] = [35.6, 6952830]
