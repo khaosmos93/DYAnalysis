@@ -26,7 +26,7 @@ for ROOTFile in List_ROOTFile:
 
 	# -- make a directory -- #
 	DirName = ROOTFile.split(".")[0].split("ROOTFile_")[-1]
-	print "\tDirName = %s\n" % (DirName)
+	print "\tDirName = %s" % (DirName)
 	f_output.cd() # -- return to top directory -- #
 	f_output.mkdir( DirName )
 
@@ -42,6 +42,9 @@ for ROOTFile in List_ROOTFile:
 		f_input.cd()
 
 	f_input.Close()
+	cmd_mv = "mv %s ./Local"
+	print "\t"+cmd_mv
+	os.system(cmd_mv)
 
 print "Merging root files are finished: Output file = ", f_output.GetName()
 f_output.Close()
