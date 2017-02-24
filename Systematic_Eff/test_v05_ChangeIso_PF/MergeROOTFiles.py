@@ -50,7 +50,7 @@ for ROOTFile in List_ROOTFile:
 
 	f_input.Close()
 	cmd_mv = "mv %s ./Local" % (ROOTFile)
-	print "\t"+cmd_mv
+	print "Move: %s -> ./Local" % (ROOTFile)
 	os.system(cmd_mv)
 
 print "Merging root files are finished: Output file = ", f_output.GetName()
