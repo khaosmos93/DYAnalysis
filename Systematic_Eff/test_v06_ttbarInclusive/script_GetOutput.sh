@@ -1,7 +1,7 @@
 #!bin/bash
 cwd2=$(pwd)
 
-cd /home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170224_074539_ProdHist_Systematic_Eff
+cd /home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170225_055458_ProdHist_Systematic_Eff
 cd Data; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
@@ -58,7 +58,7 @@ cd ZZ; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
 
-cd ttbarTo2L2Nu; source hadd_all.sh
+cd ttbar; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
 
