@@ -1,4 +1,5 @@
 import os
+import sys
 from ROOT import TFile, TH1D
 if not os.path.exists("./Local"):
 	os.mkdir( "./Local" )
@@ -18,6 +19,12 @@ for file in os.listdir("."):
 	if ext == ".root":
 		print "\t"+file
 		List_ROOTFile.append ( file )
+
+
+OutputFileName = "ROOTFile_Systematic_Eff.root"
+if OutputFileName in os.listdir("."):
+	print "%s is already exists! ... please check"
+	sys.exit()
 
 f_output = TFile("ROOTFile_Systematic_Eff.root", "RECREATE")
 
@@ -42,7 +49,7 @@ for ROOTFile in List_ROOTFile:
 		f_input.cd()
 
 	f_input.Close()
-	cmd_mv = "mv %s ./Local"
+	cmd_mv = "mv %s ./Local" % (ROOTFile)
 	print "\t"+cmd_mv
 	os.system(cmd_mv)
 
