@@ -430,6 +430,7 @@ public:
 	Double_t AbsTrkIso;
 	Double_t trkiso;
 	Double_t relPFiso;
+	Double_t RelPFIso_dBeta;
 
 	// -- Various Track Information -- //
 	Double_t Default_pT;
@@ -514,6 +515,9 @@ public:
 		Double_t pfNeutralIso = ntuple->Muon_PfNeutralHadronIsoR04[index];
 		Double_t pfGammaIso = ntuple->Muon_PfGammaIsoR04[index];
 		relPFiso = (pfChargedIso + pfNeutralIso + pfGammaIso) / ntuple->Muon_pT[index];
+
+		Double_t pfSumPUPt = ntuple->Muon_PFSumPUIsoR04[index];
+		this->RelPFIso_dBeta = ( pfChargedIso + max(0.0, pfNeutralIso + pfGammaIso - 0.5*pfSumPUPt) ) / this->Pt;
 
 		Double_t px = ntuple->Muon_Px[index];
 		Double_t py = ntuple->Muon_Py[index];
