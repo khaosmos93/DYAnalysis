@@ -15,8 +15,8 @@ List_DirName = []
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZ" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
 # List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
-List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
-List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
+List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbar" )
+List_DirName.append( "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarBackup" )
 
 
 for DirName in List_DirName:
