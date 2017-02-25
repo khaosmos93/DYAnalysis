@@ -1,4 +1,4 @@
-from ROOT import TFile, TH1D, TGraphAsymmErrors, TString, TLatex, TCanvas, TPad, TLegend, TColor, TF1, Double, kRed, kBlack, kWhite
+from ROOT import TFile, TH1, TH1D, TGraphAsymmErrors, TString, TLatex, TCanvas, TPad, TLegend, TColor, TF1, Double, kRed, kBlack, kWhite
 from math import sqrt
 from array import array
 
@@ -33,10 +33,10 @@ class HistInfo(BaseInfo):
 	h = None
 	h_ratio = None
 
-	def __init__(self, FileName, HistName, _color, _LegendName):
-		self.Color = _color
-		self.LegendName = _LegendName
-		self.Get_Histogram( FileName, HistName )
+	# def __init__(self, _FileName, _HistName, _color, _LegendName):
+	# 	self.Color = _color
+	# 	self.LegendName = _LegendName
+	# 	self.Get_Histogram( _FileName, _HistName )
 
 	def Get_Histogram(self, FileName, HistName):
 		self.h = Get_Hist( FileName, HistName )
@@ -50,13 +50,13 @@ class HistInfo(BaseInfo):
 		self.h.Sumw2()
 		h_DEN.Sumw2()
 		self.h_ratio = self.h.Clone()
-		self.h_ratio.Divide( h, h_DEN )
+		self.h_ratio.Divide( self.h, h_DEN )
 
 	def CalcRatio_NUM( self, h_NUM ):
 		self.h.Sumw2()
 		h_NUM.Sumw2()
 		self.h_ratio = self.h.Clone()
-		self.h_ratio.Divide( h_NUM, h )
+		self.h_ratio.Divide( h_NUM, self.h )
 
 	def Draw(self, DrawOp):
 		self.h.Draw( DrawOp )
