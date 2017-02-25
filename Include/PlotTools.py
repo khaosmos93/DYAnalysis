@@ -73,13 +73,16 @@ class GraphInfo(BaseInfo):
 	g = None
 	g_ratio = None
 
-	def __init__(self, FileName, GraphName, _color, _LegendName):
-		self.Color = _color
-		self.LegendName = _LegendName
-		self.Get_Graph( FileName, GraphName )
+	# def __init__(self, FileName, GraphName, _color, _LegendName):
+	# 	self.Color = _color
+	# 	self.LegendName = _LegendName
+	# 	self.Get_Graph( FileName, GraphName )
 
 	def Get_Graph( self, FileName, GraphName ):
 		self.g = Get_Graph( FileName, GraphName )
+
+	def Set_Graph( self, _g ):
+		self.g = _g.Clone()
 
 	def DrawGraph( self, DrawOp ):
 		self.g.Draw( DrawOp )

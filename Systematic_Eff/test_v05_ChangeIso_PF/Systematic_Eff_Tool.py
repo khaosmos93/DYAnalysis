@@ -108,6 +108,54 @@ class Tool_Systematic_Eff:
 		self.g_data = _EfficiencyGraph( "Data" )
 		self.g_MC = _EfficiencyGraph( "MC" )
 
+		Graph_MC = GraphInfo( kRed, "MC (DY)" )
+		Graph_MC.Set_Graph( self.g_MC )
+
+		Graph_Data = GraphInfo( kBlack, "Data (Bkg.Sub.)")
+		Graph_Data.Set_Graph( self.g_data )
+		Graph_Data.CalcRatio_DEN( Graph_MC.g )
+
+		CanvasName = "c_Eff_%s_%s_%s" % (self.DENStr, self.NUMStr, self.Region)
+
+		c, TopPad, BottomPad = Canvas_Ratio( c, CanvasName, 1, 0 )
+		c.cd()
+		TopPad.cd()
+
+		Graph_MC.DrawGraph("APSAME")
+		Graph_Data.DrawGraph("PSAME")
+
+		SetFormat_TopPad( Graph_MC.g, "Efficiency" )
+		Graph_MC.g.SetXaxis().SetRangeUser(0.7, 1.05)
+
+		legend = GetLegend()
+		legend.AddEntry( Graph_Data.g, Graph_Data.LegendName )
+		legend.AddEntry( Graph_MC.g, Graph_MC.LegendName )
+		legend.Draw()
+
+		latex = TLatex()
+		Latex_Preliminary( latex, self.Lumi, 13 )
+		Latex_Info( latex, "", self.Region )
+
+
+		c.cd()
+		BottomPad.cd()
+
+		Graph_Data.g_ratio.Draw("APSAME")
+		SetFormat_BottomPad( Graph_Data.g_ratio, "m [GeV}", "Data/MC", 0.6, 1.05 )
+
+		f_line = GetLine()
+		f_line.Draw("PSAME")
+
+		c.SaveAs(".pdf")
+
+
+
+
+
+
+
+
+
 	def _EfficiencyGraph( self, _DataType ):
 
 		h_DEN = None
@@ -130,14 +178,15 @@ class Tool_Systematic_Eff:
 
 		GraphName = "g_%s_%s_%s_%s" % (_DataType, self.DENStr, self.NUMStr, self.Region)
 
-		g_Eff = TEff.CreateGraph().Clone(GraphName);
+		g_Eff = TEff.CreateGraph().Clone(GraphName)
 
+		return g_Eff
 
 	def _RemoveUnderOverFlow( h ):
-		h.SetBinContent(0, 1);
-		h.SetBinError(0, 1);
-		h.SetBinContent( h.GetNbinsX()+1, 1);
-		h.SetBinError( h.GetNbinsX()+1, 1);
+		h.SetBinContent(0, 1)
+		h.SetBinError(0, 1)
+		h.SetBinContent( h.GetNbinsX()+1, 1)
+		h.SetBinError( h.GetNbinsX()+1, 1)
 
 	def _Rebin_Mass( h_before ):
 		_MassBinEdges = [60, 120, 200, 400, 600, 800, 1000, 2500]

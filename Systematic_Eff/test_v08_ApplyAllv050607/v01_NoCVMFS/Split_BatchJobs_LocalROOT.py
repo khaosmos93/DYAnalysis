@@ -112,7 +112,8 @@ class SplitJobs:
 		# print cmd_cp
 		os.system( cmd_cp )
 
-		cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'";
+		# cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'"
+		cmd_execute = ".x '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'"
 		print cmd_execute
 
 		BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
@@ -190,12 +191,19 @@ cwd=$(pwd)
 # -- local ROOT environment without CVMFS -- #
 source /share/apps/root_v5-34-32/root/bin/thisroot.sh
 
-# -- Include path -- #
-export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:/home/kplee/Physics/
-
 cd ${{cwd}}
 
+root -l -b << EOF
+
+.include /home/kplee/Physics/ZprimeAnalysis_80X
+
+.include
+
 {_cmd_execute}
+
+.q
+
+EOF
 
 echo "job is completed"
 
