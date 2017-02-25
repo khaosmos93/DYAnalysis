@@ -113,7 +113,7 @@ class SplitJobs:
 		os.system( cmd_cp )
 
 		# cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'"
-		cmd_execute = ".x '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'"
+		cmd_execute = ".x "+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor)
 		print cmd_execute
 
 		BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
@@ -195,7 +195,7 @@ cd ${{cwd}}
 
 root -l -b << EOF
 
-.include /home/kplee/Physics/ZprimeAnalysis_80X
+.include /home/kplee/Physics/
 
 .include
 
