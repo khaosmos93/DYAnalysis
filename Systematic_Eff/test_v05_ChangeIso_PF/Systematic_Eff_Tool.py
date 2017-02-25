@@ -23,7 +23,7 @@ import sys
 sys.path.append( IncludePath )
 ###############################################################
 from PlotTools import *
-from ROOT import THStack, kPink, kYellow, kBlue
+from ROOT import TEfficiency, THStack, kPink, kYellow, kBlue
 
 def Latex_Info( latex, Type, region ):
 	TStr_Type = ""
@@ -103,6 +103,47 @@ class Tool_Systematic_Eff:
 	def DrawCanvas_Mass_All( self ):
 		self._DrawCanvas_Mass( self.DENStr, self.Region )
 		self._DrawCanvas_Mass( self.NUMStr, self.Region )
+
+	def DrawCanvas_Eff_Data_vs_MC( self ):
+		self.g_data = _EfficiencyGraph( "Data" )
+		self.g_MC = _EfficiencyGraph( "MC" )
+
+	def _EfficiencyGraph( self, _DataType ):
+
+		h_DEN = None
+		h_NUM = None
+
+		if _DataType == "Data":
+			h_DEN = h_data_DEN_BkgSub.Clone()
+			h_NUM = h_data_NUM_BkgSub.Clone()
+		elif _DataType == "MC":
+			h_DEN = h_DY_DEN.Clone()
+			h_NUM = h_DY_NUM.Clone()
+
+		h_DEN = self._Rebin_Mass( h_DEN )
+		h_NUM = self._Rebin_Mass( h_NUM )
+
+		self._RemoveUnderOverFlow( h_DEN )
+		self._RemoveUnderOverFlow( h_NUM )
+
+		TEff = TEfficiency(h_NUM, h_DEN);
+
+		GraphName = "g_%s_%s_%s_%s" % (_DataType, self.DENStr, self.NUMStr, self.Region)
+
+		g_Eff = TEff.CreateGraph().Clone(GraphName);
+
+
+	def _RemoveUnderOverFlow( h ):
+		h.SetBinContent(0, 1);
+		h.SetBinError(0, 1);
+		h.SetBinContent( h.GetNbinsX()+1, 1);
+		h.SetBinError( h.GetNbinsX()+1, 1);
+
+	def _Rebin_Mass( h_before ):
+		_MassBinEdges = [60, 120, 200, 400, 600, 800, 1000, 2500]
+		Arr_MassBinEdges = array("d", _MassBinEdges)
+
+		return h_before.Rebin( len(_MassBinEdges)-1, h_before.GetName(), Arr_MassBinEdges)
 
 	def _Init( self ):
 		self.i_canvas = 0
@@ -260,6 +301,29 @@ class Tool_Systematic_Eff:
 		f_line.Draw("PSAME")
 
 		c.SaveAs(".pdf")
+
+		if _DENNUMTYPE == self.DENStr:
+			self.h_DY_DEN = Hist_DY.h.Clone()
+			self.h_data_DEN_BkgSub = self._BackgroundSubtraction( Hist_data.h, Hist_top.h, Hist_diboson.h )
+
+		else _DENNUMTYPE == self.NUMStr:
+			self.h_DY_NUM = Hist_DY.h.Clone()
+			self.h_data_NUM_BkgSub = self._BackgroundSubtraction( Hist_data.h, Hist_top.h, Hist_diboson.h )
+
+	def _BackgroundSubtraction( self, h_data, h_top, h_diboson ):
+		HistName = h_data.GetName()
+		HistName = HistName + "_BkgSub"
+
+		h_BkgSub = h_data.Clone(HistName)
+
+		h_BkgSub.Sumw2()
+		h_top.Sumw2()
+		h_diboson.Sumw2()
+
+		h_BkgSub.Add( h_top, -1 )
+		h_BkgSub.Add( h_diboson, -1 )
+
+		return h_BkgSub
 
 	def _SF_Zpeak_DirectlyExtracted( self, h_data, h_DY, h_top, h_diboson ):
 		h_totMC = h_DY.Clone()
