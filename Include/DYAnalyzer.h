@@ -20,7 +20,7 @@
 TString GetBasePath()
 {
 	TString BasePath = gSystem->Getenv("KP_ANALYZER_PATH");
-	return BasePath;
+	return BasePath + "/";
 }
 
 class DYAnalyzer
