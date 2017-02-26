@@ -229,7 +229,7 @@ protected:
 		Hist_DY->h->SetFillColorAlpha( Hist_DY->Color, 1 );
 
 		// -- ttbar + tW + tbarW -- //
-		TH1D* h_ttbar = Get_Hist( this->InputFileName, "ttbar/"+HistName_MC);
+		TH1D* h_ttbar = Get_Hist( this->InputFileName, "ttbarTo2L2Nu/"+HistName_MC);
 		TH1D* h_tW = Get_Hist( this->InputFileName, "tW/"+HistName_MC );
 		TH1D* h_tbarW = Get_Hist( this->InputFileName, "tbarW/"+HistName_MC );
 
