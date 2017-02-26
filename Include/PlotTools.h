@@ -11,6 +11,18 @@
 
 #include <vector>
 
+TGraphAsymmErrors* Get_Graph(TString FileName, TString GraphName, TString GraphName_New = "" )
+{
+	TFile *f_input = TFile::Open( FileName );
+	TGraphAsymmErrors* g_temp = (TGraphAsymmErrors*)f_input->Get(GraphName)->Clone();
+	if( GraphName_New != "" )
+		g_temp->SetName( GraphName_New );
+
+	f_input->Close();
+
+	return g_temp;
+}
+
 
 class BaseInfo
 {
@@ -188,13 +200,18 @@ public:
 	void Set()
 	{
 		if( g == NULL )
-			this->Get_Graph();
+			this->g = Get_Graph( this->FileName, this->ObjectName );
 		// this->Set_Attributes(); // -- Attributes for Graph shuold be set after drawing it -- //
 	}
 
 	void Set_Graph( TGraphAsymmErrors* _g )
 	{
 		this->g = (TGraphAsymmErrors*)_g->Clone();
+	}
+
+	void Set_Graph( TString _FileName, TString _GraphName )
+	{
+		this->g = Get_Graph( _FileName, _GraphName );
 	}
 
 	void DrawGraph( TString DrawOp )
@@ -209,6 +226,7 @@ public:
 
 		this->g->SetLineColor( this->Color );
 		this->g->SetMarkerStyle( 20 );
+		this->g->SetMarkerSize( 1.5 );
 		this->g->SetMarkerColor( this->Color );
 		this->g->SetFillColorAlpha( kWhite, 0 );
 
@@ -258,22 +276,6 @@ public:
 	}
 
 protected:
-	void Get_Graph()
-	{
-		if( this->FileName == "" || this->ObjectName == "" )
-		{
-			printf( "[FileName, ObjectName] = [%s, %s] ... at least one of them is not set yet", this->FileName.Data(), this->ObjectName.Data() );
-			return;
-		}
-
-		TFile *f_input = TFile::Open( this->FileName );
-		f_input->cd();
-
-		this->g = (TGraphAsymmErrors*)f_input->Get( this->ObjectName )->Clone();
-
-		f_input->Close();
-	}
-
 	TGraphAsymmErrors* MakeRatioGraph(TGraphAsymmErrors *g_Type1, TGraphAsymmErrors *g_Type2)
 	{
 		g_ratio = (TGraphAsymmErrors*)g_Type2->Clone();
@@ -556,7 +558,7 @@ void Print_Histogram( TH1D* h )
 	printf("\n\n");
 }
 
-void SetLegend( TLegend *& legend, Double_t xMin = 0.75, Double_t yMin = 0.75, Double_t xMax = 0.95, Double_t yMax = 0.95 )
+void SetLegend( TLegend *& legend, Double_t xMin = 0.65, Double_t yMin = 0.80, Double_t xMax = 0.95, Double_t yMax = 0.95 )
 {
 	legend = new TLegend( xMin, yMin, xMax, yMax );
 	legend->SetFillStyle(0);
@@ -569,14 +571,28 @@ TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
 	TH1::AddDirectory(kFALSE);
 
 	TFile *f_input = TFile::Open( FileName );
-	TH1D* h_temp = (TH1D*)f_input->Get(HistName)->Clone();
+	if( f_input->IsZombie() )
+	{
+		printf("There is no file corresponding to %s\n", FileName.Data() );
+		return NULL;
+	}
+	TH1D* h_temp = (TH1D*)f_input->Get(HistName);
+	if( h_temp == NULL )
+	{
+		printf("There is no histogram corresponding to %s in %s\n", HistName.Data(), FileName.Data() );
+		return h_temp;
+	}
+
+	TH1D* h_return = (TH1D*)h_temp->Clone();
+
 	if( HistName_New != "" )
-		h_temp->SetName( HistName_New );
+		h_return->SetName( HistName_New );
 
 	f_input->Close();
 
-	return h_temp;
+	return h_return;
 }
+
 
 TH1D* QuadSum_NoError( TH1D* h1, TH1D* h2 )
 {
