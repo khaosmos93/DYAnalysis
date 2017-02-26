@@ -22,7 +22,7 @@ then
 
 	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src
 	eval `scramv1 runtime -sh`
-	#cmsenv
+	#cmsenv # -- this doesn't work. why?? -- #
 	cd $KP_ANALYZER_PATH
 else
 	echo "WARNING: ntuples are not available in this machine"
