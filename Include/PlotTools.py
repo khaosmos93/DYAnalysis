@@ -303,3 +303,24 @@ def GetLegend( xMin = 0.75, yMin = 0.75, xMax = 0.95, yMax = 0.95 ):
 	legend.SetTextFont(62)
 
 	return legend
+
+
+def Print_Histogram( h ):
+	h.Print()
+	nBin = h.GetNbinsX()
+	for i in range(0, nBin):
+		i_bin = i+1
+		LowerEdge = h.GetBinLowEdge(i_bin)
+		UpperEdge = h.GetBinLowEdge(i_bin+1)
+
+		value = h.GetBinContent(i_bin)
+		errorAbs = h.GetBinError(i_bin)
+
+		if value != 0:
+			errorRel = errorAbs / value
+		else:
+			errorRel = 0
+
+		print "%02d bin: [%6.1lf, %6.1lf] (value, error) = (%lf, %lf (%7.3lf %%))" % (i_bin, LowerEdge, UpperEdge, value, errorAbs, errorRel*100)
+
+	print "\n\n"

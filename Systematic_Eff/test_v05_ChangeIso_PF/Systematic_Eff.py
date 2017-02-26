@@ -18,7 +18,11 @@ for DEN, NUM in List_DENNUM:
 
 		tool.DrawCanvas_Mass_All()
 
+		tool.DrawCanvas_Eff_Data_vs_MC()
 
+		f_output.cd()
+		tool.g_data.Write()
+		tool.g_MC.Write()
 
 
 

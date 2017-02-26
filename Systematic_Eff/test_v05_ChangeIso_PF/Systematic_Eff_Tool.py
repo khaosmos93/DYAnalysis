@@ -105,8 +105,8 @@ class Tool_Systematic_Eff:
 		self._DrawCanvas_Mass( self.NUMStr, self.Region )
 
 	def DrawCanvas_Eff_Data_vs_MC( self ):
-		self.g_data = _EfficiencyGraph( "Data" )
-		self.g_MC = _EfficiencyGraph( "MC" )
+		self.g_data = self._EfficiencyGraph( "Data" )
+		self.g_MC = self._EfficiencyGraph( "MC" )
 
 		Graph_MC = GraphInfo( kRed, "MC (DY)" )
 		Graph_MC.Set_Graph( self.g_MC )
@@ -117,7 +117,7 @@ class Tool_Systematic_Eff:
 
 		CanvasName = "c_Eff_%s_%s_%s" % (self.DENStr, self.NUMStr, self.Region)
 
-		c, TopPad, BottomPad = Canvas_Ratio( c, CanvasName, 1, 0 )
+		c, TopPad, BottomPad = Canvas_Ratio( CanvasName )
 		c.cd()
 		TopPad.cd()
 
@@ -125,7 +125,7 @@ class Tool_Systematic_Eff:
 		Graph_Data.DrawGraph("PSAME")
 
 		SetFormat_TopPad( Graph_MC.g, "Efficiency" )
-		Graph_MC.g.SetXaxis().SetRangeUser(0.7, 1.05)
+		Graph_MC.g.GetYaxis().SetRangeUser(0.7, 1.05)
 
 		legend = GetLegend()
 		legend.AddEntry( Graph_Data.g, Graph_Data.LegendName )
@@ -148,25 +148,17 @@ class Tool_Systematic_Eff:
 
 		c.SaveAs(".pdf")
 
-
-
-
-
-
-
-
-
 	def _EfficiencyGraph( self, _DataType ):
 
 		h_DEN = None
 		h_NUM = None
 
 		if _DataType == "Data":
-			h_DEN = h_data_DEN_BkgSub.Clone()
-			h_NUM = h_data_NUM_BkgSub.Clone()
+			h_DEN = self.h_data_DEN_BkgSub.Clone()
+			h_NUM = self.h_data_NUM_BkgSub.Clone()
 		elif _DataType == "MC":
-			h_DEN = h_DY_DEN.Clone()
-			h_NUM = h_DY_NUM.Clone()
+			h_DEN = self.h_DY_DEN.Clone()
+			h_NUM = self.h_DY_NUM.Clone()
 
 		h_DEN = self._Rebin_Mass( h_DEN )
 		h_NUM = self._Rebin_Mass( h_NUM )
@@ -182,13 +174,13 @@ class Tool_Systematic_Eff:
 
 		return g_Eff
 
-	def _RemoveUnderOverFlow( h ):
+	def _RemoveUnderOverFlow( self, h ):
 		h.SetBinContent(0, 1)
 		h.SetBinError(0, 1)
 		h.SetBinContent( h.GetNbinsX()+1, 1)
 		h.SetBinError( h.GetNbinsX()+1, 1)
 
-	def _Rebin_Mass( h_before ):
+	def _Rebin_Mass( self, h_before ):
 		_MassBinEdges = [60, 120, 200, 400, 600, 800, 1000, 2500]
 		Arr_MassBinEdges = array("d", _MassBinEdges)
 
@@ -355,15 +347,20 @@ class Tool_Systematic_Eff:
 			self.h_DY_DEN = Hist_DY.h.Clone()
 			self.h_data_DEN_BkgSub = self._BackgroundSubtraction( Hist_data.h, Hist_top.h, Hist_diboson.h )
 
-		else _DENNUMTYPE == self.NUMStr:
+		elif _DENNUMTYPE == self.NUMStr:
 			self.h_DY_NUM = Hist_DY.h.Clone()
 			self.h_data_NUM_BkgSub = self._BackgroundSubtraction( Hist_data.h, Hist_top.h, Hist_diboson.h )
 
 	def _BackgroundSubtraction( self, h_data, h_top, h_diboson ):
 		HistName = h_data.GetName()
 		HistName = HistName + "_BkgSub"
+		print HistName
+
+		Print_Histogram( h_data )
 
 		h_BkgSub = h_data.Clone(HistName)
+
+		Print_Histogram( h_BkgSub )
 
 		h_BkgSub.Sumw2()
 		h_top.Sumw2()
