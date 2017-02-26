@@ -118,7 +118,7 @@ class SplitJobs:
 		BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
 
 		cmd_cd = "cd ${cwd}/%s" % (DirName)
-		cmd_sub = "qsub -q %s %s" % (self.queue, BatchFileName)
+		cmd_sub = "qsub -V -q %s %s" % (self.queue, BatchFileName)
 		List_cmd_qsub.append( [cmd_cd, cmd_sub] )
 
 		cmd_hadd = "${cwd}/%s/*.root \\" % (DirName)
