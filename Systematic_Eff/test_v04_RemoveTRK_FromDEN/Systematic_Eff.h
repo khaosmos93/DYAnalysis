@@ -1,4 +1,5 @@
 #include "ZprimeAnalysis_80X/Include/PlotTools.h"
+#include <fstream>
 
 // -- AN2016_391_v5, Table 11 -- //
 Double_t SF_Zpeak( TString region )
@@ -20,7 +21,7 @@ Double_t SF_Zpeak( TString region )
 void Latex_Info( TLatex &latex, TString Type, TString region )
 {
 	TString TStr_Type = "";
-	if( Type == "DEN" ) TStr_Type = "Denominator";
+	if( Type.Contains("DEN") ) TStr_Type = "Denominator";
 	else if( Type == "" ) TStr_Type = "";
 	else TStr_Type = "Numerator";
 
@@ -36,12 +37,15 @@ void Latex_Info( TLatex &latex, TString Type, TString region )
 class Tool_Systematic_Eff
 {
 public:
-	Int_t i_canvas;
+	Int_t *i_canvas;
+	TString InputFileName;
 	TFile *f_output;
 
 	TString DENStr;
 	TString NUMStr;
 	TString Region;
+
+	TString Legend_Data;
 
 	TH1D* h_data_DEN_BkgSub;
 	TH1D* h_data_NUM_BkgSub;
@@ -49,12 +53,42 @@ public:
 	TH1D* h_DY_DEN;
 	TH1D* h_DY_NUM;
 
+	Double_t Lumi;
+	Double_t Lumi_Total;
+	Double_t Lumi_RunBtoF;
+	Double_t Lumi_RunGtoH;
+	Double_t Lumi_Scale;
+
+	Bool_t isRunBtoF;
+	Bool_t isRunGtoH;
+
 	TGraphAsymmErrors* g_data;
 	TGraphAsymmErrors* g_MC;
 
+	ofstream *outFile;
+
 	Tool_Systematic_Eff()
 	{
-		i_canvas = 0;
+		this->Lumi = 0;
+		this->Lumi_Total = 35867.060;
+		this->Lumi_RunBtoF = 19720.882;
+		this->Lumi_RunGtoH = 16146.178;
+
+	}
+
+	void Set_OutFile( ofstream *_outFile )
+	{
+		this->outFile = _outFile;
+	}
+
+	void Set_iCanvas( Int_t *_i_canvas )
+	{
+		this->i_canvas = _i_canvas;
+	}
+
+	void Set_InputFileName( TString _InputFileName )
+	{
+		this->InputFileName = _InputFileName;
 	}
 
 	void Set_Output( TFile *_f_output )
@@ -66,6 +100,30 @@ public:
 	{
 		this->DENStr = _DENStr;
 		this->NUMStr = _NUMStr;
+
+		this->isRunBtoF = kFALSE;
+		this->isRunGtoH = kFALSE;
+
+		if( this->DENStr.Contains("RunBtoF") )
+		{
+			this->isRunBtoF = kTRUE;
+			this->Lumi = this->Lumi_RunBtoF;
+			this->Lumi_Scale = this->Lumi_RunBtoF / this->Lumi_Total;
+			this->Legend_Data = "Data, RunB-F";
+		}
+		else if( this->DENStr.Contains("RunGtoH") )
+		{
+			this->isRunGtoH = kTRUE;
+			this->Lumi = this->Lumi_RunGtoH;
+			this->Lumi_Scale = this->Lumi_RunGtoH / this->Lumi_Total;
+			this->Legend_Data = "Data, RunG-H";
+		}
+		else
+		{
+			this->Lumi = this->Lumi_Total;
+			this->Lumi_Scale = 1.0;
+			this->Legend_Data = "Data";
+		}
 	}
 
 	void Set_Region( TString _Region )
@@ -87,7 +145,7 @@ public:
 		GraphInfo *Graph_MC = new GraphInfo( kRed, "MC (DY)" );
 		Graph_MC->Set_Graph( this->g_MC );
 
-		GraphInfo *Graph_data = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+		GraphInfo *Graph_data = new GraphInfo( kBlack, this->Legend_Data + " (Bkg.Sub.)" );
 		Graph_data->Set_Graph( this->g_data );
 		Graph_data->Calc_RatioGraph_Denominator( Graph_MC->g );
 
@@ -102,13 +160,13 @@ public:
 		Graph_data->DrawGraph( "PSAME" );
 
 		SetGraphFormat_TopPad( Graph_MC->g, "Efficiency" );
-		Graph_MC->g->GetYaxis()->SetRangeUser( 0.83, 1.05 );
+		Graph_MC->g->GetYaxis()->SetRangeUser( 0.2, 1.05 );
 
 		Graph_MC->g->SetMarkerSize(1.5);
 		Graph_data->g->SetMarkerSize(1.5);
 
 		TLegend *legend;
-		SetLegend( legend, 0.15, 0.30, 0.45, 0.45);
+		SetLegend( legend, 0.15, 0.30, 0.50, 0.45);
 
 		legend->AddEntry( Graph_data->g, Graph_data->LegendName );
 		legend->AddEntry( Graph_MC->g, Graph_MC->LegendName );
@@ -116,14 +174,15 @@ public:
 		legend->Draw();
 
 		TLatex latex;
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, this->Lumi / 1000.0, 13 );
 		Latex_Info( latex, "", this->Region );
 
 		c->cd();
 		BottomPad->cd();
 
 		Graph_data->g_ratio->Draw("APSAME");
-		SetGraphFormat_BottomPad( Graph_data->g_ratio, "m [GeV]", "Data/MC", 0.8, 1.05 );
+		SetGraphFormat_BottomPad( Graph_data->g_ratio, "m [GeV]", "Data/MC", 0.6, 1.1 );
+		Graph_data->g_ratio->GetYaxis()->SetNdivisions(505);
 
 		Graph_data->g_ratio->SetMarkerSize(1.5);
 
@@ -138,37 +197,41 @@ public:
 protected:
 	void DrawCanvas_EachTypeAndRegion( TString Type, TString region )
 	{
-		// if( !(Type == "DEN" || Type == "NUM") )
-		// {
-		// 	printf("[%s is not correct Type]\n", Type.Data() );
-		// 	return;
-		// }
-
 		if( !(region == "All" || region == "BB" || region == "BEEE" ) )
 		{
 			printf("[%s is not correct region]\n", region.Data() );
 			return;
 		}
 
-		TString HistName = TString::Format("h_mass_%s_%s", region.Data(), Type.Data());
+		TString HistName_Base = TString::Format("h_mass_%s", region.Data());
 		if( region == "All" )
-			HistName = TString::Format("h_mass_%s", Type.Data());
+			HistName_Base = "h_mass";
 
-		TH1D* h_data = Get_Hist( "ROOTFile_Data.root", HistName );
-		HistInfo *Hist_data = new HistInfo( kBlack, "Data" );
+		TString HistName_Data = TString::Format( "%s_%s", HistName_Base.Data(), Type.Data() );
+		TString HistName_MC = HistName_Data;
+		if( this->isRunBtoF || this->isRunGtoH )
+		{
+			TString TStr_Type = "";
+			if( Type.Contains("DEN") ) TStr_Type = "DEN";
+			if( Type.Contains("NUM") ) TStr_Type = "NUM";
+			HistName_MC = TString::Format( "%s_%s", HistName_Base.Data(), TStr_Type.Data() );
+		}
+
+		TH1D* h_data = Get_Hist( this->InputFileName, "Data/"+HistName_Data );
+		HistInfo *Hist_data = new HistInfo( kBlack, this->Legend_Data );
 		Hist_data->Set_Histogram( h_data );
 		Hist_data->Set();
 
-		TH1D* h_DY = Get_Hist( "ROOTFile_DYPowheg.root", HistName );
+		TH1D* h_DY = Get_Hist( this->InputFileName, "DYPowheg/"+HistName_MC );
 		HistInfo *Hist_DY = new HistInfo( kPink, "Z/#gamma*#rightarrow#mu#mu" );
 		Hist_DY->Set_Histogram( h_DY );
 		Hist_DY->Set();
 		Hist_DY->h->SetFillColorAlpha( Hist_DY->Color, 1 );
 
 		// -- ttbar + tW + tbarW -- //
-		TH1D* h_ttbar = Get_Hist( "ROOTFile_ttbarTo2L2Nu.root", HistName);
-		TH1D* h_tW = Get_Hist( "ROOTFile_tW.root", HistName );
-		TH1D* h_tbarW = Get_Hist( "ROOTFile_tbarW.root", HistName );
+		TH1D* h_ttbar = Get_Hist( this->InputFileName, "ttbarTo2L2Nu/"+HistName_MC);
+		TH1D* h_tW = Get_Hist( this->InputFileName, "tW/"+HistName_MC );
+		TH1D* h_tbarW = Get_Hist( this->InputFileName, "tbarW/"+HistName_MC );
 
 		TH1D* h_top = (TH1D*)h_ttbar->Clone(); h_top->Sumw2();
 		h_top->Add( h_tW );
@@ -180,9 +243,9 @@ protected:
 		Hist_top->h->SetFillColorAlpha( Hist_top->Color, 1 );
 
 		// -- dibosons -- //
-		TH1D* h_WW = Get_Hist("ROOTFile_WWTo2L2Nu.root", HistName );
-		TH1D* h_WZ = Get_Hist("ROOTFile_WZ.root", HistName );
-		TH1D* h_ZZ = Get_Hist("ROOTFile_ZZ.root", HistName );
+		TH1D* h_WW = Get_Hist(this->InputFileName, "WWTo2L2Nu/"+HistName_MC );
+		TH1D* h_WZ = Get_Hist(this->InputFileName, "WZ/"+HistName_MC );
+		TH1D* h_ZZ = Get_Hist(this->InputFileName, "ZZ/"+HistName_MC );
 
 		TH1D* h_diboson = (TH1D*)h_WW->Clone(); h_diboson->Sumw2();
 		h_diboson->Add( h_WZ );
@@ -192,6 +255,11 @@ protected:
 		Hist_diboson->Set_Histogram( h_diboson );
 		Hist_diboson->Set();
 		Hist_diboson->h->SetFillColorAlpha( Hist_diboson->Color, 1 );
+
+		// -- scale dowwn if it is RunB-F or RunG-H -- //
+		Hist_DY->h->Scale( this->Lumi_Scale );
+		Hist_top->h->Scale( this->Lumi_Scale );
+		Hist_diboson->h->Scale( this->Lumi_Scale );
 
 		// -- rebin -- //
 		Int_t RebinSize = 50;
@@ -229,7 +297,7 @@ protected:
 
 		// -- draw canvas -- //
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
-		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", i_canvas, Type.Data(), region.Data() ); i_canvas++;
+		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", *i_canvas, Type.Data(), region.Data() ); (*i_canvas)++;
 		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
 
 		c->cd();
@@ -247,7 +315,7 @@ protected:
 		h_format->GetYaxis()->SetRangeUser(1e-3, 1e7);
 
 		TLegend *legend;
-		SetLegend( legend, 0.75, 0.75, 0.95, 0.95 );
+		SetLegend( legend, 0.65, 0.80, 0.95, 0.95 );
 		legend->SetTextFont(62);
 		legend->AddEntry( Hist_data->h, Hist_data->LegendName );
 		legend->AddEntry( Hist_DY->h, Hist_DY->LegendName );
@@ -256,7 +324,7 @@ protected:
 		legend->Draw();
 
 		TLatex latex;
-		Latex_Preliminary( latex, 35.9, 13 );
+		Latex_Preliminary( latex, this->Lumi / 1000.0, 13 );
 		Latex_Info( latex, Type, region );
 
 		c->cd();
@@ -362,8 +430,8 @@ protected:
 		Double_t nEvent_MC = this->nEvent_Zpeak( h_totMC );
 		Double_t SF = nEvent_Data / nEvent_MC;
 
-		printf( "[%s, %s]\n", Type.Data(), this->Region.Data() );
-		printf( "[# events in Zpeak: (data, MC) = (%.0lf, %.0lf)] -> SF = %lf\n", nEvent_Data, nEvent_MC, SF );
+		*this->outFile << TString::Format("[%s, %s]", Type.Data(), this->Region.Data()) << endl;
+		*this->outFile << TString::Format("[# events in Zpeak: (data, MC) = (%.0lf, %.0lf)] -> SF = %lf\n", nEvent_Data, nEvent_MC, SF) << endl;
 
 		return SF;
 	}

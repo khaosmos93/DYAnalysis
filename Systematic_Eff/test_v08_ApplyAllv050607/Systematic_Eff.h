@@ -21,7 +21,7 @@ Double_t SF_Zpeak( TString region )
 void Latex_Info( TLatex &latex, TString Type, TString region )
 {
 	TString TStr_Type = "";
-	if( Type == "DEN" ) TStr_Type = "Denominator";
+	if( Type.Contains("DEN") ) TStr_Type = "Denominator";
 	else if( Type == "" ) TStr_Type = "";
 	else TStr_Type = "Numerator";
 

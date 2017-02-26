@@ -19,11 +19,11 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-// #include <ZprimeAnalysis_80X/Include/rochcor80x_070616v2/RoccoR.cc>
-// #include <ZprimeAnalysis_80X/Include/rochcor80x_070616v2/rochcor2016.cc>
+// #include <Include/rochcor80x_070616v2/RoccoR.cc>
+// #include <Include/rochcor80x_070616v2/rochcor2016.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <ZprimeAnalysis_80X/Include/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 
 class HistContainer
 {
@@ -124,9 +124,17 @@ public:
 		ntuple->TurnOnBranches_Muon();
 		if( this->isMC )
 			ntuple->TurnOnBranches_GenLepton();
+		ntuple->Ready();
 
 		HistContainer *Hist_DEN = new HistContainer( "DEN" );
 		HistContainer *Hist_NUM = new HistContainer( "NUM" );
+
+		// -- only for the data -- //
+		HistContainer *Hist_DEN_RunBtoF = new HistContainer( "DEN_RunBtoF" );
+		HistContainer *Hist_NUM_RunBtoF = new HistContainer( "NUM_RunBtoF" );
+
+		HistContainer *Hist_DEN_RunGtoH = new HistContainer( "DEN_RunGtoH" );
+		HistContainer *Hist_NUM_RunGtoH = new HistContainer( "NUM_RunGtoH" );
 
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
@@ -189,7 +197,7 @@ public:
 						{
 							QMuonCollection_DEN.push_back( MuonCollection[j] );
 
-							if( MuonCollection[j].isMuon_ZprimeICHEP2016_MuStationCutAorB() )
+							if( this->isMuon_NUM( MuonCollection[j] ) )
 								QMuonCollection_NUM.push_back( MuonCollection[j] );
 						}
 					}
@@ -201,6 +209,14 @@ public:
 						Muon mu1 = SelectedMuonCollection_DEN[0];
 						Muon mu2 = SelectedMuonCollection_DEN[1];
 						Hist_DEN->Fill( mu1, mu2, TotWeight);
+
+						if( !isMC ) // -- data -- //
+						{
+							if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
+								Hist_DEN_RunBtoF->Fill( mu1, mu2, TotWeight );
+							else
+								Hist_DEN_RunGtoH->Fill( mu1, mu2, TotWeight );
+						}
 					}
 
 					vector< Muon > SelectedMuonCollection_NUM;
@@ -210,6 +226,14 @@ public:
 						Muon mu1 = SelectedMuonCollection_NUM[0];
 						Muon mu2 = SelectedMuonCollection_NUM[1];
 						Hist_NUM->Fill( mu1, mu2, TotWeight);
+
+						if( !isMC ) // -- data -- //
+						{
+							if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
+								Hist_NUM_RunBtoF->Fill( mu1, mu2, TotWeight );
+							else
+								Hist_NUM_RunGtoH->Fill( mu1, mu2, TotWeight );
+						}
 					}
 
 				} // -- end of if( ntuple->isTriggered( analyzer->HLT ) ) -- //
@@ -222,6 +246,15 @@ public:
 
 		Hist_DEN->Save( f_output );
 		Hist_NUM->Save( f_output );
+
+		if( !isMC )
+		{
+			Hist_DEN_RunBtoF->Save( f_output );
+			Hist_NUM_RunBtoF->Save( f_output );
+
+			Hist_DEN_RunGtoH->Save( f_output );
+			Hist_NUM_RunGtoH->Save( f_output );
+		}
 
 		Double_t TotalRunTime = totaltime.CpuTime();
 		cout << "\tTotal RunTime(" << this->Tag << "): " << TotalRunTime << " seconds\n" << endl;
@@ -238,8 +271,29 @@ protected:
 
 	Bool_t isMuon_DEN( Muon mu )
 	{
-		if( mu.isTRK == 1
-			&& mu.isGLB == 1
+		if( mu.isGLB == 1
+			&& mu.isTRK == 1
+			&& (mu.AbsTrkIso / mu.Inner_pT) < 0.1
+			&& mu.TuneP_pT > 53
+			)
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	Bool_t isMuon_NUM( Muon mu )
+	{
+		if( mu.isGLB == 1
+			&& mu.isTRK == 1
+			&& fabs(mu.dB) < 0.2
+			&& mu.trackerLayersGLB > 5
+			&& mu.pixelHitsGLB > 0
+			&& mu.muonHits > 0
+			&& (  mu.nMatches > 1 
+				|| ( mu.nMatches==1 && !(mu.stationMask==1 || mu.stationMask==16) )
+				|| ( mu.nMatches==1 && (mu.stationMask==1 || mu.stationMask==16) && mu.nMatchesRPCLayers > 2 )  )
+			&& (mu.TuneP_pTError / mu.TuneP_pT ) < 0.3
 			&& (mu.AbsTrkIso / mu.Inner_pT) < 0.1
 			&& mu.TuneP_pT > 53
 			)
