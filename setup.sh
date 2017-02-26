@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 if [ $KP_ANALYZER_PATH ]; then
     echo "KP_ANALYZER_PATH is already defined: use a clean shell!"
@@ -21,8 +21,8 @@ then
 	source $VO_CMS_SW_DIR/cmsset_default.sh
 
 	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src
-	cmsenv
-	cmsenv
+	eval `scramv1 runtime -sh`
+	#cmsenv
 	cd $KP_ANALYZER_PATH
 else
 	echo "WARNING: ntuples are not available in this machine"
