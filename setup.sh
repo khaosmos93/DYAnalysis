@@ -20,7 +20,7 @@ then
 	export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 	source $VO_CMS_SW_DIR/cmsset_default.sh
 
-	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13; cmsenv;
+	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src; cmsenv;
 	cd $KP_ANALYZER_PATH
 else
 	echo "WARNING: ntuples are not available in this machine"
