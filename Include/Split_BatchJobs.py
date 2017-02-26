@@ -187,8 +187,6 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13
 cmsenv
 
-export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:/home/kplee/Physics/
-
 cd ${{cwd}}
 
 {_cmd_execute}
