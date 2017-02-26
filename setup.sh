@@ -14,6 +14,14 @@ export KP_DATA_PATH=""
 if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
 then 
 	KP_DATA_PATH="/data4/Users/kplee/DYntuple/"
+	
+	# -- cmssw setup (for ROOT6) -- #
+	export SCRAM_ARCH=slc6_amd64_gcc530
+	export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+	source $VO_CMS_SW_DIR/cmsset_default.sh
+
+	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13; cmsenv;
+	cd $KP_ANALYZER_PATH
 else
 	echo "WARNING: ntuples are not available in this machine"
 fi
