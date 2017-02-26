@@ -84,7 +84,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
 		TChain *chain = new TChain("recoTree/DYTree");
-		chain->Add(BaseLocation + ntupleDirectory[i_tup]+"/ntuple_*.root");
+		chain->Add(BaseLocation + "/" + ntupleDirectory[i_tup]+"/ntuple_*.root");
 		if( Tag[i_tup] == "Data" && Type == "Golden" )
 		{
 			// -- Run2015D -- // 
@@ -92,7 +92,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 		else if( Tag[i_tup] == "Data" && Type == "MuonPhys" )
 		{
 			// -- Run2015D -- // 
-			chain->Add(BaseLocation+"76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
+			chain->Add(BaseLocation+"/76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
 		}
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_GenLepton();

@@ -13,7 +13,7 @@ export ROOT_INCLUDE_PATH=${KP_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 export KP_DATA_PATH=""
 if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
 then 
-	KP_DATA_PATH="/data4/Users/kplee/DYntuple/"
+	KP_DATA_PATH="/data4/Users/kplee/DYntuple"
 	
 	# -- cmssw setup (for ROOT6) -- #
 	export SCRAM_ARCH=slc6_amd64_gcc530
