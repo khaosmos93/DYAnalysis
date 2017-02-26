@@ -20,12 +20,12 @@
 #include <TMath.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include </DYAnalysis_76X/Include/RochesterMomCorr_76X/RoccoR.cc>
-#include </DYAnalysis_76X/Include/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include </DYAnalysis_76X/Include/DYAnalyzer.h>
-#include </DYAnalysis_76X/Include/ControlPlots.h>
+#include <Include/DYAnalyzer.h>
+#include <Include/ControlPlots.h>
 
 static inline void loadBar(int x, int n, int r, int w);
 void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HLTname = "IsoMu20_OR_IsoTkMu20")
@@ -52,7 +52,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 
 	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + ".root", "RECREATE");
 
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 	//Each ntuple directory & corresponding Tags
 	vector<TString> ntupleDirectory; vector<TString> Tag; vector<Double_t> Xsec; vector<Double_t> nEvents;
 
@@ -84,7 +84,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
 		TChain *chain = new TChain("recoTree/DYTree");
-		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
+		chain->Add(BaseLocation + ntupleDirectory[i_tup]+"/ntuple_*.root");
 		if( Tag[i_tup] == "Data" && Type == "Golden" )
 		{
 			// -- Run2015D -- // 
@@ -92,7 +92,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 		else if( Tag[i_tup] == "Data" && Type == "MuonPhys" )
 		{
 			// -- Run2015D -- // 
-			chain->Add("/home/kplee/data/DYntuple/76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
+			chain->Add(BaseLocation+"76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
 		}
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_GenLepton();

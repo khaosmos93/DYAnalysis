@@ -230,8 +230,8 @@ rochcor2015::rochcor2015(){
   // muresol1.init("./RoccoR_13tev.txt");"/home/kplee/Physics/DYAnalysis_76X/CommonCodes/";
 
   // muresol1.init("/home/kplee/Physics/DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR_13tev.txt");
-  TString Path_text = gSystem->HomeDirectory();
-  Path_text = Path_text + "/Physics/DYAnalysis_76X/Include/RochesterMomCorr_76X/RoccoR_13tev.txt";
+  TString Path_text = gSystem->Getenv("KP_ANALYZER_PATH");
+  Path_text = Path_text + "Include/RochesterMomCorr_76X/RoccoR_13tev.txt";
   muresol1.init( Path_text.Data() );
   muresol1.dumpParams();
   

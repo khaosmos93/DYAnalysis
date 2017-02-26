@@ -4,8 +4,8 @@
 // -- 2016.11.04 (v02): include v02 headers, SeparateDYLLSample_LHEInfo -> add DYEE case
 #pragma once
 
-#include <DYAnalysis_76X/Include/Object.h>
-#include <DYAnalysis_76X/Include/NtupleHandle.h>
+#include <Include/Object.h>
+#include <Include/NtupleHandle.h>
 
 #include <TSystem.h>
 #include <TH1D.h>
@@ -24,9 +24,7 @@ using namespace std;
 
 TString GetBasePath()
 {
-	TString BasePath = gSystem->HomeDirectory();
-	BasePath = BasePath + "/Physics/DYAnalysis_76X/";
-
+	TString BasePath = gSystem->Getenv("KP_ANALYZER_PATH");
 	return BasePath;
 }
 
