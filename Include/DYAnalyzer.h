@@ -2,8 +2,8 @@
 // -- Author: KyoengPil Lee, 05 Dec. 2015 -- //
 #pragma once
 
-#include <ZprimeAnalysis_80X/Include/Object.h>
-#include <ZprimeAnalysis_80X/Include/NtupleHandle.h>
+#include <Include/Object.h>
+#include <Include/NtupleHandle.h>
 #include <fstream>
 #include <iostream>
 #include <TSystem.h>
@@ -19,9 +19,7 @@
 
 TString GetBasePath()
 {
-	TString BasePath = gSystem->HomeDirectory();
-	BasePath = BasePath + "/Physics/ZprimeAnalysis_80X/";
-
+	TString BasePath = gSystem->Getenv("KP_ANALYZER_PATH");
 	return BasePath;
 }
 
