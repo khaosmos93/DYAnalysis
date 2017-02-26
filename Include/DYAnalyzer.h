@@ -17,8 +17,8 @@
 
 using namespace std;
 
-#define Lumi 2832.673 // -- Up to Run260627 (Full 2015 Data), MuonPhys_v2 JSON. unit: /pb, Updated at 2016.02.24 -- //
-#define Lumi_HLTv4p2 865.919 // -- integrated luminosity before Run 257933 -- //
+#define Lumi 2759.017 
+#define Lumi_HLTv4p2 843.404 // -- integrated luminosity before Run 257933 -- //
 #define nMassBin 43
 
 
@@ -307,8 +307,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	{
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -376,8 +376,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	{
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -401,8 +401,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	{
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -417,8 +417,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	{
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -441,8 +441,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	{
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -537,8 +537,8 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 		// cout << "# events should be adjusted later" << endl;
 		// -- Background Samples -- //
 		
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16520811.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "76X/v20160304_76X_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7467514.0 ); //nEvents: sum of DYTauTau weights
@@ -657,13 +657,13 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	}
 	else if( Type == "MCBkg" )
 	{
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 	}
 	else if( Type == "Diboson" )
 	{
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 985598 );
-		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 999996 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 985598 );
+		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 999996 );
 		ntupleDirectory->push_back( "76X/v20160303_76X_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 988416 );
 	}
 	else if( Type == "WJets" )
@@ -688,8 +688,8 @@ void DYAnalyzer::SetupMCsamples_v20160131_MiniAODv2( TString Type, vector<TStrin
 	if( Type == "Full" )
 	{
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 996944 );
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 978512 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 996944 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 978512 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993640 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16541203.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7255646.0 ); //nEvents: sum of DYTauTau weights
@@ -711,8 +711,8 @@ void DYAnalyzer::SetupMCsamples_v20160131_MiniAODv2( TString Type, vector<TStrin
 	else if( Type == "Full_NoHighMass" )
 	{
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 996944 );
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 978512 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 996944 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 978512 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993640 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16541203.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7255646.0 ); //nEvents: sum of DYTauTau weights
@@ -767,8 +767,8 @@ void DYAnalyzer::SetupMCsamples_v20160131_MiniAODv2( TString Type, vector<TStrin
 	else if( Type == "Full_withoutM200to400" )
 	{
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 996944 );
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 978512 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 996944 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 978512 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 993640 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16541203.0 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160123_MINIAODv2_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7255646.0 ); //nEvents: sum of DYTauTau weights
@@ -850,8 +850,8 @@ void DYAnalyzer::SetupMCsamples_v20160117_MiniAOD_JetMET( TString Type, vector<T
 	if( Type == "Full" )
 	{
 		// -- Background Samples -- //
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 15.4 ); nEvents->push_back( 996168 );
-		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 66.1 ); nEvents->push_back( 991232 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_ZZ_25ns" ); Tag->push_back( "ZZ" ); Xsec->push_back( 16.523 ); nEvents->push_back( 996168 );
+		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_WZ_25ns" ); Tag->push_back( "WZ" ); Xsec->push_back( 47.13 ); nEvents->push_back( 991232 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_WW_25ns" ); Tag->push_back( "WW" ); Xsec->push_back( 118.7 ); nEvents->push_back( 994416 );
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_WJets_25ns" ); Tag->push_back( "WJets" ); Xsec->push_back( 6.15e4 ); nEvents->push_back( 16518173 ); //nEvents: sum of weights
 		ntupleDirectory->push_back( "Spring15DR/25ns/v20160102_MINIAOD_AddJetMET_DYLL_M10to50_25ns" ); Tag->push_back( "DYTauTau_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7418362 ); //nEvents: sum of DYTauTau weights
