@@ -790,18 +790,18 @@ public:
 		// h_2D->SetMinimum(LowerEdge_Z);
 		// h_2D->SetMaximum(UpperEdge_Z);
 
-		TPaletteAxis *palette = (TPaletteAxis*)h_2D->GetListOfFunctions()->FindObject("palette");
-		if( palette != NULL )
-		{
-			// the following lines moe the paletter. Choose the values you need for the position.
-			palette->SetX1NDC(0.885);
+		// TPaletteAxis *palette = (TPaletteAxis*)h_2D->GetListOfFunctions()->FindObject("palette");
+		// if( palette != NULL )
+		// {
+		// 	// the following lines moe the paletter. Choose the values you need for the position.
+		// 	palette->SetX1NDC(0.885);
 
-			palette->SetX2NDC(0.87);
-			palette->SetY1NDC(0.10);
-			palette->SetY2NDC(0.97);
-			gPad->Modified();
-			gPad->Update();
-		}
+		// 	palette->SetX2NDC(0.87);
+		// 	palette->SetY1NDC(0.10);
+		// 	palette->SetY2NDC(0.97);
+		// 	gPad->Modified();
+		// 	gPad->Update();
+		// }
 
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { h_2D->GetXaxis()->SetNoExponent(); h_2D->GetXaxis()->SetMoreLogLabels(); }
 		if( LowerEdge_X != 0 || UpperEdge_X != 0 ) h_2D->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
