@@ -5,8 +5,12 @@ if [ $KP_ANALYZER_PATH ]; then
     return 1
 fi
 
-# -- analyzer path -- #
+# -- analyzer path (do not insert "/" in the end of the path)-- #
 export KP_ANALYZER_PATH=$(pwd)
+export KP_INCLUDE_PATH=$KP_ANALYZER_PATH/Include
+export KP_ROOTFile_PATH=$KP_INCLUDE_PATH/Results_ROOTFiles_76X
+
+# -- root setup -- #
 export ROOT_INCLUDE_PATH=${KP_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 
 # -- ntuple path -- #
@@ -28,6 +32,8 @@ fi
 
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
+echo "KP_INCLUDE_PATH: " ${KP_INCLUDE_PATH}
+echo "KP_ROOTFile_PATH: " ${KP_ROOTFile_PATH}
 echo "KP_DATA_PATH:" ${KP_DATA_PATH}
 if [ -z $KP_DATA_PATH ]; then
     echo "     [WARNING]: ntuples are not available in this machine"
