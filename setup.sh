@@ -11,7 +11,7 @@ export ROOT_INCLUDE_PATH=${KP_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 
 # -- ntuple path -- #
 export KP_DATA_PATH=""
-if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
+if [ $HOSTNAME = "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
 then 
 	KP_DATA_PATH="/data4/Users/kplee/DYntuple"
 	
@@ -21,15 +21,19 @@ then
 	source $VO_CMS_SW_DIR/cmsset_default.sh
 
 	cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src
-	eval `scramv1 runtime -sh`
+	eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
 	#cmsenv # -- this doesn't work. why?? -- #
 	cd $KP_ANALYZER_PATH
-else
-	echo "WARNING: ntuples are not available in this machine"
 fi
 
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
 echo "KP_DATA_PATH:" ${KP_DATA_PATH}
+if [ -z $KP_DATA_PATH ]; then
+    echo "     [WARNING]: ntuples are not available in this machine"
+fi
+# if [ $KP_DATA_PATH == "asdf" ]; then
+# 	# echo "     [WARNING]: ntuples are not available in this machine"
+# fi
 echo "============================================="
 echo "setup is finished. Welcome :)"
