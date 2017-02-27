@@ -1,5 +1,5 @@
-#include <DYAnalysis_76X/Include/DYAnalyzer.h>
-#include <DYAnalysis_76X/Include/MyCanvas.C>
+#include <Include/DYAnalyzer.h>
+#include <Include/MyCanvas.C>
 #include <TLatex.h>
 
 class SysUncTool_Combine
@@ -39,7 +39,7 @@ public:
 
 	SysUncTool_Combine()
 	{
-		FileLocation = GetBasePath() + "Include/Results_ROOTFiles_76X";
+		FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -109,7 +109,7 @@ public:
 
 	}
 
-	void MakeHistogram_LumiUnc( Double_t RelLumiUnc = 0.027 )
+	void MakeHistogram_LumiUnc( Double_t RelLumiUnc = 0.023 )
 	{
 		h_RelLumiUnc = new TH1D("h_RelLumiUnc_Percent", "", nMassBin, MassBinEdges);
 		for(Int_t i=0; i<nMassBin; i++)
@@ -1393,49 +1393,49 @@ public:
 		cout << "===========================================================================" << endl;
 	}
 
-	void Print_FpoF_SysUnc_texFormat()
-	{
-		cout << "===========================================================================" << endl;		
-		Int_t nSource = (Int_t)Sources.size();
-		printf("                     ");
-		printf("%10s", "Mom.Corr" );
-		for(Int_t i_source=0; i_source<nSource; i_source++)
-				printf("%10s", Sources[i_source].Data() );
+	// void Print_FpoF_SysUnc_texFormat()
+	// {
+	// 	cout << "===========================================================================" << endl;		
+	// 	Int_t nSource = (Int_t)Sources.size();
+	// 	printf("                     ");
+	// 	printf("%10s", "Mom.Corr" );
+	// 	for(Int_t i_source=0; i_source<nSource; i_source++)
+	// 			printf("%10s", Sources[i_source].Data() );
 
-		printf("%10s", "TotSys" );
-		// printf("%10s", "Acc.");
-		printf("\n");
+	// 	printf("%10s", "TotSys" );
+	// 	// printf("%10s", "Acc.");
+	// 	printf("\n");
 
-		// -- syst. from momentum scale -- //
-		TFile *f_MomCorr = TFile::Open(FileLocation+"/ROOTFile_SysUnc_DetRes.root");
-		TH1D* h_Syst_MomCorr = (TH1D*)f_MomCorr->Get("h_RelSysUnc_MomCorr_Percent")->Clone();
+	// 	// -- syst. from momentum scale -- //
+	// 	TFile *f_MomCorr = TFile::Open(FileLocation+"/ROOTFile_SysUnc_DetRes.root");
+	// 	TH1D* h_Syst_MomCorr = (TH1D*)f_MomCorr->Get("h_RelSysUnc_MomCorr_Percent")->Clone();
 
-		for(Int_t i=0; i<nMassBin; i++)
-		{
-			Int_t i_bin = i+1;
-			Double_t lowerEdge = h_RelTotUnc->GetBinLowEdge(i_bin);
-			Double_t upperEdge = h_RelTotUnc->GetBinLowEdge(i_bin+1);
+	// 	for(Int_t i=0; i<nMassBin; i++)
+	// 	{
+	// 		Int_t i_bin = i+1;
+	// 		Double_t lowerEdge = h_RelTotUnc->GetBinLowEdge(i_bin);
+	// 		Double_t upperEdge = h_RelTotUnc->GetBinLowEdge(i_bin+1);
 
 			
-			TString str_syst = TString::Format("%.0d-%.0d", (Int_t)lowerEdge, (Int_t)upperEdge);
-			str_syst = str_syst + TString::Format(" & $  %.2lf  $", h_Syst_MomCorr->GetBinContent(i_bin) ); // -- Syst. form Mom.Corr -- //
+	// 		TString str_syst = TString::Format("%.0d-%.0d", (Int_t)lowerEdge, (Int_t)upperEdge);
+	// 		str_syst = str_syst + TString::Format(" & $  %.2lf  $", h_Syst_MomCorr->GetBinContent(i_bin) ); // -- Syst. form Mom.Corr -- //
 			
-			Double_t Unc_Acc = 0;
-			for(Int_t i_source=0; i_source<nSource; i_source++)
-			{
-				if( Sources[i_source].Contains("Acc") )
-					Unc_Acc = Histos_Unc[i_source]->GetBinContent(i_bin);
-				else
-					str_syst = str_syst + TString::Format(" & $  %.2lf  $", Histos_Unc[i_source]->GetBinContent(i_bin) );
-			}
+	// 		Double_t Unc_Acc = 0;
+	// 		for(Int_t i_source=0; i_source<nSource; i_source++)
+	// 		{
+	// 			if( Sources[i_source].Contains("Acc") )
+	// 				Unc_Acc = Histos_Unc[i_source]->GetBinContent(i_bin);
+	// 			else
+	// 				str_syst = str_syst + TString::Format(" & $  %.2lf  $", Histos_Unc[i_source]->GetBinContent(i_bin) );
+	// 		}
 
-			str_syst = str_syst + TString::Format(" & $  %.2lf  $", h_RelSysUnc_Tot->GetBinContent(i_bin) );
-			str_syst = str_syst + "\\\\";
+	// 		str_syst = str_syst + TString::Format(" & $  %.2lf  $", h_RelSysUnc_Tot->GetBinContent(i_bin) );
+	// 		str_syst = str_syst + "\\\\";
 
-			printf( "%s\n\\hline\n", str_syst.Data() );
-		}
-		cout << "===========================================================================" << endl;
-	}
+	// 		printf( "%s\n\\hline\n", str_syst.Data() );
+	// 	}
+	// 	cout << "===========================================================================" << endl;
+	// }
 
 	void PrintFinalResults_texFormat()
 	{

@@ -4,7 +4,7 @@
 class MyTool : public SysUncTool_Combine
 {
 public:
-	MyTool(TString version) : SysUncTool_Combine(version)
+	MyTool() : SysUncTool_Combine()
 	{
 
 	}
@@ -23,9 +23,14 @@ public:
 	}
 };
 
-void FpoF_SysUnc_Combination(TString version)
+void FpoF_SysUnc_Combination()
 {
-	MyTool *tool = new MyTool(version);
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+	
+	MyTool *tool = new MyTool();
 	Bool_t FpoF = kTRUE;
 
 	tool->MakeHistogram_LumiUnc();
@@ -38,7 +43,7 @@ void FpoF_SysUnc_Combination(TString version)
 	// tool->DrawDiffXsec_WithAllUnc("FpoF_Powheg");
 	tool->SaveResults( FpoF );
 
-	tool->Print_FpoF_SysUnc_texFormat();
+	// tool->Print_FpoF_SysUnc_texFormat();
 	tool->FpoF_PrintFinalResults_texFormat();
 
 	// tool->PrintAll();

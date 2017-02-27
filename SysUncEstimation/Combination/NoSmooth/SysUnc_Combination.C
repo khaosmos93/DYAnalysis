@@ -1,10 +1,10 @@
-#include "SysUncTool_CombineAll.h"
+#include "../SysUncTool_CombineAll.h"
 
 
 class MyTool : public SysUncTool_Combine
 {
 public:
-	MyTool(TString version) : SysUncTool_Combine(version)
+	MyTool() : SysUncTool_Combine()
 	{
 
 	}
@@ -25,9 +25,14 @@ public:
 	}
 };
 
-void SysUnc_Combination(TString version)
+void SysUnc_Combination()
 {
-	MyTool *tool = new MyTool(version);
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+	
+	MyTool *tool = new MyTool();
 
 	tool->MakeHistogram_LumiUnc();
 	tool->SetupSources();

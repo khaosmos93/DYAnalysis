@@ -27,6 +27,11 @@ public:
 
 void SysUnc_Combination()
 {
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+
 	MyTool *tool = new MyTool();
 
 	tool->MakeHistogram_LumiUnc();
