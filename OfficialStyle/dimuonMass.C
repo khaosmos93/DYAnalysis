@@ -1,6 +1,6 @@
 void dimuonMass()
 {
-   TCanvas *c1 = new TCanvas("c1", "",0,0, 800, 800);
+   TCanvas *c1 = new TCanvas("dimuonMass", "",0,0, 800, 800);
    gStyle->SetOptFit(1);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -42,7 +42,20 @@ void dimuonMass()
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
-   TFile* f1 = new TFile("./ROOTFile_Histograms_DimuonMassSpectrum.root");
+   TString BasePath = gSystem->Getenv("KP_ROOTFile_PATH");
+   TFile* f1 = new TFile(BasePath+"/ROOTFile_Histograms_DimuonMassSpectrum_All.root");
+   // -- get histograms -- //
+   TH1D* h_data = (TH1D*)f1->Get("h_data")->Clone();
+   TH1D* h_SignalMC = (TH1D*)f1->Get("h_SignalMC")->Clone();
+   TH1D* h_ttbar_emu = (TH1D*)f1->Get("h_ttbar_emu")->Clone();
+   TH1D* h_DYTauTau_emu = (TH1D*)f1->Get("h_DYTauTau_emu")->Clone();
+   TH1D* h_WW_emu = (TH1D*)f1->Get("h_WW_emu")->Clone();
+   TH1D* h_WZ = (TH1D*)f1->Get("h_WZ")->Clone();
+   TH1D* h_ZZ = (TH1D*)f1->Get("h_ZZ")->Clone();
+   TH1D* h_tW_emu = (TH1D*)f1->Get("h_tW_emu")->Clone();
+   TH1D* h_WJets_FR = (TH1D*)f1->Get("h_WJets_FR")->Clone();
+   TH1D* h_diJet_FR = (TH1D*)f1->Get("h_diJet_FR")->Clone();
+
    f1->cd();
    Double_t xAxis[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185, 200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000}; 
 
@@ -264,5 +277,7 @@ void dimuonMass()
    c1->Modified();
    c1->cd();
    c1->SetSelected(c1);
+
+   // c1->SaveAs(".pdf"); // -- if it is printed using this method, canvas size becomes different! (why?)
 }
 
