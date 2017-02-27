@@ -15,7 +15,7 @@ export ROOT_INCLUDE_PATH=${KP_ANALYZER_PATH}:${ROOT_INCLUDE_PATH}
 
 # -- ntuple path -- #
 export KP_DATA_PATH=""
-if [ $HOSTNAME = "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
+if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
 then 
 	KP_DATA_PATH="/data4/Users/kplee/DYntuple"
 	
@@ -30,16 +30,26 @@ then
 	cd $KP_ANALYZER_PATH
 fi
 
+# -- RooUnfold package path -- #
+export KP_ROOUNFOLD_PATH=""
+if [ $HOME == "/Users/KyeongPil_Lee" ]; # -- macbook -- #
+then
+	KP_ROOUNFOLD_PATH=${HOME}/Physics/RooUnfold
+fi
+
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
-echo "KP_INCLUDE_PATH: " ${KP_INCLUDE_PATH}
-echo "KP_ROOTFile_PATH: " ${KP_ROOTFile_PATH}
+echo "KP_INCLUDE_PATH:" ${KP_INCLUDE_PATH}
+echo "KP_ROOTFile_PATH:" ${KP_ROOTFile_PATH}
+
 echo "KP_DATA_PATH:" ${KP_DATA_PATH}
 if [ -z $KP_DATA_PATH ]; then
     echo "     [WARNING]: ntuples are not available in this machine"
 fi
-# if [ $KP_DATA_PATH == "asdf" ]; then
-# 	# echo "     [WARNING]: ntuples are not available in this machine"
-# fi
+
+echo "KP_ROOUNFOLD_PATH:" ${KP_ROOUNFOLD_PATH}
+if [ -z $KP_ROOUNFOLD_PATH ]; then
+	echo "     [WARNING]: RooUnfold package is not available in this machine"
+fi
 echo "============================================="
 echo "setup is finished. Welcome :)"
