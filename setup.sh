@@ -34,7 +34,8 @@ fi
 export KP_ROOUNFOLD_PATH=""
 if [ $HOME == "/Users/KyeongPil_Lee" ]; # -- macbook -- #
 then
-	KP_ROOUNFOLD_PATH=${HOME}/Physics/RooUnfold
+	KP_ROOUNFOLD_PATH=/Users/KyeongPil_Lee/ROOT5/Unfolding/RooUnfold
+	export ROOT_INCLUDE_PATH=${KP_ROOUNFOLD_PATH}:${ROOT_INCLUDE_PATH}
 fi
 
 echo "================ environment ================"
