@@ -13,9 +13,10 @@
 #include <TStyle.h>
 #include <TF1.h>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/tdrstyle.C"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h"
+#include <Include/tdrstyle.C>
+#include <Include/DYAnalyzer.h>
 
+// -- should be updated -- //
 #define Lumi_HLTv4p3_Split1 618.174
 #define Lumi_HLTv4p3_Split2 633.070
 #define Lumi_HLTv4p3_Split3 715.510
@@ -41,7 +42,7 @@ public:
 
 	Int_t Nfactor_overall;
 	
-	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg);
+	DrawControlPlotTool(Bool_t DrawDataDriven_arg, TString NormType_arg);
 	virtual void SetupHistogramNames();
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
@@ -62,7 +63,7 @@ public:
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
-DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg)
+DrawControlPlotTool::DrawControlPlotTool(Bool_t DrawDataDriven_arg, TString NormType_arg)
 {
 	if( !(NormType_arg == "Lumi" || NormType_arg == "Zpeak") )
 	{
@@ -87,10 +88,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 		MassBinEdges[i] = MassBinEdges_temp[i];
 
 	// -- Get root file containing the histograms -- //
-	// FileLocation = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/Results_ROOTFiles/" + version; // -- 74X -- //
-	FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
-
-	if( version == "None" ) FileLocation = ".";
+	FileLocation = GetBasePath() + "/Include/Results_ROOTFiles_76X/";
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root");
 	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root");
@@ -348,9 +346,9 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 			cout << endl;
 		}
 
-		/////////////////////////////////////////////////////////////////////////////////////////
-		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
-		/////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////
+		// -- Store yield histogram && Draw mass distribution (MC-based, data-driven bkg.) -- //
+		////////////////////////////////////////////////////////////////////////////////////////
 		if( Variables[i_hist] == "OSMass_DYBin" || Variables[i_hist] == "OSMass_DYBin_HLTv4p2" || Variables[i_hist] == "OSMass_DYBin_HLTv4p3" )
 		{
 			vector< TH1D* > h_bkgs;

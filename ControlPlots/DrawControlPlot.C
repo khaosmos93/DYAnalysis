@@ -1,8 +1,13 @@
 #include "DrawControlPlotTool.h"
 
-void DrawControlPlot(TString version, Bool_t DrawDataDriven = kTRUE, TString NormType = "Lumi" )
+void DrawControlPlot(Bool_t DrawDataDriven = kTRUE, TString NormType = "Lumi" )
 {
-	DrawControlPlotTool *tool = new DrawControlPlotTool(version, DrawDataDriven, NormType);
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+	
+	DrawControlPlotTool *tool = new DrawControlPlotTool(DrawDataDriven, NormType);
 	// tool->GenLevelMassSpectrum();
 	tool->SetupHistogramNames();
 	tool->LoopForHistograms(3);
