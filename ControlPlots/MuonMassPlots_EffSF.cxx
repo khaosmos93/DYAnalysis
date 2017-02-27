@@ -87,6 +87,9 @@ void MuonMassPlots_EffSF(Bool_t isCorrected = kTRUE, TString Type = "MCBkg", TSt
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
+		Bool_t isMC;
+		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
+
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation + "/" + ntupleDirectory[i_tup] + "/ntuple_*.root");
 		if( Tag[i_tup] == "Data" && Type == "Golden" )
@@ -99,13 +102,14 @@ void MuonMassPlots_EffSF(Bool_t isCorrected = kTRUE, TString Type = "MCBkg", TSt
 			chain->Add(BaseLocation+"/76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
 		}
 		NtupleHandle *ntuple = new NtupleHandle( chain );
-		ntuple->TurnOnBranches_GenLepton();
+		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_Muon();
+		if( isMC )
+			ntuple->TurnOnBranches_GenLepton();
+
 		
 		rochcor2015 *rmcor = new rochcor2015();
 
-		Bool_t isMC;
-		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
 		analyzer->SetupPileUpReWeighting_76X( isMC );
 
 		TH1D* h_mass_HLTv4p2 = new TH1D("h_mass_OS_HLTV4p2_"+Tag[i_tup], "", 10000, 0, 10000);
