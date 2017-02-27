@@ -1,4 +1,4 @@
-#include <DYAnalysis_76X/CommonCodes/DYAnalyzer_v02.h>
+#include <Include/DYAnalyzer.h>
 
 Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -107,7 +107,6 @@ public:
 class SysUncTool_BkgEst
 {
 public:
-	TString version;
 	TString FileLocation;
 
 	// Double_t MassBinEdges[nMassBin+1];
@@ -139,7 +138,7 @@ public:
 	HistogramContainer* Hists_FR;
 	HistogramContainer* Hists_MC;
 
-	SysUncTool_BkgEst(TString _version)
+	SysUncTool_BkgEst()
 	{
 		// Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 		// 									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -150,8 +149,7 @@ public:
 		// for(Int_t i=0; i<nMassBin+1; i++)
 		// 	MassBinEdges[i] = MassBinEdges_temp[i];
 
-		version = _version;
-		FileLocation = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/" + version;
+		FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 		DYAnalyzer *analyzer = new DYAnalyzer( "None" );
 		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //

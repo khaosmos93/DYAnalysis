@@ -1,8 +1,13 @@
 #include "SysUncTool_BkgEst.h"
 
-void SysUnc_BkgEst(TString version)
+void SysUnc_BkgEst()
 {
-	SysUncTool_BkgEst *tool = new SysUncTool_BkgEst(version);
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+
+	SysUncTool_BkgEst *tool = new SysUncTool_BkgEst();
 	tool->SysUncEstimation();
 	
 	tool->MakeCanvas_ForEachBkgMethod();
