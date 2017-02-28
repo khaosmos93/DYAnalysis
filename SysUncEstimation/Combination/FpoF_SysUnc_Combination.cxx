@@ -13,7 +13,7 @@ public:
 	{
 		Sources.push_back( "Eff.SF."); FileNames.push_back("ROOTFile_SysUnc_EffSF.root"); HistNames.push_back("h_RelSysUnc_Tot"); Colors.push_back( kBlue ); Markers.push_back( 25 );
 		Sources.push_back( "Det.Res"); FileNames.push_back("ROOTFile_SysUnc_DetRes.root"); HistNames.push_back("h_RelSysUnc_DetRes_Percent"); Colors.push_back( kViolet ); Markers.push_back( 26 );
-		Sources.push_back( "Bkg.Est."); FileNames.push_back("ROOTFile_SysUnc_BkgEst.root"); HistNames.push_back("h_SysUnc_BkgEst_Percent"); Colors.push_back( kGreen+1 ); Markers.push_back( 27 );
+		Sources.push_back( "Bkg.Est."); FileNames.push_back("ROOTFile_SysUnc_BkgEst.root"); HistNames.push_back("h_RelUnc_Tot_Total"); Colors.push_back( kGreen+1 ); Markers.push_back( 27 );
 
 		// LegendName.push_back( "Acceptance" );
 		LegendName.push_back( "Efficiency SF" );

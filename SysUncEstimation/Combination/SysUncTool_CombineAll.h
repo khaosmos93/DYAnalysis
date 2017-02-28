@@ -1241,7 +1241,7 @@ public:
 	{
 		TString FileName = "ROOTFile_DiffXSec_FullUnc.root";
 		if( FpoF ) 
-			FileName.ReplaceAll( "ROOTFile_", "ROOTFile_SysUnc_" );
+			FileName.ReplaceAll( "ROOTFile_", "ROOTFile_FpoF_" );
 
 		f_output = new TFile(FileName, "RECREATE"); f_output->cd();
 
