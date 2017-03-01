@@ -16,9 +16,14 @@ void Systematic_Eff()
 	vec_Region.push_back( "BEEE" );
 
 	vector< pair<TString, TString> > vec_pair_DENNUM;
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus0") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus1") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus2") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus3") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus4") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus5") );
+	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM_DENPlus6") );
 	vec_pair_DENNUM.push_back( make_pair("DEN", "NUM") );
-	vec_pair_DENNUM.push_back( make_pair("DEN_RunBtoF", "NUM_RunBtoF") );
-	vec_pair_DENNUM.push_back( make_pair("DEN_RunGtoH", "NUM_RunGtoH") );
 
 	// for( const auto &pair_DENNUM : vec_pair_DENNUM )
 	// {
@@ -51,7 +56,20 @@ void Systematic_Eff()
 			tool->g_data->Write();
 			tool->g_MC->Write();
 		}
-	}
 
+		vector< pair<TString, TString> > vec_pair_NUM_Legend;
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus0", "1. NUM=DEN") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus1", "2. +pixelHits") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus2", "3. +trackerLayers") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus3", "4. +dB") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus4", "5. +muonHits") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus5", "6. +matchedStations") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus6", "7. +RelPtError") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM", "8. +OS (=Full Selection)") );
+
+		DrawCanvas_Eff_VariousNUM( f_output, "Data", Region, vec_pair_NUM_Legend);
+	}
 	outFile->close();
+
+
 }

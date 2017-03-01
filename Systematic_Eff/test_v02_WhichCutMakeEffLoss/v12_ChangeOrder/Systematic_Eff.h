@@ -501,17 +501,20 @@ protected:
 };
 
 
-void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region, vector<TString> vec_NUMStr )
+void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region, vector< pair<TString, TString> > vec_pair_NUM_Legend )
 {
 	vector< GraphInfo* > vec_GraphInfo;
 
-	Int_t nNUM = (Int_t)vec_NUMStr.size();
+	Int_t nNUM = (Int_t)vec_pair_NUM_Legend.size();
 	for(Int_t i_num=0; i_num<nNUM; i_num++)
 	{
-		TString GraphName = TString::Format("g_%s_%s_%s_%s", DataType.Data(), "DEN", vec_NUMStr[i_num].Data(), Region.Data());
+		TString GraphName = TString::Format("g_%s_%s_%s_%s", DataType.Data(), "DEN", vec_pair_NUM_Legend[i_num].first.Data(), Region.Data());
+		// cout << "[" << GraphName << "]" << endl;
 		TGraphAsymmErrors* g_temp = (TGraphAsymmErrors*)f_input->Get(GraphName)->Clone();
 
-		GraphInfo *GraphInfo_temp = new GraphInfo( i_num+1, vec_NUMStr[i_num] );
+		Int_t Color_temp = i_num+1;
+		if( i_num+1 == 3 )
+		GraphInfo *GraphInfo_temp = new GraphInfo( i_num+1, vec_pair_NUM_Legend[i_num].second );
 		GraphInfo_temp->Set_Graph( g_temp );
 
 		vec_GraphInfo.push_back( GraphInfo_temp );
