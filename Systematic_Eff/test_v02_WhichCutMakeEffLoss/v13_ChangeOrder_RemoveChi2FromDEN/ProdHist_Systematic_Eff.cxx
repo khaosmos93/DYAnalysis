@@ -134,7 +134,7 @@ public:
 		HistContainer *Hist_NUM_DENPlus4 = new HistContainer( "NUM_DENPlus4" );
 		HistContainer *Hist_NUM_DENPlus5 = new HistContainer( "NUM_DENPlus5" );
 		HistContainer *Hist_NUM_DENPlus6 = new HistContainer( "NUM_DENPlus6" );
-		HistContainer *Hist_NUM_DENPlus6 = new HistContainer( "NUM_DENPlus7" );
+		HistContainer *Hist_NUM_DENPlus7 = new HistContainer( "NUM_DENPlus7" );
 
 		HistContainer *Hist_NUM = new HistContainer( "NUM" );
 
@@ -201,6 +201,7 @@ public:
 					vector< Muon > QMuonCollection_NUM_DENPlus4;
 					vector< Muon > QMuonCollection_NUM_DENPlus5;
 					vector< Muon > QMuonCollection_NUM_DENPlus6;
+					vector< Muon > QMuonCollection_NUM_DENPlus7;
 
 					vector< Muon > QMuonCollection_NUM;
 					for(Int_t j=0; j<(int)MuonCollection.size(); j++)
