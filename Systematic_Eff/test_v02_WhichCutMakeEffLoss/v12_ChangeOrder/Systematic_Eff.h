@@ -513,8 +513,10 @@ void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region
 		TGraphAsymmErrors* g_temp = (TGraphAsymmErrors*)f_input->Get(GraphName)->Clone();
 
 		Int_t Color_temp = i_num+1;
-		if( i_num+1 == 3 )
-		GraphInfo *GraphInfo_temp = new GraphInfo( i_num+1, vec_pair_NUM_Legend[i_num].second );
+		if( i_num+1 == 3 ) Color_temp = kOrange+2;
+		if( i_num+1 == 5 ) Color_temp = 28;
+
+		GraphInfo *GraphInfo_temp = new GraphInfo( Color_temp, vec_pair_NUM_Legend[i_num].second );
 		GraphInfo_temp->Set_Graph( g_temp );
 
 		vec_GraphInfo.push_back( GraphInfo_temp );
