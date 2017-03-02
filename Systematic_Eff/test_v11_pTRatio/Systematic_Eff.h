@@ -67,6 +67,16 @@ public:
 
 	ofstream *outFile;
 
+	Int_t RebinSize;
+	Double_t xMin;
+	Double_t xMax;
+	Double_t yMin;
+	Double_t yMax;
+	TString XTitle;
+	TString YTitle;
+	Bool_t isLogx;
+	Bool_t isLogy;
+
 	Tool_Systematic_Eff()
 	{
 		this->Lumi = 0;
@@ -74,6 +84,7 @@ public:
 		this->Lumi_RunBtoF = 19720.882;
 		this->Lumi_RunGtoH = 16146.178;
 
+		this->Init();
 	}
 
 	void Set_OutFile( ofstream *_outFile )
@@ -194,6 +205,147 @@ public:
 		// Print_Graph( Graph_data->g_ratio );
 	}
 
+	void DrawCanvas_Data_vs_MC( TString HistName_Base, TString Type )
+	{
+		this->Init();
+
+		this->SetHistStyle( HistName_Base );
+
+		TString HistName_Data = TString::Format( "%s_%s", HistName_Base.Data(), Type.Data() );
+		TString HistName_MC = HistName_Data;
+		if( this->isRunBtoF || this->isRunGtoH )
+		{
+			TString TStr_Type = "";
+			if( Type.Contains("DEN") ) TStr_Type = "DEN";
+			if( Type.Contains("NUM") ) TStr_Type = "NUM";
+			HistName_MC = TString::Format( "%s_%s", HistName_Base.Data(), TStr_Type.Data() );
+		}
+
+		TH1D* h_data = Get_Hist( this->InputFileName, "Data/"+HistName_Data );
+		HistInfo *Hist_data = new HistInfo( kBlack, this->Legend_Data );
+		Hist_data->Set_Histogram( h_data );
+		Hist_data->Set();
+
+		TH1D* h_DY = Get_Hist( this->InputFileName, "DYPowheg/"+HistName_MC );
+		HistInfo *Hist_DY = new HistInfo( kPink, "Z/#gamma*#rightarrow#mu#mu" );
+		Hist_DY->Set_Histogram( h_DY );
+		Hist_DY->Set();
+		Hist_DY->h->SetFillColorAlpha( Hist_DY->Color, 1 );
+
+		// -- ttbar + tW + tbarW -- //
+		TH1D* h_ttbar = Get_Hist( this->InputFileName, "ttbarTo2L2Nu/"+HistName_MC);
+		TH1D* h_tW = Get_Hist( this->InputFileName, "tW/"+HistName_MC );
+		TH1D* h_tbarW = Get_Hist( this->InputFileName, "tbarW/"+HistName_MC );
+
+		TH1D* h_top = (TH1D*)h_ttbar->Clone(); h_top->Sumw2();
+		h_top->Add( h_tW );
+		h_top->Add( h_tbarW );
+
+		HistInfo *Hist_top = new HistInfo( kYellow, "t#bar{t}+tW+#bar{t}W" );
+		Hist_top->Set_Histogram( h_top );
+		Hist_top->Set();
+		Hist_top->h->SetFillColorAlpha( Hist_top->Color, 1 );
+
+		// -- dibosons -- //
+		TH1D* h_WW = Get_Hist(this->InputFileName, "WWTo2L2Nu/"+HistName_MC );
+		TH1D* h_WZ = Get_Hist(this->InputFileName, "WZ/"+HistName_MC );
+		TH1D* h_ZZ = Get_Hist(this->InputFileName, "ZZ/"+HistName_MC );
+
+		TH1D* h_diboson = (TH1D*)h_WW->Clone(); h_diboson->Sumw2();
+		h_diboson->Add( h_WZ );
+		h_diboson->Add( h_ZZ );
+
+		HistInfo *Hist_diboson = new HistInfo( kBlue, "Diboson" );
+		Hist_diboson->Set_Histogram( h_diboson );
+		Hist_diboson->Set();
+		Hist_diboson->h->SetFillColorAlpha( Hist_diboson->Color, 1 );
+
+		// -- scale dowwn if it is RunB-F or RunG-H -- //
+		Hist_DY->h->Scale( this->Lumi_Scale );
+		Hist_top->h->Scale( this->Lumi_Scale );
+		Hist_diboson->h->Scale( this->Lumi_Scale );
+
+		// -- rebin -- //
+		Hist_data->h->Rebin( this->RebinSize );
+		Hist_DY->h->Rebin( this->RebinSize );
+		Hist_top->h->Rebin( this->RebinSize );
+		Hist_diboson->h->Rebin( this->RebinSize );
+
+		// TString YTitle = "Entries per bin";
+		// Hist_data->h = Rebin_Mass( Hist_data->h );
+		// Hist_DY->h = Rebin_Mass( Hist_DY->h );
+		// Hist_top->h = Rebin_Mass( Hist_top->h );
+		// Hist_diboson->h = Rebin_Mass( Hist_diboson->h );
+		// Double_t xMin = 60;
+
+		// -- apply scale factor (data/MC @ Z-peak) -- //
+		// Double_t SF = SF_Zpeak( region );
+		Double_t SF = this->SF_Zpeak_DirectlyExtracted( Type );
+		Hist_DY->h->Scale( SF );
+		Hist_top->h->Scale( SF );
+		Hist_diboson->h->Scale( SF );
+
+		// -- MC stack -- //
+		THStack *hs = new THStack("hs", "");
+		hs->Add( Hist_diboson->h );
+		hs->Add( Hist_top->h );
+		hs->Add( Hist_DY->h );
+
+		// -- total MC (for ratio) -- //
+		TH1D* h_totMC = (TH1D*)Hist_DY->h->Clone("h_totMC"); h_totMC->Sumw2();
+		h_totMC->Add( Hist_top->h );
+		h_totMC->Add( Hist_diboson->h );
+
+		// -- draw canvas -- //
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", *i_canvas, HistName_Base.Data(), Type.Data() ); (*i_canvas)++;
+		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
+
+		c->cd();
+		TopPad->cd();
+
+		TH1D* h_format = (TH1D*)Hist_data->h->Clone();
+		h_format->Reset("ICES");
+		h_format->Draw("");
+		hs->Draw("histsame");
+		Hist_data->h->Draw("EPsame");
+		h_format->Draw("axissame");
+
+		SetHistFormat_TopPad( h_format,  this->YTitle);
+		h_format->GetXaxis()->SetRangeUser(this->xMin, this->xMax);
+		h_format->GetYaxis()->SetRangeUser(this->yMin, this->yMax);
+
+		TLegend *legend;
+		SetLegend( legend, 0.65, 0.80, 0.95, 0.95 );
+		legend->SetTextFont(62);
+		legend->AddEntry( Hist_data->h, Hist_data->LegendName );
+		legend->AddEntry( Hist_DY->h, Hist_DY->LegendName );
+		legend->AddEntry( Hist_top->h, Hist_top->LegendName );
+		legend->AddEntry( Hist_diboson->h, Hist_diboson->LegendName );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, this->Lumi / 1000.0, 13 );
+		Latex_Info( latex, Type, "" );
+
+		c->cd();
+		BottomPad->cd();
+		TH1D* h_ratio = (TH1D*)Hist_data->h->Clone();
+		h_ratio->Divide( Hist_data->h, h_totMC );
+		h_ratio->Draw("EPSAME");
+		SetHistFormat_BottomPad( h_ratio, "m [GeV]", "Data/MC", 0, 2.5);
+		h_ratio->GetXaxis()->SetRangeUser(this->xMin, this->xMax);
+
+		TF1 *f_line;
+		DrawLine( f_line );
+
+		c->SaveAs(".pdf");
+
+		TH1D* h_data_bkgSub = BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h );
+
+		this->DrawCanvas_DataBkgSub_vs_DYMC( HistName_Base, Type, h_data_bkgSub, Hist_DY->h );
+	}
+
 protected:
 	void DrawCanvas_EachTypeAndRegion( TString Type, TString region )
 	{
@@ -298,7 +450,7 @@ protected:
 		// -- draw canvas -- //
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
 		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", *i_canvas, Type.Data(), region.Data() ); (*i_canvas)++;
-		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
+		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, this->isLogx, this->isLogy );
 
 		c->cd();
 		TopPad->cd();
@@ -352,6 +504,53 @@ protected:
 			this->h_DY_NUM = (TH1D*)Hist_DY->h->Clone(); // -- after applying SF -- //
 			this->h_data_NUM_BkgSub = this->BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h );
 		}
+	}
+
+
+
+	void DrawCanvas_DataBkgSub_vs_DYMC( TString HistName_Base, TString Type, TH1D* h_data_BkgSub, TH1D* h_DY )
+	{
+		HistInfo *Hist_DY = new HistInfo( kRed, "MC (DY)" );
+		Hist_DY->Set_Histogram( h_DY );
+		Hist_DY->Set();
+
+		HistInfo *Hist_data = new HistInfo( kBlack, "Data (Bkg. Sub)" );
+		Hist_data->Set_Histogram( h_data_BkgSub );
+		Hist_data->Set();
+		Hist_data->Calc_RatioHist_Denominator( Hist_DY->h );
+
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = TString::Format( "c_DataBkgSub_vs_DYMC_%s_%s", HistName_Base.Data(), Type.Data() );
+		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, this->isLogx, this->isLogy );
+
+		c->cd();
+		TopPad->cd();
+
+		Hist_DY->h->Draw("EPSAME");
+		Hist_data->h->Draw("EPSAME");
+
+		SetHistFormat_TopPad( Hist_DY->h, this->YTitle );
+
+		TLegend *legend;
+		SetLegend( legend );
+		legend->AddEntry( Hist_data->h, Hist_data->LegendName );
+		legend->AddEntry( Hist_DY->h, Hist_DY->LegendName );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, this->Lumi / 1000.0, 13 );
+		Latex_Info( latex, Type, "" );
+
+		c->cd();
+		BottomPad->cd();
+		Hist_data->h_ratio->Draw("EPSAME");
+		SetHistFormat_BottomPad( Hist_data->h_ratio, this->XTitle, "Data/MC", 0, 2.5);
+		Hist_data->h_ratio->GetXaxis()->SetRangeUser(this->xMin, this->xMax);
+
+		TF1 *f_line;
+		DrawLine( f_line );
+
+		c->SaveAs(".pdf");
 	}
 
 	TH1D* BackgroundSubtraction( TH1D* h_data, TH1D* h_top, TH1D* h_diboson )
@@ -462,6 +661,56 @@ protected:
 		return SF;
 	}
 
+	Double_t SF_Zpeak_DirectlyExtracted( TString Type )
+	{
+		TString HistName_Base = "h_mass";
+
+		TString HistName_Data = TString::Format( "%s_%s", HistName_Base.Data(), Type.Data() );
+		TString HistName_MC = HistName_Data;
+		if( this->isRunBtoF || this->isRunGtoH )
+		{
+			TString TStr_Type = "";
+			if( Type.Contains("DEN") ) TStr_Type = "DEN";
+			if( Type.Contains("NUM") ) TStr_Type = "NUM";
+			HistName_MC = TString::Format( "%s_%s", HistName_Base.Data(), TStr_Type.Data() );
+		}
+
+		TH1D* h_data = Get_Hist( this->InputFileName, "Data/"+HistName_Data );
+		TH1D* h_DY = Get_Hist( this->InputFileName, "DYPowheg/"+HistName_MC );
+
+		// -- ttbar + tW + tbarW -- //
+		TH1D* h_ttbar = Get_Hist( this->InputFileName, "ttbarTo2L2Nu/"+HistName_MC);
+		TH1D* h_tW = Get_Hist( this->InputFileName, "tW/"+HistName_MC );
+		TH1D* h_tbarW = Get_Hist( this->InputFileName, "tbarW/"+HistName_MC );
+		TH1D* h_top = (TH1D*)h_ttbar->Clone(); h_top->Sumw2();
+
+		// -- dibosons -- //
+		TH1D* h_WW = Get_Hist(this->InputFileName, "WWTo2L2Nu/"+HistName_MC );
+		TH1D* h_WZ = Get_Hist(this->InputFileName, "WZ/"+HistName_MC );
+		TH1D* h_ZZ = Get_Hist(this->InputFileName, "ZZ/"+HistName_MC );
+
+		TH1D* h_diboson = (TH1D*)h_WW->Clone(); h_diboson->Sumw2();
+		h_diboson->Add( h_WZ );
+		h_diboson->Add( h_ZZ );
+
+		// -- total MC (for ratio) -- //
+		TH1D* h_totMC = (TH1D*)h_DY->Clone("h_totMC"); h_totMC->Sumw2();
+		h_totMC->Add( h_top );
+		h_totMC->Add( h_diboson );
+		
+		// -- scale dowwn if it is RunB-F or RunG-H -- //
+		h_totMC->Scale( this->Lumi_Scale );
+
+		Double_t nEvent_Data = this->nEvent_Zpeak( h_data );
+		Double_t nEvent_MC = this->nEvent_Zpeak( h_totMC );
+		Double_t SF = nEvent_Data / nEvent_MC;
+
+		*this->outFile << TString::Format("[%s, %s]", Type.Data(), this->Region.Data()) << endl;
+		*this->outFile << TString::Format("[# events in Zpeak: (data, MC) = (%.0lf, %.0lf)] -> SF = %lf\n", nEvent_Data, nEvent_MC, SF) << endl;
+
+		return SF;
+	}
+
 	Double_t nEvent_Zpeak(TH1D* h )
 	{
 		Double_t nEv_Zpeak = 0;
@@ -523,6 +772,35 @@ protected:
 		DrawLine( f_line );
 
 		c->SaveAs(".pdf");
+	}
+
+	void SetHistStyle( TString HistName_Base )
+	{
+		if( HistName_Base == "h_RatioPt" )
+		{
+			this->RebinSize = 1;
+			this->xMin = 1;
+			this->xMax = 100;
+			this->yMin = 0.5;
+			this->yMax = 1e7;
+			this->XTitle = "P_{T}^{lead} / P_{T}^{sub}";
+			this->YTitle = TString::Format("Entries / %.0d", this->RebinSize);
+			this->isLogx = kTRUE;
+			this->isLogy = kTRUE;
+		}
+	}
+
+	void Init()
+	{
+		this->RebinSize = -1;
+		this->xMin = 0;
+		this->xMax = 0;
+		this->yMin = 0;
+		this->yMax = 0;
+		this->XTitle = "";
+		this->YTitle = "";
+		this->isLogx = kFALSE;
+		this->isLogy = kFALSE;
 	}
 };
 

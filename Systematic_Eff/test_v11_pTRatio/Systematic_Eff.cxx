@@ -34,16 +34,24 @@ void Systematic_Eff()
 
 	for( const auto &Region : vec_Region )
 	{
+		Tool_Systematic_Eff *tool = new Tool_Systematic_Eff();
+		tool->Set_OutFile( outFile );
+		tool->Set_iCanvas( &i_canvas );
+		tool->Set_InputFileName( InputFileName );
+		tool->Set_Output( f_output );
+
+
 		for( const auto &pair_DENNUM : vec_pair_DENNUM )
 		{
-			Tool_Systematic_Eff *tool = new Tool_Systematic_Eff();
-			tool->Set_OutFile( outFile );
-			tool->Set_iCanvas( &i_canvas );
-			tool->Set_InputFileName( InputFileName );
-			tool->Set_Output( f_output );
 			tool->Set_DEN_NUM( pair_DENNUM.first, pair_DENNUM.second );
 			tool->Set_Region( Region );
-			
+
+			if( Region == "All" )
+			{
+				tool->DrawCanvas_Data_vs_MC( "h_RatioPt", pair_DENNUM.first );
+				tool->DrawCanvas_Data_vs_MC( "h_RatioPt", pair_DENNUM.second );
+			}
+
 			tool->DrawCanvas_Mass();
 			tool->DrawCanvas_Eff_Data_vs_MC();
 
@@ -51,6 +59,8 @@ void Systematic_Eff()
 			tool->g_data->Write();
 			tool->g_MC->Write();
 		}
+
+
 	}
 
 	outFile->close();
