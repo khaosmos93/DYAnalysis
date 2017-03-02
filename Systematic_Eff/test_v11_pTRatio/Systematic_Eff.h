@@ -298,8 +298,8 @@ public:
 
 		// -- draw canvas -- //
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
-		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", *i_canvas, HistName_Base.Data(), Type.Data() ); (*i_canvas)++;
-		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
+		TString CanvasName = TString::Format("c%02d_%s_%s", *i_canvas, HistName_Base.Data(), Type.Data() ); (*i_canvas)++;
+		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, this->isLogx, this->isLogy );
 
 		c->cd();
 		TopPad->cd();
@@ -333,7 +333,7 @@ public:
 		TH1D* h_ratio = (TH1D*)Hist_data->h->Clone();
 		h_ratio->Divide( Hist_data->h, h_totMC );
 		h_ratio->Draw("EPSAME");
-		SetHistFormat_BottomPad( h_ratio, "m [GeV]", "Data/MC", 0, 2.5);
+		SetHistFormat_BottomPad( h_ratio, this->XTitle, "Data/MC", 0, 2.5);
 		h_ratio->GetXaxis()->SetRangeUser(this->xMin, this->xMax);
 
 		TF1 *f_line;
@@ -450,7 +450,7 @@ protected:
 		// -- draw canvas -- //
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
 		TString CanvasName = TString::Format("c%02d_Mass_%s_%s", *i_canvas, Type.Data(), region.Data() ); (*i_canvas)++;
-		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, this->isLogx, this->isLogy );
+		SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 0, 1 );
 
 		c->cd();
 		TopPad->cd();
@@ -530,6 +530,8 @@ protected:
 		Hist_data->h->Draw("EPSAME");
 
 		SetHistFormat_TopPad( Hist_DY->h, this->YTitle );
+		Hist_DY->h->GetXaxis()->SetRangeUser( this->xMin, this->xMax );
+		Hist_DY->h->GetYaxis()->SetRangeUser( this->yMin, this->yMax );
 
 		TLegend *legend;
 		SetLegend( legend );
@@ -551,6 +553,41 @@ protected:
 		DrawLine( f_line );
 
 		c->SaveAs(".pdf");
+
+		Int_t nBin = Hist_data->h->GetNbinsX();
+		*this->outFile << TString::Format("[HistName, Type] = [%s, %s]", HistName_Base.Data(), Type.Data() ) << endl;
+		*this->outFile << TString::Format("[overFlow]: (Data, MC) = (%.1lf, %.1lf)", Hist_data->h->GetBinContent(nBin+1), Hist_DY->h->GetBinContent(nBin+1)) << endl;
+
+		*this->outFile << "Data (Bkg.Sub)" << endl; 
+		Print_FractionOfEvents( Hist_data->h, 5 );
+		Print_FractionOfEvents( Hist_data->h, 10 );
+		Print_FractionOfEvents( Hist_data->h, 15 );
+		Print_FractionOfEvents( Hist_data->h, 20 );
+
+		*this->outFile << "MC (DY)" << endl;
+		Print_FractionOfEvents( Hist_DY->h, 5 );
+		Print_FractionOfEvents( Hist_DY->h, 10 );
+		Print_FractionOfEvents( Hist_DY->h, 15 );
+		Print_FractionOfEvents( Hist_DY->h, 20 );
+	}
+
+	void Print_FractionOfEvents( TH1D* h, Double_t cut )
+	{
+		Int_t nBin = h->GetNbinsX();
+		Double_t TotEntries = h->Integral() + h->GetBinContent(0) + h->GetBinContent(nBin+1);
+		Double_t nPassEntries = 0.0;
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+			Double_t BinCenter = h->GetBinCenter(i_bin);
+			if( BinCenter > cut )
+				nPassEntries = nPassEntries + h->GetBinContent(i_bin);
+		}
+		nPassEntries = nPassEntries + h->GetBinContent(nBin+1); // -- take into account overflow -- //
+
+		Double_t Frac = nPassEntries / TotEntries;
+
+		*this->outFile << TString::Format("Fraction = %1.lf / %1.lf = %.2lf", nPassEntries, TotEntries, Frac*100) << endl;
 	}
 
 	TH1D* BackgroundSubtraction( TH1D* h_data, TH1D* h_top, TH1D* h_diboson )
@@ -778,13 +815,13 @@ protected:
 	{
 		if( HistName_Base == "h_RatioPt" )
 		{
-			this->RebinSize = 1;
+			this->RebinSize = 5;
 			this->xMin = 1;
 			this->xMax = 100;
 			this->yMin = 0.5;
-			this->yMax = 1e7;
+			this->yMax = 1e6;
 			this->XTitle = "P_{T}^{lead} / P_{T}^{sub}";
-			this->YTitle = TString::Format("Entries / %.0d", this->RebinSize);
+			this->YTitle = TString::Format("Entries / %.2lf", (Double_t)this->RebinSize * 0.01);
 			this->isLogx = kTRUE;
 			this->isLogy = kTRUE;
 		}
