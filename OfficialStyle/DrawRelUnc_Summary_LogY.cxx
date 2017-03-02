@@ -1,6 +1,6 @@
 #include <Include/PlotTools.h>
 
-class Tool_DrawRelUnc()
+class Tool_DrawRelUnc
 {
 public:
 	TCanvas *c;
@@ -18,12 +18,58 @@ public:
 
 	Tool_DrawRelUnc()
 	{
-		c = new TCanvas("Myc_RelUnc_Summary", "",0,0,1100,1000);
-		this->Setup_Canvas();
-
 		this->FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 	}
+	
 
+	void DrawCanvas()
+	{
+		this->Get_Histograms();
+
+		this->c = new TCanvas("Myc_RelUnc_Summary", "",0,0,1100,1000);
+		this->Setup_Canvas();
+		this->c->cd();
+
+		this->Hist_RelStatUnc->h->Draw("HISTLP");
+		this->Hist_RelLumiUnc->h->Draw("HISTLPSAME");
+		this->Hist_RelTheoUnc_Acc->h->Draw("HISTLPSAME");
+		this->Hist_RelSystUnc_EffSF->h->Draw("HISTLPSAME");
+		this->Hist_RelSystUnc_DetRes->h->Draw("HISTLPSAME");
+		// this->Hist_RelSystUnc_Bkg->h->Draw("HISTLPSAME");
+		this->Hist_RelSystUnc_FSR->h->Draw("HISTLPSAME");
+		this->Hist_RelSystUnc_Tot->h->Draw("HISTLPSAME");
+
+		this->SetAxisFormat( this->Hist_RelStatUnc->h );
+
+		// Print_Histogram( Hist_RelStatUnc->h, kTRUE );
+		// Print_Histogram( Hist_RelLumiUnc->h, kTRUE );
+		// Print_Histogram( Hist_RelTheoUnc_Acc->h, kTRUE );
+		// Print_Histogram( Hist_RelSystUnc_EffSF->h, kTRUE );
+		// Print_Histogram( Hist_RelSystUnc_DetRes->h, kTRUE );
+		// Print_Histogram( Hist_RelSystUnc_Bkg->h, kTRUE );
+		// Print_Histogram( Hist_RelSystUnc_FSR->h, kTRUE );
+		// Print_Histogram( Hist_RelSystUnc_Tot->h, kTRUE );
+
+		TLegend *legend1 = this->Get_Legend1();
+		legend1->Draw();
+
+		TLegend *legend2 = this->Get_Legend2();
+		legend2->Draw();
+
+		TLatex latex;
+		this->DrawLatex( latex );
+
+		// Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(1e-2, 1);
+		c->SaveAs(".pdf");
+		c->SetLogy();
+		this->RemoveNegativeBin ( this->Hist_RelSystUnc_Bkg->h );
+		c->SaveAs(".pdf");
+
+		Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(4e-2, 250);
+
+		c->SaveAs(".pdf");
+	}
+protected:
 	void Get_Histograms()
 	{
 		TString FileName = FileLocation + "/ROOTFile_DiffXSec_FullUnc.root";
@@ -71,37 +117,12 @@ public:
 		this->Hist_RelTheoUnc_Acc->h->SetMarkerStyle(24);
 
 		// -- uncertainty from luminosity -- //
-		this->Hist_RelTheoUnc_Acc = new HistInfo( TColor::GetColor("#ff9933"), "Luminosity");
-		this->Hist_RelTheoUnc_Acc->Set_FileName_ObjectName( FileName, "h_RelLumiUnc_Percent");
-		this->Hist_RelTheoUnc_Acc->Set();
-		this->Hist_RelTheoUnc_Acc->h->SetMarkerStyle(22);
+		this->Hist_RelLumiUnc = new HistInfo( TColor::GetColor("#ff9933"), "Luminosity");
+		this->Hist_RelLumiUnc->Set_FileName_ObjectName( FileName, "h_RelLumiUnc_Percent");
+		this->Hist_RelLumiUnc->Set();
+		this->Hist_RelLumiUnc->h->SetMarkerStyle(22);
 	}
 
-	void DrawCanvas()
-	{
-		this->c->cd();
-
-		this->Hist_RelStatUnc->h->Draw("HISTLP");
-		this->Hist_RelLumiUnc->h->Draw("HISTLPSAME");
-		this->Hist_RelTheoUnc_Acc->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_EffSF->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_EffSF->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_DetRes->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_DetRes->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_Bkg->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_Bkg->h->Draw("HISTLPSAME");
-		this->Hist_RelSystUnc_Tot->h->Draw("HISTLPSAME");
-
-		TLegend *legend1 = this->Get_Legend1();
-		legend1->Draw();
-
-		TLegend *legend2 = this->Get_Legend2();
-		legend2->Draw();
-
-		TLatex latex;
-		this->DrawLatex( latex );
-	}
-protected:
 	void Setup_Canvas()
 	{
 		this->c->Range(0.7446481,-1.71506,3.620936,2.425239);
@@ -109,7 +130,7 @@ protected:
 		this->c->SetBorderMode(0);
 		this->c->SetBorderSize(2);
 		this->c->SetLogx();
-		this->c->SetLogy();
+		// this->c->SetLogy();
 		this->c->SetLeftMargin(0.12);
 		this->c->SetRightMargin(0.05);
 		this->c->SetTopMargin(0.08);
@@ -152,6 +173,28 @@ protected:
 		return leg;
 	}
 
+	void SetAxisFormat( TH1D* h )
+	{
+		h->GetXaxis()->SetTitle("m [GeV]");
+		h->GetXaxis()->SetRange(1,43);
+		h->GetXaxis()->SetMoreLogLabels();
+		h->GetXaxis()->SetNoExponent();
+		h->GetXaxis()->SetLabelFont(42);
+		h->GetXaxis()->SetLabelOffset(0.007);
+		h->GetXaxis()->SetLabelSize(0.05);
+		h->GetXaxis()->SetTitleOffset(0.95);
+		h->GetXaxis()->SetTitleSize(0.06);
+		h->GetXaxis()->SetTitleFont(42);
+		h->GetYaxis()->SetTitle("Relative Uncertainty (%)");
+		h->GetYaxis()->SetLabelFont(42);
+		h->GetYaxis()->SetLabelOffset(0.007);
+		h->GetYaxis()->SetLabelSize(0.05);
+		h->GetYaxis()->SetTitleSize(0.06);
+		h->GetYaxis()->SetTitleOffset(0.9);
+		h->GetYaxis()->SetTitleFont(42);
+		h->GetYaxis()->SetRangeUser(4e-2, 3e+2);
+	}
+
 	void DrawLatex( TLatex &latex )
 	{
 		latex.SetTextSize(0.04);
@@ -161,11 +204,26 @@ protected:
 		latex.DrawLatexNDC( 0.15, 0.87, "CMS Preliminary" );
 	}
 
-}
+	void RemoveNegativeBin( TH1D* h)
+	{
+		Int_t nBin = h->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+			Double_t value = h->GetBinContent(i_bin);
+			if( value < 0 )
+			{
+				printf("Find negative value! ... value = %lf\n", value);
+				h->SetBinContent(i_bin, 1e-10);
+			}
+		}
+	}
 
-void DrawRelunc_Summary_LogY()
+};
+
+void DrawRelUnc_Summary_LogY()
 {
 	Tool_DrawRelUnc *tool = new Tool_DrawRelUnc();
-	
+	tool->DrawCanvas();
 }
 
