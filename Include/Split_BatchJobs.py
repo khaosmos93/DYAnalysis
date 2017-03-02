@@ -37,7 +37,7 @@ class SplitJobs:
 		self.CodeName = self.CodeFullPath.split('/')[-1]
 
 		self.queue = "fastq"
-		if os.environ("HOSTNAME") == "tamsa2.snu.ac.kr":
+		if os.environ["HOSTNAME"] == "tamsa2.snu.ac.kr":
 			self.queue = "bigq"
 		if '--queue' in _opts:
 			self.queue = _opts['--queue']
