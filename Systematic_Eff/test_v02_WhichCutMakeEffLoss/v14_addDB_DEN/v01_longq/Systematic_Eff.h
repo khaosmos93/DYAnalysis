@@ -394,8 +394,6 @@ protected:
 		this->RemoveUnderOverFlow( h_DEN );
 		this->RemoveUnderOverFlow( h_NUM );
 
-		this->CheckConsistency( h_DEN, h_NUM );
-
 		// -- TEfficiency -- //
 		TEfficiency *TEff = new TEfficiency(*h_NUM, *h_DEN);
 
@@ -403,30 +401,6 @@ protected:
 		TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)TEff->CreateGraph()->Clone(GraphName);
 
 		return g_Eff;
-	}
-
-	void CheckConsistency( TH1D* h_DEN, TH1D* h_NUM )
-	{
-		Int_t nBin = h_DEN->GetNbinsX();
-		for(Int_t i=0; i<nBin; i++)
-		{
-			Int_t i_bin = i+1;
-
-			Double_t DEN = h_DEN->GetBinContent(i_bin);
-			Double_t NUM = h_NUM->GetBinContent(i_bin);
-
-			if( DEN < NUM )
-			{
-				Double_t LowerEdge = h_DEN->GetBinLowEdge(i_bin);
-				Double_t UpperEdge = h_DEN->GetBinLowEdge(i_bin+1);
-
-				printf("[%02d bin: %.0lf < M < %.0lf]: DEN < NUM! ... (DEN, NUM) = (%.1lf, %.1lf)\n", i_bin, LowerEdge, UpperEdge, DEN, NUM);
-				printf("\t NUM is set to have same value with DEN\n");
-
-				h_NUM->SetBinContent(i_bin, DEN);
-				h_NUM->SetBinError(i_bin, h_DEN->GetBinError(i_bin) );
-			}
-		}
 	}
 
 	void RemoveUnderOverFlow( TH1D* h )
@@ -527,17 +501,22 @@ protected:
 };
 
 
-void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region, vector<TString> vec_NUMStr )
+void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region, vector< pair<TString, TString> > vec_pair_NUM_Legend )
 {
 	vector< GraphInfo* > vec_GraphInfo;
 
-	Int_t nNUM = (Int_t)vec_NUMStr.size();
+	Int_t nNUM = (Int_t)vec_pair_NUM_Legend.size();
 	for(Int_t i_num=0; i_num<nNUM; i_num++)
 	{
-		TString GraphName = TString::Format("g_%s_%s_%s_%s", DataType.Data(), "DEN", vec_NUMStr[i_num].Data(), Region.Data());
+		TString GraphName = TString::Format("g_%s_%s_%s_%s", DataType.Data(), "DEN", vec_pair_NUM_Legend[i_num].first.Data(), Region.Data());
+		// cout << "[" << GraphName << "]" << endl;
 		TGraphAsymmErrors* g_temp = (TGraphAsymmErrors*)f_input->Get(GraphName)->Clone();
 
-		GraphInfo *GraphInfo_temp = new GraphInfo( i_num+1, vec_NUMStr[i_num] );
+		Int_t Color_temp = i_num+1;
+		if( i_num+1 == 3 ) Color_temp = kOrange+2;
+		if( i_num+1 == 5 ) Color_temp = 28;
+
+		GraphInfo *GraphInfo_temp = new GraphInfo( Color_temp, vec_pair_NUM_Legend[i_num].second );
 		GraphInfo_temp->Set_Graph( g_temp );
 
 		vec_GraphInfo.push_back( GraphInfo_temp );
@@ -564,7 +543,7 @@ void DrawCanvas_Eff_VariousNUM( TFile* f_input, TString DataType, TString Region
 		legend->AddEntry( vec_GraphInfo[i_num]->g, vec_GraphInfo[i_num]->LegendName );
 	}
 	SetGraphFormat_SinglePad( vec_GraphInfo[0]->g, "m [GeV]", "Efficiency" );
-	vec_GraphInfo[0]->g->GetYaxis()->SetRangeUser( 0.85, 1.05 );
+	vec_GraphInfo[0]->g->GetYaxis()->SetRangeUser( 0.65, 1.05 );
 	
 	legend->Draw();
 

@@ -14,6 +14,8 @@ export KP_DATA_PATH=""
 if [ $HOSTNAME == "cms.snu.ac.kr" ]; # -- 147.47.242.42 -- # 
 then 
 	KP_DATA_PATH="/data1/kplee/DYntuple/80X"
+elif [ $HOSTNAME == "" ]; # -- 147.47.242.67 -- #
+	KP_DATA_PATH = "/data5/Users/kplee/DYntuple/80X"
 else
 	echo "WARNING: ntuples are not available in this machine"
 fi
