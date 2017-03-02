@@ -12,7 +12,7 @@ def usage():
     print "   --isMC isMC                      MC or data"
     print "   --outdir Dir                     Directory where outputs are stored"
     print "  Optional options :"
-    print "   --queue queueName                      queue name (default: fastq)"
+    print "   --queue queueName                      queue name (default: fastq or bigq)"
     sys.exit()
 
 # Parse arguments
@@ -37,6 +37,8 @@ class SplitJobs:
 		self.CodeName = self.CodeFullPath.split('/')[-1]
 
 		self.queue = "fastq"
+		if os.environ("HOSTNAME") == "tamsa2.snu.ac.kr":
+			self.queue = "bigq"
 		if '--queue' in _opts:
 			self.queue = _opts['--queue']
 
