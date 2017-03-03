@@ -390,7 +390,6 @@ protected:
 			&& (mu.AbsTrkIso / mu.Inner_pT) < 0.1
 			&& mu.TuneP_pT > 53
 			&& fabs(mu.dB) < 0.2
-			&& mu.muonHits > 0
 			&& mu.pixelHitsGLB > 0
 			// && mu.trackerLayersGLB > 5
 			// && mu.muonHits > 0
