@@ -1,7 +1,7 @@
 #!bin/bash
 cwd2=$(pwd)
 
-cd /home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170226_080923_ProdHist_Systematic_Eff
+cd /share_home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170306_002010_ProdHist_Systematic_Eff
 cd Data; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
