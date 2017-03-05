@@ -221,7 +221,7 @@ echo "job is completed"
 
 	def GetListOfROOTFiles( self ):
 		List_FullPath = []
-		BasePath = environ['KP_DATA_PATH'] + "/"
+		BasePath = os.environ['KP_DATA_PATH'] + "/"
 
 		if "DYPowheg" in self.Sample:
 			MassRange = self.Sample.split("_")[-1]
