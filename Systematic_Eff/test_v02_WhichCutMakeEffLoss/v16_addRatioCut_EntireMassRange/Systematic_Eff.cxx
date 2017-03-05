@@ -61,9 +61,9 @@ void Systematic_Eff()
 		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus0", "1. NUM=DEN") );
 		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus1", "2. +pixelHits") );
 		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus2", "3. +trackerLayers") );
-		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus3", "4. +vertex chi2") );
-		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus4", "5. +muonHits") );
-		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus5", "6. +matchedStations") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus3", "4. +muonHits") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus4", "5. +matchedStations") );
+		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus5", "6. +vertex chi2") );
 		vec_pair_NUM_Legend.push_back( make_pair("NUM_DENPlus6", "7. +RelPtError") );
 		vec_pair_NUM_Legend.push_back( make_pair("NUM", "8. +OS (=Full Selection)") );
 

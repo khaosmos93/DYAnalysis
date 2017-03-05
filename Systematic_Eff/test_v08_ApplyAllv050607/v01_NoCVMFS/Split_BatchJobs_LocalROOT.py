@@ -37,6 +37,8 @@ class SplitJobs:
 		self.CodeName = self.CodeFullPath.split('/')[-1]
 
 		self.queue = "fastq"
+		if os.environ["HOSTNAME"] == "tamsa2.snu.ac.kr":
+			self.queue = "bigq"
 		if '--queue' in _opts:
 			self.queue = _opts['--queue']
 
@@ -219,7 +221,7 @@ echo "job is completed"
 
 	def GetListOfROOTFiles( self ):
 		List_FullPath = []
-		BasePath = "/data1/kplee/DYntuple/80X/"
+		BasePath = environ['KP_DATA_PATH'] + "/"
 
 		if "DYPowheg" in self.Sample:
 			MassRange = self.Sample.split("_")[-1]

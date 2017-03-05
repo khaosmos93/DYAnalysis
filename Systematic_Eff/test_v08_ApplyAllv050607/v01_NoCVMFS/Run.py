@@ -85,9 +85,10 @@ List_Samples.append( ["tW", 1, 2] )
 List_Samples.append( ["tbarW", 1, 2] )
 
 # -- output directory -- //
+AnalyzerPATH = os.environ['KP_ANALYZER_PATH']
 TIME = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
-OutDir = "~/Physics/ZprimeAnalysis_80X/Outputs/v%s_%s" % (TIME, MainOpts['--code'].split('.cxx')[0] )
-OutDir = os.path.expanduser( OutDir )
+OutDir = "%s/Outputs/v%s_%s" % (AnalyzerPATH, TIME, MainOpts['--code'].split('.cxx')[0] )
+# OutDir = os.path.expanduser( OutDir )
 os.mkdir( OutDir )
 
 # -- convert path for code to absolute path -- #
