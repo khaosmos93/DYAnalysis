@@ -357,6 +357,14 @@ echo "job is completed"
 				XSec = -1
 				SumW = -1
 
+		elif "WJets_HT" in self.Sample:
+			HTRange = self.Sample.split("_")[-1]
+			if HTRange in xSecSumW_WJetsHTBinned:
+				XSec = xSecSumW_WJetsHTBinned[ MassRange ][0]
+				SumW = xSecSumW_WJetsHTBinned[ MassRange ][1]
+			else:
+				XSec = -1
+				SumW = -1
 		# elif "DYMuMu" in self.Sample:
 		# 	MassRange = self.Sample.split("_")[1]
 		# 	if MassRange in XSecSumW_DYMMaMCNLO:
