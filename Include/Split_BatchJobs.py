@@ -360,8 +360,8 @@ echo "job is completed"
 		elif "WJets_HT" in self.Sample:
 			HTRange = self.Sample.split("_")[-1]
 			if HTRange in xSecSumW_WJetsHTBinned:
-				XSec = xSecSumW_WJetsHTBinned[ MassRange ][0]
-				SumW = xSecSumW_WJetsHTBinned[ MassRange ][1]
+				XSec = xSecSumW_WJetsHTBinned[ HTRange ][0]
+				SumW = xSecSumW_WJetsHTBinned[ HTRange ][1]
 			else:
 				XSec = -1
 				SumW = -1
