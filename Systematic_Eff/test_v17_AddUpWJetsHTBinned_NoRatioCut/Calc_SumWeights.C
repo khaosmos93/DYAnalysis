@@ -115,7 +115,7 @@ void Calc_SumWeights()
 
 			if( i == 99999 && SumWeight_All == 100000 && SumWeight_Separated == 100000 )
 			{
-				outFile << "\tNo negative weights up to 100k events: it is considered as the samples without negative weight" << endl;
+				outFile << "\tNo negative weights up to 100k events: it is considered as a sample without negative weight" << endl;
 				SumWeight_All = nEvent;
 				SumWeight_Separated = nEvent;
 				break;
