@@ -213,7 +213,7 @@ echo "job is completed"
 			MassRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
-		elif "WJetsHTBinned" in self.Sample:
+		elif "WJets_HT" in self.Sample:
 			HTRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
 
@@ -304,14 +304,14 @@ echo "job is completed"
 		XSecSumW_Powheg["M6000toInf"] = [2.066E-08, 100000]
 
 		xSecSumW_WJetsHTBinned = {}
-		xSecSumW_WJetsHTBinned["HT70to100"] = [-1, -1]
-		xSecSumW_WJetsHTBinned["HT100to200"] = [1345, -1]
-		xSecSumW_WJetsHTBinned["HT200to400"] = [359.7, -1]
-		xSecSumW_WJetsHTBinned["HT400to600"] = [48.91, -1]
-		xSecSumW_WJetsHTBinned["HT600to800"] = [12.05, -1]
-		xSecSumW_WJetsHTBinned["HT800to1200"] = [5.501, -1]
-		xSecSumW_WJetsHTBinned["HT1200to2500"] = [1.329, -1]
-		xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, -1]
+		xSecSumW_WJetsHTBinned["HT70to100"] = [-1, 10094300.0]
+		xSecSumW_WJetsHTBinned["HT100to200"] = [1345, 39617782.0]
+		xSecSumW_WJetsHTBinned["HT200to400"] = [359.7, 4950372.0]
+		xSecSumW_WJetsHTBinned["HT400to600"] = [48.91, 5796237.0]
+		xSecSumW_WJetsHTBinned["HT600to800"] = [12.05, 14908337.0]
+		xSecSumW_WJetsHTBinned["HT800to1200"] = [5.501, 6200954.0]
+		xSecSumW_WJetsHTBinned["HT1200to2500"] = [1.329, 6474309.0]
+		xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, 2384259.0]
 
 		# XSecSumW_DYMMaMCNLO = {}
 		# XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]

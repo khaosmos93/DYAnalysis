@@ -26,6 +26,15 @@ def Add_DYPowheg( _List_Samples ):
 	_List_Samples.append( ["DYPowheg_M4500to6000", 1, 1] )
 	_List_Samples.append( ["DYPowheg_M6000toInf", 1, 1] )
 
+def Add_WJetsHTBinned( _List_Samples ):
+	_List_Samples.append( ["WJets_HT100to200", 1, 1] )
+	_List_Samples.append( ["WJets_HT200to400", 1, 2] )
+	_List_Samples.append( ["WJets_HT400to600", 1, 1] )
+	_List_Samples.append( ["WJets_HT600to800", 1, 1] )
+	_List_Samples.append( ["WJets_HT800to1200", 1, 1] )
+	_List_Samples.append( ["WJets_HT1200to2500", 1, 1] )
+	_List_Samples.append( ["WJets_HT2500toInf", 1, 1] )
+
 def MakeScript_Sub(_OutDir, _List_Samples, _TIME):
 	f = open("./script_qsub_ALL.sh", "w")
 	f.write( "#!bin/bash\n" )
@@ -77,6 +86,7 @@ except:
 List_Samples = []
 List_Samples.append( ["Data", 0, 10] )
 Add_DYPowheg( List_Samples )
+Add_WJetsHTBinned( List_Samples )
 List_Samples.append( ["WWTo2L2Nu", 1, 1] )
 List_Samples.append( ["WZ", 1, 1] )
 List_Samples.append( ["ZZ", 1, 1] )
