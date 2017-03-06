@@ -113,6 +113,14 @@ void Calc_SumWeights()
 			if( GenFlag == kTRUE )
 				SumWeight_Separated += GenWeight;
 
+			if( i == 99999 && SumWeight_All == 100000 && SumWeight_Separated == 100000 )
+			{
+				outFile << "\tNo negative weights up to 100k events: it is considered as the samples without negative weight" << endl;
+				SumWeight_All = nEvent;
+				SumWeight_Separated = nEvent;
+				break;
+			}
+
 		} // -- end of event iteration -- //
 
 		outFile << TString::Format("\t[Sum of weights: (total, separated) = (%.1lf, %.1lf)]\n", SumWeight_All, SumWeight_Separated) << endl;
