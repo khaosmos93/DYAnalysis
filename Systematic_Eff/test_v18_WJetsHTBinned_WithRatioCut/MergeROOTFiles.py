@@ -12,6 +12,14 @@ if "ROOTFile_DYPowheg.root" not in os.listdir("."):
 	print cmd_mv
 	os.system( cmd_mv )
 
+if "ROOTFile_WJets.root" not in os.listdir("."):
+	cmd_hadd = "hadd ROOTFile_WJets.root ROOTFile_WJets_HT*.root"
+	print cmd_hadd
+	os.system( cmd_hadd )
+	cmd_mv = "mv ROOTFile_WJets_HT*.root ./Local"
+	print cmd_mv
+	os.system( cmd_mv )
+
 List_ROOTFile = []
 print "List of ROOT files that will be merged: "
 for file in os.listdir("."):
