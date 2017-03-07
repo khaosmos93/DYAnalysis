@@ -1,7 +1,7 @@
 #!bin/bash
 cwd2=$(pwd)
 
-cd /share_home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170304_003036_ProdHist_Systematic_Eff
+cd /share_home/kplee/Physics/ZprimeAnalysis_80X/Outputs/v20170306_234800_ProdHist_Systematic_Eff
 cd Data; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
@@ -43,6 +43,34 @@ cp *.root ${cwd2}
 cd ../
 
 cd DYPowheg_M6000toInf; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT100to200; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT200to400; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT400to600; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT600to800; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT800to1200; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT1200to2500; source hadd_all.sh
+cp *.root ${cwd2}
+cd ../
+
+cd WJets_HT2500toInf; source hadd_all.sh
 cp *.root ${cwd2}
 cd ../
 

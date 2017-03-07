@@ -1,0 +1,56 @@
+<WJets_HT70to100>
+	[Total Events: 10094300]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (10094300.0, 10094300.0)]
+
+	Loop RunTime(WJets_HT70to100): 2.43 seconds
+
+<WJets_HT100to200>
+	[Total Events: 39617782]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (39617782.0, 39617782.0)]
+
+	Loop RunTime(WJets_HT100to200): 3.91 seconds
+
+<WJets_HT200to400>
+	[Total Events: 4950372]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (4950372.0, 4950372.0)]
+
+	Loop RunTime(WJets_HT200to400): 2.08 seconds
+
+<WJets_HT400to600>
+	[Total Events: 5796237]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (5796237.0, 5796237.0)]
+
+	Loop RunTime(WJets_HT400to600): 2.28 seconds
+
+<WJets_HT600to800>
+	[Total Events: 14908337]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (14908337.0, 14908337.0)]
+
+	Loop RunTime(WJets_HT600to800): 2.35 seconds
+
+<WJets_HT800to1200>
+	[Total Events: 6200954]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (6200954.0, 6200954.0)]
+
+	Loop RunTime(WJets_HT800to1200): 2.62 seconds
+
+<WJets_HT1200to2500>
+	[Total Events: 6474309]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (6474309.0, 6474309.0)]
+
+	Loop RunTime(WJets_HT1200to2500): 2.68 seconds
+
+<WJets_HT2500toInf>
+	[Total Events: 2384259]
+	No negative weights up to 100k events: it is considered as the samples without negative weight
+	[Sum of weights: (total, separated) = (2384259.0, 2384259.0)]
+
+	Loop RunTime(WJets_HT2500toInf): 2.6 seconds
+
