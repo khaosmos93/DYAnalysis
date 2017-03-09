@@ -35,7 +35,7 @@ public:
 		this->Hist_RelTheoUnc_Acc->h->Draw("HISTLPSAME");
 		this->Hist_RelSystUnc_EffSF->h->Draw("HISTLPSAME");
 		this->Hist_RelSystUnc_DetRes->h->Draw("HISTLPSAME");
-		// this->Hist_RelSystUnc_Bkg->h->Draw("HISTLPSAME");
+		this->Hist_RelSystUnc_Bkg->h->Draw("HISTLPSAME");
 		this->Hist_RelSystUnc_FSR->h->Draw("HISTLPSAME");
 		this->Hist_RelSystUnc_Tot->h->Draw("HISTLPSAME");
 
@@ -60,14 +60,14 @@ public:
 		this->DrawLatex( latex );
 
 		// Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(1e-2, 1);
-		c->SaveAs(".pdf");
-		c->SetLogy();
-		this->RemoveNegativeBin ( this->Hist_RelSystUnc_Bkg->h );
-		c->SaveAs(".pdf");
+		// c->SaveAs(".pdf");
+		// c->SetLogy();
+		// this->RemoveNegativeBin ( this->Hist_RelSystUnc_Bkg->h );
+		// c->SaveAs(".pdf");
 
-		Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(4e-2, 250);
+		// Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(4e-2, 250);
 
-		c->SaveAs(".pdf");
+		// c->SaveAs(".pdf");
 	}
 protected:
 	void Get_Histograms()
@@ -103,6 +103,7 @@ protected:
 		this->Hist_RelSystUnc_Bkg->Set_FileName_ObjectName( FileName, "h_RelSysUnc_Bkg.Est._Percent");
 		this->Hist_RelSystUnc_Bkg->Set();
 		this->Hist_RelSystUnc_Bkg->h->SetMarkerStyle(27);
+		Hist_RelSystUnc_Bkg->h->SetMinimum(0.001);
 
 		// -- uncertainty from FSR correction -- //
 		this->Hist_RelSystUnc_FSR = new HistInfo( TColor::GetColor("#9999ff"), "FSR");
@@ -130,7 +131,7 @@ protected:
 		this->c->SetBorderMode(0);
 		this->c->SetBorderSize(2);
 		this->c->SetLogx();
-		// this->c->SetLogy();
+		this->c->SetLogy();
 		this->c->SetLeftMargin(0.12);
 		this->c->SetRightMargin(0.05);
 		this->c->SetTopMargin(0.08);
