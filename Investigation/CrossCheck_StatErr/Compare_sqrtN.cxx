@@ -1,5 +1,5 @@
-#include <DYAnalysis_76X/Include/PlotTools.h>
-#include <DYAnalysis_76X/Include/DYAnalyzer.h>
+#include <Include/PlotTools.h>
+#include <Include/DYAnalyzer.h>
 
 // -- nMassBin: defined in DYAnalyzer -- //
 Double_t MassBinEdges[nMassBin+1] = {
@@ -88,7 +88,7 @@ void Compare_sqrtN()
 	Hist_KP->h_ratio->Draw("LPSAME");
 	Hist_Andrius->h_ratio->Draw("LPSAME");
 
-	SetHistFormat_BottomPad( Hist_KP->h_ratio, "m (#mu#mu) [GeV]", "Unc. / black", 0.9, 2.0 );
+	SetHistFormat_BottomPad( Hist_KP->h_ratio, "m (#mu#mu) [GeV]", "Unc. / black", 0.9, 3.0 );
 	Hist_KP->h_ratio->GetYaxis()->CenterTitle();
 	Hist_KP->h_ratio->GetYaxis()->SetTitleOffset(0.4);
 
