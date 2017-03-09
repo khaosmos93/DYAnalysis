@@ -143,13 +143,14 @@ void DrawCavnas_Comparison_DiffXSec( TString Type1, HistInfo *Hist1, TString Typ
 
 void Compatibility_TwoChannel()
 {
-	TString FileName_Theory = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval/ROOTFile_xSec_Theory.root";
+	TString BasePath = gSystem->Getenv("KP_ROOTFILE_PATH");
+	TString FileName_Theory = BasePath+"/ROOTFile_xSec_Theory.root";
 	TString HistName_Theory = "h_DiffXsec_FEWZ_NNPDF_NNLO";
 
 	TString FileName_ee = "./diffXsec_Electron.root";
 	TString HistName_ee = "h_xSec_dM_FSRCorr";
 
-	TString FileName_mm = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval/ROOTFile_DiffXSec_FullUnc.root";
+	TString FileName_mm = BasePath+"/ROOTFile_DiffXSec_FullUnc.root";
 	TString HistName_mm = "h_DiffXsec_FSRCorr";
 
 	HistInfo *Hist_Theory = new HistInfo( kRed, "FEWZ (NNLO, NNPDF3.0)" );
