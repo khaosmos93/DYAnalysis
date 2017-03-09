@@ -1,4 +1,4 @@
-#include <DYAnalysis_76X/Include/PlotTools.h>
+#include <Include/PlotTools.h>
 
 #include <TPad.h>
 
@@ -22,11 +22,11 @@ Int_t color_MMHT = kBlue;
 
 TString HistName_HERAPDF = "h_DXSec_HERAPDF";
 TString HistName_HERAPDF_RelUnc = "h_RelTotUnc_HERAPDF";
-Int_t color_HERAPDF = kGreen+1;
+Int_t color_HERAPDF = kGreen+2;
 
 TString HistName_ABM = "h_DXSec_ABM";
 TString HistName_ABM_RelUnc = "h_RelTotUnc_ABM";
-Int_t color_ABM = kOrange+1;
+Int_t color_ABM = kOrange+2;
 
 Double_t small = 0.000001; // -- margin between Pads -- //
 
