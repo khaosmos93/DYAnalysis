@@ -14,6 +14,8 @@ class InputMaker
 {
 public:
 
+	TString AnalyzerPath;
+	TString ROOTFilePath;
 	vector< TH1D* > vec_Hist;
 
 	/////////////////
@@ -46,16 +48,18 @@ public:
 	TH1D* h_DiffXSec_NNLO_13;
 	TH1D* h_NormXSec_NNLO_13;
 
-	void InputMaker()
+	InputMaker()
 	{
 		TH1::AddDirectory(kFALSE);
+		this->AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+		this->ROOTFilePath = gSystem->Getenv("KP_ROOTFILE_PATH");
 	}
 
 	void Save( TFile *f_output )
 	{
 		this->PutIntoVector();
 
-		Int_t nHist = (TH1D*)vec_Hist.size();
+		Int_t nHist = (Int_t)vec_Hist.size();
 		for(Int_t i_hist=0; i_hist<nHist; i_hist++)
 			vec_Hist[i_hist]->Write();
 	}
@@ -79,7 +83,7 @@ protected:
 		// -- differential cross section -- //
 		// TString Path_13 = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval";
 		// TFile *f_input_13 = TFile::Open(Path_13+"/ROOTFile_DiffXSec_FullUnc.root");
-		TFile *f_input_13 = TFile::Open("./ROOTFile_DiffXSec_FullUnc.root");
+		TFile *f_input_13 = TFile::Open(this->ROOTFilePath+"/ROOTFile_DiffXSec_FullUnc.root");
 
 		TH1D* h_DiffXSec_13_beforeBin = (TH1D*)f_input_13->Get("h_DiffXsec_FSRCorr")->Clone("h_DiffXSec_13");
 		this->h_DiffXSec_13 = this->Rebin_DiffXSec( h_DiffXSec_13_beforeBin );
@@ -198,27 +202,19 @@ protected:
 		//////////////////////////////////
 		// -- set theoretical values -- //
 		//////////////////////////////////
-		TFile *f_input_theo_8 = TFile::Open("1Dabsxsec_NNLO_CTEQ12NNLO.root"); f_input_theo_8->cd();
-		TH1D* h_AbsXSec =  (TH1D*)f_input_theo_8->Get("invm_FEWZ")->Clone(); // -- just sigma, not dsigma/dm -- //
-
-		// -- Z-peak - //
+		TFile *f_input_theo_8 = TFile::Open(this->AnalyzerPath+"/TheoryValues/NNLO_NNPDF30_8TeV_forDoubleRatio/ROOTFile_DY_FEWZ_NNLO_NNPDF30_nnlo_as_0118.root");
+		f_input_theo_8->cd();
+		TH1D* h_AbsXSec =  (TH1D*)f_input_theo_8->Get("h_Xsec")->Clone(); // -- just sigma, not dsigma/dm -- //
 		Double_t ZpeakXSec_NNLO_8 = h_AbsXSec->Integral(10, 22); // -- from 60 to 120 GeV -- //
 		Double_t ZpeakXSecErr_NNLO_8 = 0; // -- not used yet -- //
 		this->h_ZpeakXSec_NNLO_8 = new TH1D("h_ZpeakXSec_NNLO_8", "", 1, 0, 1);
 		this->h_ZpeakXSec_NNLO_8->SetBinContent( 1, ZpeakXSec_NNLO_8 );
 		this->h_ZpeakXSec_NNLO_8->SetBinError( 1, ZpeakXSecErr_NNLO_8 );
 
-		// -- change from x-sec to diff.x-sec -- //
-		h_AbsXSec = this->Rebin_MassBin( h_AbsXSec );
-		this->h_DiffXSec_NNLO_8 = this->GetDiffXSec_FromAbsXSec( h_AbsXSec, "h_DiffXSec_NNLO_8" );
+		this->h_DiffXSec_NNLO_8 = (TH1D*)f_input_theo_8->Get("h_DiffXsec")->Clone("h_DiffXSec_NNLO_8");
 
 		// -- calculate ratio (normalized x-sec) -- //
 		this->h_NormXSec_NNLO_8 = (TH1D*)this->h_DiffXSec_NNLO_8->Clone("h_NormXSec_NNLO_8");
-
-		// -- assign error -- //
-		TFile *f_input_theoUnc_8 = TFile::Open("pdfu.root");
-		TH1D* h_PDF = (TH1D*)f_input_theoUnc_8->Get("pdfu")->Clone(); h_PDF->Scale( 0.01 );
-
 		for(Int_t i=0; i<nMassBin; i++)
 		{
 			Int_t i_bin = i+1;
@@ -231,12 +227,7 @@ protected:
 			Double_t DiffXSecAbsError = this->h_DiffXSec_NNLO_8->GetBinError(i_bin);
 			Double_t NormXSecAbsError = DiffXSecAbsError / ZpeakXSec_NNLO_8;
 
-			Double_t PDFError = h_PDF->GetBinContent(i_bin);
-			Double_t PDFAbsError = PDFError * NormXSec;
-
-			Double_t TotError = sqrt( NormXSecAbsError*NormXSecAbsError + 0.04*PDFAbsError*PDFAbsError); // -- what is 0.04? ... copy & paste it from 8TeV code (DYPackage/test/ShapeR/plot_dratio.C)
-
-			this->h_NormXSec_NNLO_8->SetBinError( i_bin, TotError );
+			this->h_NormXSec_NNLO_8->SetBinError( i_bin, NormXSecAbsError );
 		}
 
 		Print_Histogram( this->h_NormXSec_NNLO_8 );
@@ -382,9 +373,9 @@ protected:
 		legend->SetFillStyle(0);
 		legend->SetBorderSize(0);
 
-		TString TheoType = "";
-		if( Type == "8TeV" ) TheoType = "CT10";
-		else if( Type == "13TeV" ) TheoType = "NNPDF 3.0";
+		TString TheoType = "NNPDF 3.0";
+		// if( Type == "8TeV" ) TheoType = "CT10";
+		// else if( Type == "13TeV" ) TheoType = "NNPDF 3.0";
 		legend->AddEntry( h_data, "Data" );
 		legend->AddEntry( h_theory, "Theory (NNLO, "+TheoType+")" );
 		legend->Draw();
