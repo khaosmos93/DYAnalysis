@@ -250,7 +250,7 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	Hist_ABM->h_ratio->GetYaxis()->SetTitleOffset( yTitleOffset * (ySize_LastPad / ySize_Pads) );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleSize( 0.2 );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleOffset( 0.8 );
-	Hist_ABM->h_ratio->GetXaxis()->SetTitle( "m (#mu#mu) [GeV]" );
+	Hist_ABM->h_ratio->GetXaxis()->SetTitle( "m [GeV]" );
 	TLegend *legend_lastPad = (TLegend*)LastPad->GetPrimitive("TPave");
 	legend_lastPad->SetY1NDC(0.3);
 	legend_lastPad->SetY2NDC(0.6);
@@ -259,9 +259,20 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	TLatex latex;
 	Double_t lumi = 2.8;
 	Int_t E_CM = 13;
-	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
-	latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
-	latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	if( TStr_Channel == "MM" )
+	{
+		latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
+		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
+		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	}
+	else if( TStr_Channel == "LL" )
+	{
+		latex.DrawLatexNDC( 0.55, 0.96, "#font[42]{#scale[0.8]{2.3 fb^{-1} (ee)}}");
+		latex.DrawLatexNDC( 0.75, 0.96, "#font[42]{#scale[0.8]{2.8 fb^{-1} (#mu#mu)}}");
+		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
+		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	}
+
 	// latex.DrawLatexNDC( 0.76, 0.004, "#font[42]{#scale[0.8]{m (#mu#mu) [GeV]}}");
 
 	c->SaveAs(".pdf");
