@@ -1,8 +1,5 @@
-#include <DYAnalysis_76X/Include/PlotTools.h>
-
+#include <Include/PlotTools.h>
 #include <TPad.h>
-
-TString FileName = "ROOTFile_Input_Comparison_VariousPDF.root";
 
 TString HistName_Data = "h_DXSec";
 TString HistName_RelStatUnc = "h_RelStatUnc";
@@ -22,11 +19,11 @@ Int_t color_MMHT = kBlue;
 
 TString HistName_HERAPDF = "h_DXSec_HERAPDF";
 TString HistName_HERAPDF_RelUnc = "h_RelTotUnc_HERAPDF";
-Int_t color_HERAPDF = kGreen+1;
+Int_t color_HERAPDF = kGreen+2;
 
 TString HistName_ABM = "h_DXSec_ABM";
 TString HistName_ABM_RelUnc = "h_RelTotUnc_ABM";
-Int_t color_ABM = kOrange+1;
+Int_t color_ABM = kOrange+2;
 
 Double_t small = 0.000001; // -- margin between Pads -- //
 
@@ -63,8 +60,8 @@ void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistIn
 	// X_axis->SetTickLength( xTickWidth );
 
 	TAxis *Y_axis = Hist_Theory->h_ratio->GetYaxis();
-	Double_t ratio_Min = 0.51;
-	Double_t ratio_Max = 1.49;
+	Double_t ratio_Min = 0.31;
+	Double_t ratio_Max = 1.69;
 	Y_axis->SetTitle( Hist_Theory->LegendName+"/Data" );
 	Y_axis->CenterTitle();
 	Y_axis->SetTitleOffset( 0.45 );
@@ -91,8 +88,11 @@ void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistIn
 	
 }
 
-void Comparison_VariousPDF()
+void Comparison_VariousPDF(TString TStr_Channel = "LL")
 {
+	TString FileName = TString::Format("ROOTFile_Input_Comparison_VariousPDF_%s.root", TStr_Channel.Data() );
+	printf( "[FileName = %s]\n", FileName.Data() );
+
 	// -- data x-section with stat. unc. only -- //
 	HistInfo *Hist_Data_StatUnc = new HistInfo( kBlack, "Data" );
 	Hist_Data_StatUnc->Set_FileName_ObjectName( FileName, HistName_Data );
@@ -190,7 +190,7 @@ void Comparison_VariousPDF()
 
 	// -- Draw Canvas -- //
 	TCanvas *c;
-	SetCanvas_Square( c, "c_Comparison_VariousPDF" );
+	SetCanvas_Square( c, "c_Comparison_VariousPDF_"+TStr_Channel );
 
 	gStyle->SetPadBorderMode(0);
 	gStyle->SetFrameBorderMode(0);
