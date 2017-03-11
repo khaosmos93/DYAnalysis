@@ -149,6 +149,47 @@ public:
 		this->h_DiffXSec->Write();
 	}
 
+	void Load_Histogram( TFile *f_input, TString _Type )
+	{
+		TString HistName = "";
+
+		HistName = "h_data_4p2_"+_Type;
+		this->h_data_4p2 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_data_4p3_"+_Type;
+		this->h_data_4p3 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_BkgSub_4p2_"+_Type;
+		this->h_BkgSub_4p2 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_BkgSub_4p3_"+_Type;
+		this->h_BkgSub_4p3 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_Unfolded_4p2_"+_Type;
+		this->h_Unfolded_4p2 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_Unfolded_4p3_"+_Type;
+		this->h_Unfolded_4p3 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_AccEffCorr_4p2_"+_Type;
+		this->h_AccEffCorr_4p2 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_AccEffCorr_4p3_"+_Type;
+		this->h_AccEffCorr_4p3 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_EffSFCorr_4p2_"+_Type;
+		this->h_EffSFCorr_4p2 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_EffSFCorr_4p3_"+_Type;
+		this->h_EffSFCorr_4p3 = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_FSRCorr_"+_Type;
+		this->h_FSRCorr = (TH1D*)f_input->Get(HistName)->Clone();
+
+		HistName = "h_DiffXSec_"+_Type;
+		this->h_DiffXSec = (TH1D*)f_input->Get(HistName)->Clone();
+	}
+
 protected:
 	void Set_HistogramName()
 	{
@@ -489,9 +530,9 @@ public:
 		this->Make_Histogram_SqrtN();
 	}
 
-	void MakeAndSave_Histogram()
+	void MakeAndSave_Histogram( TFile *f_output )
 	{
-		TFile *f_output = TFile::Open("ROOTFile_CentralValue_and_Replicas.root", "RECREATE");
+		f_output->cd();
 		Hists_CV->Set_Type( "CV" );
 		Hists_CV->Make_Histogram_All();
 		Hists_CV->Save_Histogram( f_output );
@@ -503,13 +544,11 @@ public:
 			Hists_Smeared[i_map]->Make_Histogram_All();
 			Hists_Smeared[i_map]->Save_Histogram( f_output );
 		}
-
-		f_output->Close();
 	}
 
-	void Save_RelStatUnc()
+	void Save_RelStatUnc( TFile *f_output )
 	{
-		TFile *f_output = TFile::Open("ROOTFile_Output_StatUnc_StepByStep.root", "RECREATE"); f_output->cd();
+		f_output->cd();
 		this->h_1OverSqrtN->Write("h_1OverSqrtN");
 
 		this->h_RelStatUnc_Observed->Write("h_RelStatUnc_Observed");
@@ -523,15 +562,28 @@ public:
 		f_output->Close();
 	}
 
+	void Load_Histogram_StepByStep( TFile *f_input )
+	{
+		this->Hists_CV->Load_Histogram( f_input, "CV" );
+		for(Int_t i_map=0; i_map<nMap; i_map++)
+		{
+			TString Type = TString::Format("Smeared_%d", i_map);
+			this->Hists_Smeared[i_map]->Load_Histogram( f_input, Type );
+		}
+	}
+
+	void Make_Histogram_StepByStep()
+	{
+		this->Hists_CV->Make_Histogram_All();
+		for(Int_t i_map=0; i_map<nMap; i_map++)
+			this->Hists_Smeared[i_map]->Make_Histogram_All();
+	}
+
 	void Calc_RelStatUnc_StepByStep()
 	{
 		// -- just validation: statistical uncertainty of observed yield -- //
 		this->h_RelStatUnc_Observed = this->Init_DYBin( "h_RelStatUnc_Observed" );
 		this->Calc_RelStatUnc( "Observed", this->h_RelStatUnc_Observed );
-
-		Hists_CV->Make_Histogram_All();
-		for(Int_t i_map=0; i_map<nMap; i_map++)
-			Hists_Smeared[i_map]->Make_Histogram_All();
 
 		// -- statistical uncertainty after background subtraction -- //
 		this->h_RelStatUnc_BkgSub = this->Init_DYBin( "h_RelStatUnc_BkgSub" );
