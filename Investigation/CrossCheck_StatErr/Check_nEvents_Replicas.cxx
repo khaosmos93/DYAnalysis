@@ -1,5 +1,14 @@
+#include <RooRealVar.h>
+#include <RooDataSet.h>
+#include <RooDataHist.h>
+#include <RooGaussian.h>
+#include <RooGlobalFunc.h>
+#include <RooPlot.h>
+
 // #include "StatUnc_StepByStep.h"
 #define nTest 100
+
+using namespace RooFit;
 
 class HistogramContainer
 {
@@ -90,7 +99,9 @@ public:
 	}
 };
 
-void Print( HistogramContainer* Hists_CV, HistogramContainer** Hists_Smeared );
+TTree* makeTTree_RelDiff_DEN_BkgSub_NUM_Unfolding(Int_t i_bin, HistogramContainer *Hists_CV, HistogramContainer *Hists_Smeared[nTest]);
+void RelUnc_DEN_BkgSub_NUM_Unfolding(Int_t i_bin, HistogramContainer *Hists_CV, HistogramContainer *Hists_Smeared[nTest] );
+
 void Check_nEvents_Replicas()
 {
 	TFile *f_input = TFile::Open("./Local/ROOTFile_CentralValue_and_Replicas.root");
@@ -143,24 +154,25 @@ void Check_nEvents_Replicas()
 			Sum_RelDiff_Observed_LargerRelDiff += RelDiff_Observed;
 		}
 
-		if( fabs(RelDiff_Unfolded) < fabs(RelDiff_BkgSub) )
-		{
-			printf( "[Observed] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Observed_Smeared, Observed_CV, AbsDiff_Observed, Observed_CV, RelDiff_Observed*100 );
-			printf( "[BkgSub] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", BkgSub_Smeared, BkgSub_CV, AbsDiff_BkgSub, BkgSub_CV, RelDiff_BkgSub*100 );
-			printf( "[Unfolded] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Unfolded_Smeared, Unfolded_CV, AbsDiff_Unfolded, Unfolded_CV, RelDiff_Unfolded*100 );
-			printf( "\n" );
-		}
-		// printf("[CV] (Observed, BkgSub, Unfolded) = (%.1lf, %.1lf, %.1lf)\n", Observed_CV, BkgSub_CV, Unfolded_CV);
-		// Double_t RelDiff_Observed_BkgSub_CV = (BkgSub_CV - Observed_CV) / Observed_CV;
-		// Double_t RelDiff_BkgSub_Unfolded_CV = (Unfolded_CV - BkgSub_CV) / BkgSub_CV;
-		// printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf, %.3lf)\n", RelDiff_Observed_BkgSub_CV, RelDiff_BkgSub_Unfolded_CV );
+		// if( fabs(RelDiff_Unfolded) > fabs(RelDiff_BkgSub) )
+		// {
+		// 	printf( "[Observed] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Observed_Smeared, Observed_CV, AbsDiff_Observed, Observed_CV, RelDiff_Observed*100 );
+		// 	printf( "[BkgSub] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", BkgSub_Smeared, BkgSub_CV, AbsDiff_BkgSub, BkgSub_CV, RelDiff_BkgSub*100 );
+		// 	printf( "[Unfolded] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Unfolded_Smeared, Unfolded_CV, AbsDiff_Unfolded, Unfolded_CV, RelDiff_Unfolded*100 );
+		// 	printf( "\n" );
+		// }
 
-		// printf("[Smeared] (Observed, BkgSub, Unfolded) = (%.1lf, %.1lf, %.1lf)\n", Observed_Smeared, BkgSub_Smeared, Unfolded_Smeared);
-		// Double_t RelDiff_Observed_BkgSub_Smeared = (BkgSub_Smeared - Observed_Smeared) / Observed_Smeared;
-		// Double_t RelDiff_BkgSub_Unfolded_Smeared = (Unfolded_Smeared - BkgSub_Smeared) / BkgSub_Smeared;
-		// printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf, %.3lf)\n", RelDiff_Observed_BkgSub_Smeared, RelDiff_BkgSub_Unfolded_Smeared ); 
+		printf("[CV] (Observed, BkgSub, Unfolded) = (%.1lf, %.1lf, %.1lf)\n", Observed_CV, BkgSub_CV, Unfolded_CV);
+		Double_t RelDiff_Observed_BkgSub_CV = (BkgSub_CV - Observed_CV) / Observed_CV;
+		Double_t RelDiff_BkgSub_Unfolded_CV = (Unfolded_CV - BkgSub_CV) / BkgSub_CV;
+		printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf %%, %.3lf %%)\n", RelDiff_Observed_BkgSub_CV*100, RelDiff_BkgSub_Unfolded_CV*100 );
 
-		// printf( "\n" );
+		printf("[Smeared] (Observed, BkgSub, Unfolded) = (%.1lf, %.1lf, %.1lf)\n", Observed_Smeared, BkgSub_Smeared, Unfolded_Smeared);
+		Double_t RelDiff_Observed_BkgSub_Smeared = (BkgSub_Smeared - Observed_Smeared) / Observed_Smeared;
+		Double_t RelDiff_BkgSub_Unfolded_Smeared = (Unfolded_Smeared - BkgSub_Smeared) / BkgSub_Smeared;
+		printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf %%, %.3lf %%)\n", RelDiff_Observed_BkgSub_Smeared*100, RelDiff_BkgSub_Unfolded_Smeared*100 ); 
+
+		printf( "\n" );
 	}
 
 	printf("nEvent_largerRelDiff = %d (%.3lf%%)\n", nEvent_largerRelDiff, (Double_t)nEvent_largerRelDiff/nTest);

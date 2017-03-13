@@ -1008,3 +1008,249 @@ protected:
 		c->SaveAs(".pdf");
 	}
 };
+
+class TestTool_StatUnc_StepByStep: public Tool_StatUnc_StepByStep
+{
+public:
+
+	TH1D* h_RelStatUnc_DEN_BkgSub_NUM_Unfolded;
+	TH1D* h_RelStatUnc_DEN_Unfolded_NUM_BkgSub;
+
+	TestTool_StatUnc_StepByStep(): Tool_StatUnc_StepByStep()
+	{
+
+	}
+
+	void Load_Histograms_RelStatUnc( TFile *f_input )
+	{
+		f_input->cd();
+
+		this->h_1OverSqrtN = (TH1D*)f_input->Get("h_1OverSqrtN")->Clone();
+
+		this->h_RelStatUnc_Observed = (TH1D*)f_input->Get("h_RelStatUnc_Observed")->Clone();
+		this->h_RelStatUnc_BkgSub = (TH1D*)f_input->Get("h_RelStatUnc_BkgSub")->Clone();
+		this->h_RelStatUnc_Unfolded = (TH1D*)f_input->Get("h_RelStatUnc_Unfolded")->Clone();
+		this->h_RelStatUnc_AccEffCorr = (TH1D*)f_input->Get("h_RelStatUnc_AccEffCorr")->Clone();
+		this->h_RelStatUnc_EffSFCorr = (TH1D*)f_input->Get("h_RelStatUnc_EffSFCorr")->Clone();
+		this->h_RelStatUnc_FSRCorr = (TH1D*)f_input->Get("h_RelStatUnc_FSRCorr")->Clone();
+		this->h_RelStatUnc_DiffXSec = (TH1D*)f_input->Get("h_RelStatUnc_DiffXSec")->Clone();
+
+	}
+
+	void Test_SaveResults( TFile *f_output )
+	{
+		this->h_RelStatUnc_DEN_BkgSub_NUM_Unfolded = this->Test_Make_RelStatUnc_DEN_BkgSub_NUM_Unfolded();
+		this->h_RelStatUnc_DEN_Unfolded_NUM_BkgSub = this->Test_Make_RelStatUnc_DEN_Unfolded_NUM_BkgSub();
+
+		this->Test_Comparison_BkgSub_Unfold();
+
+		f_output->cd();
+		this->h_RelStatUnc_DEN_BkgSub_NUM_Unfolded->Write("h_RelStatUnc_DEN_BkgSub_NUM_Unfolded");
+		this->h_RelStatUnc_DEN_Unfolded_NUM_BkgSub->Write("h_RelStatUnc_DEN_Unfolded_NUM_BkgSub");
+
+		f_output->Close();
+	}
+
+	TH1D* Test_Make_RelStatUnc_DEN_BkgSub_NUM_Unfolded()
+	{
+		TString TStr_Type = "DEN_BkgSub_NUM_Unfolded";
+
+		TH1D* h_RelStatUnc = new TH1D("h_RelStatUnc_"+TStr_Type, "", nMassBin, MassBinEdges);
+		for(Int_t i=0; i<nMassBin; i++)
+		{
+			Int_t i_bin = i+1;
+
+			TTree *tree = this->Test_MakeTree_DEN_BkgSub_NUM_Unfolded(i_bin);
+			this->Calc_RelStatUnc_GivenTree( TStr_Type, i_bin, tree, h_RelStatUnc );
+		}
+
+		return h_RelStatUnc;
+	}
+
+	TH1D* Test_Make_RelStatUnc_DEN_Unfolded_NUM_BkgSub()
+	{
+		TString TStr_Type = "DEN_Unfolded_NUM_BkgSub";
+
+		TH1D* h_RelStatUnc = new TH1D("h_RelStatUnc_"+TStr_Type, "", nMassBin, MassBinEdges);
+		for(Int_t i=0; i<nMassBin; i++)
+		{
+			Int_t i_bin = i+1;
+
+			TTree *tree = this->Test_MakeTree_DEN_Unfolded_NUM_BkgSub(i_bin);
+			this->Calc_RelStatUnc_GivenTree( TStr_Type, i_bin, tree, h_RelStatUnc );
+		}
+
+		return h_RelStatUnc;
+	}
+
+
+	TTree* Test_MakeTree_DEN_BkgSub_NUM_Unfolded(Int_t i_bin) 
+	{
+		TTree* tree = new TTree("tree","tree");
+
+		Double_t* RelDiff = new Double_t;
+
+		tree->Branch("RelDiff", RelDiff, "RelDiff/D");
+
+		TH1D *h_BkgSub_CV = this->Hists_CV->Get_Histogram("BkgSub");
+		TH1D *h_Unfolded_CV = this->Hists_CV->Get_Histogram("Unfolded");
+		
+		Double_t BkgSub_CV = h_BkgSub_CV->GetBinContent(i_bin);
+		Double_t Unfolded_CV = h_Unfolded_CV->GetBinContent(i_bin);
+
+
+		for(Int_t i_map=0; i_map<nMap; i_map++)
+		{
+			TH1D* h_BkgSub_Smeared = this->Hists_Smeared[i_map]->Get_Histogram("BkgSub");
+			TH1D* h_Unfolded_Smeared = this->Hists_Smeared[i_map]->Get_Histogram("Unfolded");
+
+			Double_t BkgSub_Smeared = h_BkgSub_Smeared->GetBinContent(i_bin);
+			Double_t Unfolded_Smeared = h_Unfolded_Smeared->GetBinContent(i_bin);
+
+			*RelDiff = ( Unfolded_Smeared - Unfolded_CV ) / BkgSub_CV;
+
+			tree->Fill();
+		}
+
+		return tree;
+	}
+
+	TTree* Test_MakeTree_DEN_Unfolded_NUM_BkgSub(Int_t i_bin) 
+	{
+		TTree* tree = new TTree("tree","tree");
+
+		Double_t* RelDiff = new Double_t;
+
+		tree->Branch("RelDiff", RelDiff, "RelDiff/D");
+
+		TH1D *h_BkgSub_CV = this->Hists_CV->Get_Histogram("BkgSub");
+		Double_t BkgSub_CV = h_BkgSub_CV->GetBinContent(i_bin);
+
+		for(Int_t i_map=0; i_map<nMap; i_map++)
+		{
+			TH1D* h_BkgSub_Smeared = this->Hists_Smeared[i_map]->Get_Histogram("BkgSub");
+			TH1D* h_Unfolded_Smeared = this->Hists_Smeared[i_map]->Get_Histogram("Unfolded");
+
+			Double_t BkgSub_Smeared = h_BkgSub_Smeared->GetBinContent(i_bin);
+			Double_t Unfolded_Smeared = h_Unfolded_Smeared->GetBinContent(i_bin);
+
+			*RelDiff = ( BkgSub_Smeared - BkgSub_CV ) / Unfolded_Smeared;
+
+			tree->Fill();
+		}
+
+		return tree;
+	}
+
+	void Calc_RelStatUnc_GivenTree( TString TypeForTitle, Int_t i_bin, TTree* tree, TH1D* h_RelStatUnc )
+	{
+		Int_t i = i_bin-1;
+
+		Double_t BinCenter = ( MassBinEdges[i] + MassBinEdges[i+1] ) / 2.0;
+		Double_t RangeMax = 0.1;
+		Double_t Sigma_Init = 0.01;
+		this->Set_FitInitValues( BinCenter, RangeMax, Sigma_Init );
+
+		RooRealVar RelDiff("RelDiff","(N_{Smeared} - N_{CV}) / N_{CV}", (-1)*RangeMax, RangeMax);
+		RooDataSet data("data","data", tree, RelDiff) ; // -- Name of the variable should be same with the branch name in the tree -- //
+
+		// --- Make plot of binned dataset showing Poisson error bars (RooFit default)
+		RooPlot* frame = RelDiff.frame( Title(TString::Format("%.0lf < M < %.0lf (%02d bin)", MassBinEdges[i], MassBinEdges[i+1], i_bin)) );
+		
+		// -- Fit a Gaussian p.d.f to the data
+		RooRealVar mean("mean", "mean", 0, -2, 2) ;
+		RooRealVar sigma("sigma", "sigma", Sigma_Init, 0.0001, 2);
+		RooGaussian gauss("gauss", "gauss", RelDiff, mean, sigma);
+		gauss.fitTo(data);
+
+		data.plotOn(frame, Binning(50));
+		gauss.plotOn(frame);
+		gauss.paramOn(frame,Layout(0.6, 0.9, 0.9));
+		frame->getAttText()->SetTextSize(0.02);
+
+		TString CanvasName = TString::Format("c_RelDiff_%s_Bin%02d", TypeForTitle.Data(), i_bin);
+
+		TCanvas *c = new TCanvas(CanvasName, "", 700, 700); c->cd();
+		frame->Draw();
+
+		c->SaveAs(CanvasName+".pdf");
+		
+		Double_t RMS = sigma.getVal();
+		Double_t RMSErr = sigma.getError();
+
+		h_RelStatUnc->SetBinContent(i_bin, RMS);
+		h_RelStatUnc->SetBinError(i_bin, RMSErr);
+	}
+
+	void Test_Comparison_BkgSub_Unfold()
+	{
+		HistInfo *Hist_sqrtN = new HistInfo( kBlack, "1 / #sqrt{N}");
+		Hist_sqrtN->Set_Histogram( this->h_1OverSqrtN );
+		Hist_sqrtN->Set();
+		Hist_sqrtN->h->Scale( 100 );
+
+		HistInfo *Hist_BkgSub = new HistInfo( kBlue+2, "Yield after Bkg.Sub." );
+		Hist_BkgSub->Set_Histogram( this->h_RelStatUnc_BkgSub );
+		Hist_BkgSub->Set();
+		Hist_BkgSub->h->Scale( 100 );
+		Hist_BkgSub->Calc_RatioHist_Denominator( Hist_sqrtN->h );
+
+		HistInfo *Hist_Unfolded = new HistInfo( kViolet, "Yield after unfolding" );
+		Hist_Unfolded->Set_Histogram( this->h_RelStatUnc_Unfolded );
+		Hist_Unfolded->Set();
+		Hist_Unfolded->h->Scale( 100 );
+		Hist_Unfolded->Calc_RatioHist_Denominator( Hist_sqrtN->h );
+
+		HistInfo *Hist_DEN_BkgSub_NUM_Unfolded = new HistInfo( kRed, "DEN: BkgSub, NUM: Unfolded" );
+		Hist_DEN_BkgSub_NUM_Unfolded->Set_Histogram( this->h_RelStatUnc_DEN_BkgSub_NUM_Unfolded );
+		Hist_DEN_BkgSub_NUM_Unfolded->Set();
+		Hist_DEN_BkgSub_NUM_Unfolded->h->Scale( 100 );
+		Hist_DEN_BkgSub_NUM_Unfolded->CalcRatio_DEN( Hist_sqrtN->h );
+
+		HistInfo *Hist_DEN_Unfolded_NUM_BkgSub = new HistInfo( kGreen+2, "DEN: Unfolded, NUM:BkgSub" );
+		Hist_DEN_Unfolded_NUM_BkgSub->Set_Histogram( this->h_RelStatUnc_DEN_Unfolded_NUM_BkgSub );
+		Hist_DEN_Unfolded_NUM_BkgSub->Set();
+		Hist_DEN_Unfolded_NUM_BkgSub->h->Scale( 100 );
+		Hist_DEN_Unfolded_NUM_BkgSub->CalcRatio_DEN( Hist_sqrtN->h );
+
+		// -- draw canvas -- //
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = "c_Test_Comparison_RelStatUnc";
+		SetCanvas_Ratio(c, CanvasName, TopPad, BottomPad, 1, 1);
+
+		c->cd();
+		TopPad->cd();
+
+		Hist_sqrtN->Draw("HISTLPSAME");
+		Hist_BkgSub->Draw("HISTLPSAME");
+		Hist_Unfolded->Draw("HISTLPSAME");
+		Hist_DEN_BkgSub_NUM_Unfolded->Draw("HISTLPSAME");
+		Hist_DEN_Unfolded_NUM_BkgSub->Draw("HISTLPSAME");
+
+		SetHistFormat_TopPad( Hist_sqrtN->h, "Rel. Uncertainty (%)");
+		Hist_sqrtN->h->GetYaxis()->SetRangeUser( 5e-2, 300 );
+
+		TLegend *legend;
+		SetLegend( legend, 0.15, 0.70, 0.50, 0.93 );
+		Hist_sqrtN->AddToLegend( legend );
+		Hist_BkgSub->AddToLegend( legend );
+		Hist_Unfolded->AddToLegend( legend );
+		Hist_DEN_BkgSub_NUM_Unfolded->AddToLegend( legend );
+		Hist_DEN_Unfolded_NUM_BkgSub->AddToLegend( legend );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, 2.8, 13 );
+
+		c->cd();
+		BottomPad->cd();
+
+		Hist_BkgSub->DrawRatio("HISTLPSAME");
+		Hist_Unfolded->DrawRatio("HISTLPSAME");
+		Hist_DEN_BkgSub_NUM_Unfolded->DrawRatio("HISTLPSAME");
+		Hist_DEN_Unfolded_NUM_BkgSub->DrawRatio("HISTLPSAME");
+		SetHistFormat_BottomPad( Hist_BkgSub->h_ratio, "m [GeV]", "Ratio to 1/#sqrt{N}", 0.9, 3.0 );
+
+		c->SaveAs(".pdf");
+	}
+};
