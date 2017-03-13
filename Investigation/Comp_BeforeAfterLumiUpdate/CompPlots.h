@@ -166,6 +166,50 @@ protected:
 			this->XTitle = "m [GeV]";
 			this->YTitle = "Entries per bin";
 		}
+
+		else if( HistName == "wjets" )
+		{
+			this->isLogx = kTRUE;
+			this->isLogy = kTRUE;
+			this->xMin = 15;
+			this->xMax = 3000;
+			this->yMin = 0.05;
+			this->yMax = 1e4;
+			this->ratio_Min = 0;
+			this->ratio_Max = 2;
+			this->XTitle = "m [GeV]";
+			this->YTitle = "Entries per bin";
+		}
+
+		else if( HistName == "WW" )
+		{
+			this->isLogx = kTRUE;
+			this->isLogy = kTRUE;
+			this->xMin = 15;
+			this->xMax = 3000;
+			this->yMin = 0.05;
+			this->yMax = 1e4;
+			this->ratio_Min = 0;
+			this->ratio_Max = 2.5;
+			this->XTitle = "m [GeV]";
+			this->YTitle = "Entries per bin";
+		}
+
+		else if( HistName == "h_RelSysUnc_Bkg.Est._Percent" )
+		{
+			this->isLogx = kTRUE;
+			this->isLogy = kTRUE;
+			this->xMin = 15;
+			this->xMax = 3000;
+			this->yMin = 1e-2;
+			this->yMax = 200;
+			this->ratio_Min = 0.5;
+			this->ratio_Max = 1.5;
+			this->XTitle = "m [GeV]";
+			this->YTitle = "Rel. Uncertainty (%)";
+		}
+
+
 	}
 
 
