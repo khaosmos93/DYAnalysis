@@ -1,5 +1,3 @@
-#pragma once
-
 #include <TH1D.h>
 #include <TColor.h>
 #include <TLegend.h>
@@ -88,6 +86,21 @@ public:
 		this->Set_Attributes();
 	}
 
+	void Draw( TString DrawOp )
+	{
+		this->h->Draw( DrawOp );
+	}
+
+	void DrawRatio( TString DrawOp )
+	{
+		this->h_ratio->Draw( DrawOp );
+	}
+
+	void AddToLegend( TLegend *legend )
+	{
+		legend->AddEntry( this->h, this->LegendName );
+	}
+
 	void Set_Histogram( TH1D* _h )
 	{
 		this->h = (TH1D*)_h->Clone();
@@ -108,6 +121,19 @@ public:
 		h_ratio->Divide( this->h, h_Denom );
 	}
 
+	// -- shorter name -- //
+	void CalcRatio_DEN( TH1D* h_Denom )
+	{
+		this->Calc_RatioHist_Denominator( h_Denom );
+	}
+
+	// -- shorter name -- //
+	void CalcRatio_NUM( TH1D* h_Num )
+	{
+		this->Calc_RatioHist_Numerator( h_Num );
+	}
+
+	// -- outdated, just for backward compatibility -- //
 	// -- same with "Calc_RatioHist" -- //
 	void Calc_RatioHist_Denominator( TH1D* h_Denom )
 	{
@@ -124,6 +150,7 @@ public:
 		h_ratio->Divide( this->h, h_Denom );
 	}
 
+	// -- outdated, just for backward compatibility -- //
 	void Calc_RatioHist_Numerator( TH1D* h_Num )
 	{
 		if( h == NULL )
@@ -199,10 +226,28 @@ public:
 		this->g = (TGraphAsymmErrors*)_g->Clone();
 	}
 
+	// -- outdated, backward compatibility -- //
 	void DrawGraph( TString DrawOp )
 	{
 		this->g->Draw( DrawOp );
 		this->Set_Attributes();
+	}
+
+	// -- same with DrawGraph -- //
+	void Draw( TString DrawOp )
+	{
+		this->g->Draw( DrawOp );
+		this->Set_Attributes();
+	}
+
+	void DrawRatio( TString DrawOp )
+	{
+		this->g_ratio->Draw( DrawOp );
+	}
+
+	void AddToLegend( TLegend *legend )
+	{
+		legend->AddEntry( this->g, this->LegendName );
 	}
 
 	void Set_Attributes()
@@ -236,6 +281,19 @@ public:
 		this->g_ratio = this->MakeRatioGraph( g, g_Denom );
 	}
 
+	// -- shorter name -- //
+	void CalcRatio_DEN( TGraphAsymmErrors* g_Denom )
+	{
+		this->Calc_RatioGraph_Denominator( g_Denom );
+	}
+
+	// -- shorter name -- //
+	void CalcRatio_NUM( TGraphAsymmErrors* g_Num )
+	{
+		this->Calc_RatioGraph_Numerator( g_Num );
+	}
+
+	// -- outdated, just for backward compatibility -- //
 	// -- same with Calc_RatioGraph -- //
 	void Calc_RatioGraph_Denominator( TGraphAsymmErrors* g_Denom )
 	{
@@ -248,6 +306,7 @@ public:
 		this->g_ratio = this->MakeRatioGraph( g, g_Denom );
 	}
 
+	// -- outdated, just for backward compatibility -- //
 	void Calc_RatioGraph_Numerator( TGraphAsymmErrors* g_Num )
 	{
 		if( g == NULL )
@@ -449,6 +508,8 @@ void SetAxis_SinglePad( TAxis *X_axis, TAxis *Y_axis, TString XTitle, TString YT
 	X_axis->SetLabelSize(0.04);
 	X_axis->SetTitleOffset(1.1);
 	X_axis->SetTitleSize(0.05);
+	X_axis->SetNoExponent();
+	X_axis->SetMoreLogLabels();
 
 	Y_axis->SetTitle( YTitle );
 	Y_axis->SetTitleSize(0.05);
@@ -617,6 +678,7 @@ void SetLegend( TLegend *& legend, Double_t xMin = 0.75, Double_t yMin = 0.75, D
 	legend = new TLegend( xMin, yMin, xMax, yMax );
 	legend->SetFillStyle(0);
 	legend->SetBorderSize(0);
+	legend->SetTextFont( 62 );
 }
 
 TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
