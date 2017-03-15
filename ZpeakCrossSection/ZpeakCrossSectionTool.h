@@ -81,6 +81,7 @@ public:
 	// -- Uncertainties -- //
 	Double_t RelStatError;
 	Double_t RelLumiError;
+	Double_t RelSystUnc_BkgEst;
 
 	// -- for the syst. from background estimation -- //
 	TH1D *h_ttbar;
@@ -115,6 +116,10 @@ public:
 		this->Eff = 0;
 		this->EffSF_HLTv4p2 = 0;
 		this->EffSF_HLTv4p3 = 0;
+
+		this->RelStatError = -1;
+		this->RelLumiError = -1;
+		this->RelSystUnc_BkgEst = -1;
 
 		this->isDataDriven = kFALSE;
 
@@ -598,9 +603,9 @@ public:
 		printf("[%15s] %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf = %10.2lf\n", 
 				"AbsUnc", AbsSystUnc[0], AbsSystUnc[1], AbsSystUnc[2], AbsSystUnc[3], AbsSystUnc[4], AbsSystUnc[5], AbsSystUnc[6], AbsSystUnc[7], QuadSum_AbsUnc);
 
-		Double_t RelUnc_BkgEst = QuadSum_AbsUnc / yield_total;
+		this->RelSystUnc_BkgEst = QuadSum_AbsUnc / yield_total;
 		cout << "===========================================================================================" << endl;
-		printf("[Relative Uncertainty on the cross section from Bkg.Est. (Percent): %6.4lf]\n", RelUnc_BkgEst*100 );
+		printf("[Relative Uncertainty on the cross section from Bkg.Est. (Percent): %6.4lf]\n", RelSystUnc_BkgEst*100 );
 		cout << "===========================================================================================\n\n" << endl;
 	}
 
@@ -756,6 +761,7 @@ public:
 
 		this->SaveAsTVector( this->RelStatError, "RelStatError", f_output );
 		this->SaveAsTVector( this->RelLumiError, "RelLumiError", f_output );
+		this->SaveAsTVector( this->RelSystUnc_BkgEst, "RelSystUnc_BkgEst", f_output );
 
 		// -- for fiducial, post-FSR cross section -- //
 		this->SaveAsTVector( this->FpoF_yield_HLTv4p2_Eff, "FpoF_yield_HLTv4p2_Eff", f_output );
