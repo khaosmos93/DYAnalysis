@@ -1,6 +1,11 @@
 #include "ZpeakCrossSectionTool.h"
 void ZpeakCrossSection(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 {
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
+	
 	ZpeakCrossSectionTool *tool = new ZpeakCrossSectionTool(HLTname);
 
 	tool->ObtainYield(kTRUE);
@@ -25,4 +30,9 @@ void ZpeakCrossSection(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	tool->FpoF_CalcXSec();
 	tool->FpoF_CalcXsec_aMCNLO();
 	tool->Calc_SysUnc_BkgEst();
+
+	TFile *f_output = TFile::Open("ROOTFile_Output_ZpeakCrossSection.root", "RECREATE");
+	tool->Save_Results( f_output );
+
+	f_output->Close();
 }
