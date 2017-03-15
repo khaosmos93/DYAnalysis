@@ -1,7 +1,7 @@
 #include "ZpeakCrossSectionTool.h"
-void ZpeakCrossSection(TString version, TString HLTname = "IsoMu20_OR_IsoTkMu20")
+void ZpeakCrossSection(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 {
-	ZpeakCrossSectionTool *tool = new ZpeakCrossSectionTool( version, HLTname );
+	ZpeakCrossSectionTool *tool = new ZpeakCrossSectionTool(HLTname);
 
 	tool->ObtainYield(kTRUE);
 

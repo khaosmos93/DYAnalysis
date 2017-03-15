@@ -20,17 +20,16 @@
 
 #include <vector>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h"
+#include <Include/DYAnalyzer.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc"
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
 
 class ZpeakCrossSectionTool
 {
 public:
-	TString version;
 	TString HLTname;
 	TString FileLocation;
 
@@ -89,43 +88,46 @@ public:
 	TH1D *h_tW;
 	TH1D *h_WJets;
 	TH1D *h_QCD;
-	TH1D *h_diboson;
-	// TH1D *h_ZZ;
-	// TH1D *h_WZ;
-	// TH1D *h_WW;
+	// TH1D *h_diboson;
+	TH1D *h_WW;
 
-	ZpeakCrossSectionTool(TString _version, TString _HLTname )
+	// -- MC backgrounds -- //
+	TH1D *h_ZZ;
+	TH1D *h_WZ;
+	
+
+	ZpeakCrossSectionTool(TString _HLTname)
 	{
 		cout << "===================================================================================" << endl;
-		cout << "version = " << _version << ", HLT = " << _HLTname << endl;
+		cout << "HLT = " << _HLTname << endl;
 		cout << "===================================================================================\n" << endl;
 
-		HLTname = _HLTname;
-		version = _version;
-		FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
+		this->HLTname = _HLTname;
+		this->FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
-		analyzer = new DYAnalyzer( HLTname );
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X samples -- //
+		this->analyzer = new DYAnalyzer( HLTname );
+		this->analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X samples -- //
 
-		f_data = NULL;
-		f_yield = NULL;
+		this->f_data = NULL;
+		this->f_yield = NULL;
 
-		Acc = 0;
-		Eff = 0;
-		EffSF_HLTv4p2 = 0;
-		EffSF_HLTv4p3 = 0;
+		this->Acc = 0;
+		this->Eff = 0;
+		this->EffSF_HLTv4p2 = 0;
+		this->EffSF_HLTv4p3 = 0;
 
-		isDataDriven = kFALSE;
+		this->isDataDriven = kFALSE;
 
-		h_ttbar = NULL;
-		h_DYtautau = NULL;
-		h_tW = NULL;
-		h_WJets = NULL;
-		h_QCD = NULL;
-		h_diboson = NULL;
-		// h_ZZ = NULL;
-		// h_WZ = NULL;
-		// h_WW = NULL;
+		this->h_ttbar = NULL;
+		this->h_DYtautau = NULL;
+		this->h_tW = NULL;
+		this->h_WJets = NULL;
+		this->h_QCD = NULL;
+		// this->h_diboson = NULL;
+		this->h_WW = NULL;
+
+		this->h_WZ = NULL;
+		this->h_ZZ = NULL;
 
 		TH1::AddDirectory(kFALSE);
 	}
@@ -148,17 +150,17 @@ public:
 		f_data = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
 		TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
 		
-		nEvents_Observed = nEvents_Zpeak(h_data); // -- for statistical error -- //
+		this->nEvents_Observed = this->nEvents_Zpeak(h_data); // -- for statistical error -- //
 
 		f_yield = TFile::Open(FileLocation + "/ROOTFile_YieldHistogram.root"), f_yield->cd();
 		TH1D *h_yield_HLTv4p2 = (TH1D*)f_yield->Get("h_yield_OS_HLTv4p2"+Type)->Clone();
 		TH1D *h_yield_HLTv4p3 = (TH1D*)f_yield->Get("h_yield_OS_HLTv4p3"+Type)->Clone();
 
-		yield_HLTv4p2 = nEvents_Zpeak( h_yield_HLTv4p2 );
-		yield_HLTv4p3 = nEvents_Zpeak( h_yield_HLTv4p3 );
-		yield_total = yield_HLTv4p2 + yield_HLTv4p3;
+		this->yield_HLTv4p2 = this->nEvents_Zpeak( h_yield_HLTv4p2 );
+		this->yield_HLTv4p3 = this->nEvents_Zpeak( h_yield_HLTv4p3 );
+		this->yield_total = this->yield_HLTv4p2 + this->yield_HLTv4p3;
 
-		printf("[Yield] HLTv4p2: %.3lf, HLTv4p3: %.3lf, Total: %.3lf\n\n", yield_HLTv4p2, yield_HLTv4p3, yield_total);
+		printf("[Yield] HLTv4p2: %.3lf, HLTv4p3: %.3lf, Total: %.3lf\n\n", this->yield_HLTv4p2, this->yield_HLTv4p3, this->yield_total);
 	}
 
 	Double_t nEvents_Zpeak(TH1D *h)
@@ -219,6 +221,7 @@ public:
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
@@ -450,50 +453,49 @@ public:
  	// -- in case that Acceptance and efficiency are already calculated -- //
 	void ApplyAccEffCorrection(Double_t _Acc, Double_t _Eff)
 	{
-		Acc = _Acc;
-		Eff = _Eff;
-		cout << "Input Acceptance: " << Acc << ", Efficiency: " << Eff << endl; 
+		this->Acc = _Acc;
+		this->Eff = _Eff;
+		cout << "Input Acceptance: " << this->Acc << ", Efficiency: " << this->Eff << endl; 
 
-		yield_HLTv4p2_AccEff = yield_HLTv4p2 / (Acc*Eff);
-		yield_HLTv4p3_AccEff = yield_HLTv4p3 / (Acc*Eff);
+		this->yield_HLTv4p2_AccEff = this->yield_HLTv4p2 / (this->Acc*this->Eff);
+		this->yield_HLTv4p3_AccEff = this->yield_HLTv4p3 / (this->Acc*this->Eff);
 		printf("[Acc*Eff Correction] (HLTv4.2, HLTv4.3, Total) = (%.1lf, %.1lf, %.1lf)\n", yield_HLTv4p2_AccEff, yield_HLTv4p3_AccEff, yield_HLTv4p2_AccEff+yield_HLTv4p3_AccEff);
 	}
 
 	void EfficiencyScaleFactor()
 	{
-		yield_HLTv4p2_EffSF = yield_HLTv4p2_AccEff / EffSF_HLTv4p2;
-		yield_HLTv4p3_EffSF = yield_HLTv4p3_AccEff / EffSF_HLTv4p3;
-		yield_total_EffSF = yield_HLTv4p2_EffSF + yield_HLTv4p3_EffSF;
+		this->yield_HLTv4p2_EffSF = this->yield_HLTv4p2_AccEff / this->EffSF_HLTv4p2;
+		this->yield_HLTv4p3_EffSF = this->yield_HLTv4p3_AccEff / this->EffSF_HLTv4p3;
+		this->yield_total_EffSF = this->yield_HLTv4p2_EffSF + this->yield_HLTv4p3_EffSF;
 		printf("[Eff.SF-Corrected Yield] HLTv4p2: %.1lf, HLTv4p3: %.1lf, Total: %.1lf\n", yield_HLTv4p2_EffSF, yield_HLTv4p3_EffSF, yield_total_EffSF);
 	}
 
 	void EfficiencyScaleFactor(Double_t _EffSF_HLTv4p2, Double_t _EffSF_HLTv4p3)
 	{
-		EffSF_HLTv4p2 = _EffSF_HLTv4p2;
-		EffSF_HLTv4p3 = _EffSF_HLTv4p3;
-		cout << "Input Eff.SF (HLTv4.2): " << EffSF_HLTv4p2 << ", Eff.SF (HLTv4.3): " << EffSF_HLTv4p3 << endl;
+		this->EffSF_HLTv4p2 = _EffSF_HLTv4p2;
+		this->EffSF_HLTv4p3 = _EffSF_HLTv4p3;
+		cout << "Input Eff.SF (HLTv4.2): " << this->EffSF_HLTv4p2 << ", Eff.SF (HLTv4.3): " << this->EffSF_HLTv4p3 << endl;
 
-		yield_HLTv4p2_EffSF = yield_HLTv4p2_AccEff / EffSF_HLTv4p2;
-		yield_HLTv4p3_EffSF = yield_HLTv4p3_AccEff / EffSF_HLTv4p3;
-		yield_total_EffSF = yield_HLTv4p2_EffSF + yield_HLTv4p3_EffSF;
-		printf("[Eff.SF-Corrected Yield] HLTv4p2: %.1lf, HLTv4p3: %.1lf, Total: %.1lf\n", yield_HLTv4p2_EffSF, yield_HLTv4p3_EffSF, yield_total_EffSF);
+		this->yield_HLTv4p2_EffSF = this->yield_HLTv4p2_AccEff / this->EffSF_HLTv4p2;
+		this->yield_HLTv4p3_EffSF = this->yield_HLTv4p3_AccEff / this->EffSF_HLTv4p3;
+		this->yield_total_EffSF = this->yield_HLTv4p2_EffSF + this->yield_HLTv4p3_EffSF;
+		printf("[Eff.SF-Corrected Yield] HLTv4p2: %.1lf, HLTv4p3: %.1lf, Total: %.1lf\n", this->yield_HLTv4p2_EffSF, this->yield_HLTv4p3_EffSF, this->yield_total_EffSF);
 	}
 
 	void CalcXSec()
 	{
-		xSec = yield_total_EffSF / Lumi;
+		this->xSec = this->yield_total_EffSF / Lumi;
 
 		// -- Statistical Error -- //
-		this->RelStatError = sqrt(nEvents_Observed)/yield_total;
-		printf("[Stat.Error] (sqrt(# observed events) / yield) = (%.1lf / %.1lf) = %12.7lf\n\n", sqrt(nEvents_Observed), yield_total, RelStatError);
-		Double_t xSec_StatError = xSec * RelStatError;
+		this->RelStatError = sqrt(nEvents_Observed)/this->yield_total;
+		printf("[Stat.Error] (sqrt(# observed events) / yield) = (%.1lf / %.1lf) = %12.7lf\n\n", sqrt(this->nEvents_Observed), this->yield_total, this->RelStatError);
+		Double_t xSec_StatError = this->xSec * this->RelStatError;
 
-		this->RelLumiError = 0.027;
-		Double_t xSec_LumiError = xSec * RelLumiError;
-
+		this->RelLumiError = 0.023;
+		Double_t xSec_LumiError = this->xSec * this->RelLumiError;
 
 		cout << "===============================================================================" << endl;
-		printf("[Z-peak cross section] %.3lf +- %.3lf(stat. %.3lf%%) +- %.3lf(lumi. %.3lf%%)\n", xSec, xSec_StatError, RelStatError*100, xSec_LumiError, RelLumiError*100);
+		printf("[Z-peak cross section] %.3lf +- %.3lf(stat. %.3lf%%) +- %.3lf(lumi. %.3lf%%)\n", this->xSec, xSec_StatError, this->RelStatError*100, xSec_LumiError, this->RelLumiError*100);
 		cout << "===============================================================================\n\n" << endl;
 	}
 
@@ -517,7 +519,7 @@ public:
 		Double_t FpoF_xSec_LumiError = this->FpoF_xSec * this->RelLumiError;
 
 		cout << "===============================================================================" << endl;
-		printf("<Fiducial, post-FSR results> [Z-peak cross section] %.3lf +- %.3lf(stat. %.3lf%%) +- %.3lf(lumi. %.3lf%%)\n", FpoF_xSec, FpoF_xSec_StatError, RelStatError*100, FpoF_xSec_LumiError, RelLumiError*100);
+		printf("<Fiducial, post-FSR results> [Z-peak cross section] %.3lf +- %.3lf(stat. %.3lf%%) +- %.3lf(lumi. %.3lf%%)\n", this->FpoF_xSec, FpoF_xSec_StatError, this->RelStatError*100, FpoF_xSec_LumiError, this->RelLumiError*100);
 		cout << "===============================================================================\n\n" << endl;
 	}
 
@@ -533,50 +535,68 @@ public:
 		this->SetupHistogram_DataDrivenBkg();
 
 		// // -- MC-based background -- //
-		// this->SetupHistgram_MCBkg();
+		this->SetupHistgram_MCBkg_All();
 
+		vector< Double_t > nBkgEvent;
+		vector< Double_t > AbsSystUnc;
 
-		vector< TH1D* > Histo_Bkg;
-		Histo_Bkg.push_back( h_ttbar ); 
-		Histo_Bkg.push_back( h_DYtautau ); 
-		Histo_Bkg.push_back( h_tW ); 
-		Histo_Bkg.push_back( h_QCD ); 
-		Histo_Bkg.push_back( h_WJets );
-		Histo_Bkg.push_back( h_diboson );
+		// -- data-driven backgrounds -- //
+		vector< TH1D* > Histo_DataDrivnBkg;
+		Histo_DataDrivnBkg.push_back( this->h_ttbar ); 
+		Histo_DataDrivnBkg.push_back( this->h_DYtautau ); 
+		Histo_DataDrivnBkg.push_back( this->h_tW ); 
+		Histo_DataDrivnBkg.push_back( this->h_QCD ); 
+		Histo_DataDrivnBkg.push_back( this->h_WJets );
+		Histo_DataDrivnBkg.push_back( this->h_WW );
 
-		// Histo_Bkg.push_back( h_WW ); 
-		// Histo_Bkg.push_back( h_WZ ); 
-		// Histo_Bkg.push_back( h_ZZ );
-
-		const Int_t nBkg = 6;
-		Double_t nBkgEvent[nBkg] = {0};
-		Double_t AbsSysUnc[nBkg] = {0};
+		Int_t nDataDrivenBkg = (Int_t)Histo_DataDrivnBkg.size();
 
 		// -- Data-driven backgrounds -- //
-		for(Int_t i=0; i<nBkg; i++)
+		for(Int_t i=0; i<nDataDrivenBkg; i++)
 		{
-			nBkgEvent[i] = nEvents_Zpeak( Histo_Bkg[i] ); 
-			AbsSysUnc[i] = SumError_Zpeak( Histo_Bkg[i] );
+			nBkgEvent.push_back( nEvents_Zpeak( Histo_DataDrivnBkg[i] ) );
+			AbsSystUnc.push_back( SumError_Zpeak( Histo_DataDrivnBkg[i] ) );
 
-			// printf("[%d bkg] (nEvent, AbsSysUnc) = (%.3lf, %.3lf)\n", i, nEvents_Zpeak( Histo_Bkg[i] ), SumError_Zpeak( Histo_Bkg[i] ) );
+			// printf("[%d bkg] (nEvent, AbsSystUnc) = (%.3lf, %.3lf)\n", i, nEvents_Zpeak( Histo_DataDrivnBkg[i] ), SumError_Zpeak( Histo_DataDrivnBkg[i] ) );
 		}
 
+		// -- MC-based backgrounds -- //
+		Double_t RelUnc_xSec_WZ = 0.4052; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-13-011/index.html -- //
+		Double_t RelUnc_xSec_ZZ = 0.1087; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-13-005/index.html -- //
+
+		Double_t nEvent_WZ = this->nEvents_Zpeak( this->h_WZ );
+		Double_t AbsStatUnc_WZ = this->SumError_Zpeak( this->h_WZ );
+		Double_t AbsSystUnc_WZ = nEvent_WZ * RelUnc_xSec_WZ;
+		Double_t AbsTotUnc_WZ = sqrt( AbsStatUnc_WZ*AbsStatUnc_WZ + AbsSystUnc_WZ*AbsSystUnc_WZ );
+
+		nBkgEvent.push_back( nEvent_WZ );
+		AbsSystUnc.push_back( AbsTotUnc_WZ );
+
+		Double_t nEvent_ZZ = this->nEvents_Zpeak( this->h_ZZ );
+		Double_t AbsStatUnc_ZZ = this->SumError_Zpeak( this->h_ZZ );
+		Double_t AbsSystUnc_ZZ = nEvent_ZZ * RelUnc_xSec_ZZ;
+		Double_t AbsTotUnc_ZZ = sqrt( AbsStatUnc_ZZ*AbsStatUnc_ZZ + AbsSystUnc_ZZ*AbsSystUnc_ZZ );
+
+		nBkgEvent.push_back( nEvent_ZZ );
+		AbsSystUnc.push_back( AbsTotUnc_ZZ );
+
+		Int_t nBkg = (Int_t)nBkgEvent.size();
 		Double_t Sum_nBkg = 0;
 		Double_t QuadSum_AbsUnc = 0;
 		for(Int_t i=0; i<nBkg; i++)
 		{
 			Sum_nBkg += nBkgEvent[i];
-			QuadSum_AbsUnc += AbsSysUnc[i] * AbsSysUnc[i];
+			QuadSum_AbsUnc += AbsSystUnc[i] * AbsSystUnc[i];
 		}
 
 		QuadSum_AbsUnc = sqrt(QuadSum_AbsUnc);
 
 		// printf("\tttbar\tDYtautau\ttW\tDiJet\tWJet\tWW\tWZ\tZZ\n");
-		printf("[ Category] %10s, %10s, %10s, %10s, %10s, %10s\n", "ttbar", "DYtautau", "tW", "DiJet", "WJet", "diboson");
-		printf("[ # events] %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf = %10.2lf\n", 
-				nBkgEvent[0], nBkgEvent[1], nBkgEvent[2], nBkgEvent[3], nBkgEvent[4], nBkgEvent[5], Sum_nBkg);
-		printf("[AbsSysUnc] %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf = %10.2lf\n", 
-				AbsSysUnc[0], AbsSysUnc[1], AbsSysUnc[2], AbsSysUnc[3], AbsSysUnc[4], AbsSysUnc[5], QuadSum_AbsUnc);
+		printf("[%15s] %10s, %10s, %10s, %10s, %10s, %10s, %10s, %10s\n", "Category", "ttbar", "DYtautau", "tW", "DiJet", "WJet", "WW", "WZ", "ZZ");
+		printf("[%15s] %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf = %10.2lf\n", 
+				"# events", nBkgEvent[0], nBkgEvent[1], nBkgEvent[2], nBkgEvent[3], nBkgEvent[4], nBkgEvent[5], nBkgEvent[6], nBkgEvent[7], Sum_nBkg);
+		printf("[%15s] %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf, %10.2lf = %10.2lf\n", 
+				"AbsUnc", AbsSystUnc[0], AbsSystUnc[1], AbsSystUnc[2], AbsSystUnc[3], AbsSystUnc[4], AbsSystUnc[5], AbsSystUnc[6], AbsSystUnc[7], QuadSum_AbsUnc);
 
 		Double_t RelUnc_BkgEst = QuadSum_AbsUnc / yield_total;
 		cout << "===========================================================================================" << endl;
@@ -584,68 +604,47 @@ public:
 		cout << "===========================================================================================\n\n" << endl;
 	}
 
-	// void SetupHistgram_MCBkg()
-	// {
-	// 	Int_t nTag = (Int_t)Tag.size();
+	void SetupHistgram_MCBkg_All()
+	{
+		this->h_WZ = this->SetupHistgram_MCBkg( "WZ" );
+		this->h_ZZ = this->SetupHistgram_MCBkg( "ZZ" );
+	}
 
-	// 	Double_t norm_ZZ = 0;
-	// 	Double_t norm_WZ = 0;
-	// 	Double_t norm_WW = 0;
+	TH1D* SetupHistgram_MCBkg(TString Type )
+	{
+		Int_t nTag = (Int_t)Tag.size();
+		Double_t normFactor = 0;
 
-	// 	for(Int_t i_tag=0; i_tag<nTag; i_tag++)
-	// 	{
-	// 		Double_t norm = (Xsec[i_tag] * Lumi) / nEvents[i_tag];
-	// 		if( Tag[i_tag] == "ZZ" )
-	// 		{
-	// 			norm_ZZ = norm;
-	// 			printf("[Normalization factor for ZZ = %lf]\n", norm_ZZ);
-	// 		}
-	// 		else if( Tag[i_tag] == "WZ" )
-	// 		{
-	// 			norm_WZ = norm;
-	// 			printf("[Normalization factor for WZ = %lf]\n", norm_WZ);
-	// 		}
-	// 		else if( Tag[i_tag] == "WW" )
-	// 		{
-	// 			norm_WW = norm;
-	// 			printf("[Normalization factor for WW = %lf]\n", norm_WW);
-	// 		}
-	// 	}
-	// 	TFile *f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root"); f_MC->cd();
-	// 	h_ZZ = (TH1D*)f_MC->Get("h_mass_OS_ZZ")->Clone();
-	// 	// h_ZZ = (TH1D*)h_ZZ->Rebin(nMassBin, h_ZZ->GetName(), MassBinEdges);
-	// 	h_WZ = (TH1D*)f_MC->Get("h_mass_OS_WZ")->Clone();
-	// 	// h_WZ = (TH1D*)h_WZ->Rebin(nMassBin, h_WZ->GetName(), MassBinEdges);
-	// 	h_WW = (TH1D*)f_MC->Get("h_mass_OS_WW")->Clone();
-	// 	// h_WW = (TH1D*)h_WW->Rebin(nMassBin, h_WW->GetName(), MassBinEdges);
+		for(Int_t i_tag=0; i_tag<nTag; i_tag++)
+		{
+			if( Tag[i_tag] == Type )
+			{
+				normFactor = (Xsec[i_tag] * Lumi) / nEvents[i_tag];
+				printf( "[Normalization factor for %s = %lf]\n", Type.Data(), normFactor );
+				break;
+			}
+		}
 
-	// 	if( h_ZZ == NULL || h_WZ == NULL || h_WW == NULL )
-	// 	{
-	// 		printf("Histogram for MC_based background is not loaded properly! ... please check");
-	// 		return;
-	// 	}
+		TFile *f_MC = TFile::Open(this->FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root"); f_MC->cd();
+		TH1D* h_Bkg = (TH1D*)f_MC->Get("h_mass_OS_"+Type)->Clone();
+		// h_Bkg = (TH1D*)h_Bkg->Rebin(nMassBin, h_Bkg->GetName(), MassBinEdges); // -- doesn't need to Rebin -- //
+		h_Bkg->Scale( normFactor );
 
-	// 	h_ZZ->Scale( norm_ZZ );
-	// 	h_WZ->Scale( norm_WZ );
-	// 	h_WW->Scale( norm_WW );
+		f_MC->Close();
 
-	// 	TH1::AddDirectory(kFALSE);
-	// }
+		return h_Bkg;
+	}
 
 	void SetupHistogram_DataDrivenBkg()
 	{
-		TFile *f_DataDrivenBkg = TFile::Open(FileLocation + "/ROOTFile_Bkg_DataDrivenMethod.root");
+		TFile *f_DataDrivenBkg = TFile::Open(this->FileLocation + "/ROOTFile_Bkg_DataDrivenMethod.root");
 		h_QCD = (TH1D*)f_DataDrivenBkg->Get("dijet")->Clone();
 		h_WJets = (TH1D*)f_DataDrivenBkg->Get("wjets")->Clone();
 		h_ttbar = (TH1D*)f_DataDrivenBkg->Get("ttbar")->Clone();
 		h_tW = (TH1D*)f_DataDrivenBkg->Get("tW")->Clone();
 		h_DYtautau = (TH1D*)f_DataDrivenBkg->Get("DYtautau")->Clone();
-		h_diboson = (TH1D*)f_DataDrivenBkg->Get("diboson")->Clone();
-
-		if( h_QCD == NULL || h_WJets == NULL || h_ttbar == NULL || h_tW == NULL || h_DYtautau == NULL || h_diboson == NULL )
-		{
-			printf("Histogram for Data-driven background is not loaded properly! ... please check");
-		}
+		h_WW = (TH1D*)f_DataDrivenBkg->Get("WW")->Clone();
+		// h_diboson = (TH1D*)f_DataDrivenBkg->Get("diboson")->Clone();
 	}
 
 	Double_t SumError_Zpeak(TH1D *h)
@@ -672,7 +671,7 @@ public:
 
 	void FpoF_CalcXsec_aMCNLO()
 	{
-		TFile* f_result = TFile::Open(FileLocation+"/ROOTFile_Results_DYAnalysis_76X.root");
+		TFile* f_result = TFile::Open(this->FileLocation+"/ROOTFile_Results_DYAnalysis_76X.root");
 		TH1D* h_FpoF_yield_aMCNLO = (TH1D*)f_result->Get("h_FpoF_yield_aMCNLO")->Clone();
 
 		Double_t FpoF_yield_aMCNLO = 0;
