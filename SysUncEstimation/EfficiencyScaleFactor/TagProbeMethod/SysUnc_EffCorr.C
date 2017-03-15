@@ -1,6 +1,6 @@
 #include "SysUncTool_EffCorr.h"
 
-void SysUnc_EffCorr(TString version, TString Ver_CMSSW = "76X")
+void SysUnc_EffCorr()
 {
 	SysUncTool_EffCorr *SysTool = new SysUncTool_EffCorr();
 	SysTool->SetIsDataDriven( kTRUE );
@@ -11,7 +11,7 @@ void SysUnc_EffCorr(TString version, TString Ver_CMSSW = "76X")
 	SysTool->MakeSmearedEffMap();
 
 	SysTool->CorrectedEff_AllMap();
-	SysTool->CalcXsec_AllMap(version, Ver_CMSSW);
+	SysTool->CalcXsec_AllMap();
 	SysTool->SaveResults();
 
 

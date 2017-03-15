@@ -21,16 +21,16 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc"
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldBayes.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfoldResponse.h>
+#include <src/RooUnfoldBayes.h>
+#include <src/RooUnfoldInvert.h>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DiffXsecTools.h"
+#include <Include/MyCanvas.C>
+#include <Include/DYAnalyzer.h>
+#include <Include/DiffXsecTools.h>
 
 #define nEtaBin 5
 #define nPtBin 4
@@ -40,7 +40,7 @@
 class MyDiffXsecTool : public DiffXsecTools
 {
 public:
-	MyDiffXsecTool(TString version, TString Ver_CMSSW) : DiffXsecTools(version, Ver_CMSSW)
+	MyDiffXsecTool() : DiffXsecTools()
 	{
 
 	}
@@ -104,6 +104,8 @@ public:
 class SysUncTool_EffCorr
 {
 public:
+	TString IncludePath;
+	TString ROOTFilePath;
 	Bool_t isDataDriven;
 	Double_t MassBinEdges[nMassBin+1];
 
@@ -229,6 +231,9 @@ public:
 
 		isDataDriven = kTRUE;
 		cout << "Default value for isDataDriven: " << isDataDriven << endl;
+
+		this->IncludePath = gSystem->Getenv("KP_INCLUDE_PATH");
+		this->ROOTFilePath = gSystem->Getenv("KP_ROOTFILE_PATH");
 	}
 
 	void SetIsDataDriven(Bool_t _isDataDriven)
@@ -242,7 +247,7 @@ public:
 
 	void SetupCentralValueStatError(TString ROOTFileName)
 	{
-		TFile *f = new TFile("/home/kplee/CommonCodes/DrellYanAnalysis/"+ROOTFileName);
+		TFile *f = new TFile(this->IncludePath + "/" + ROOTFileName);
 		TH2D *h_RecoID_Data = (TH2D*)f->Get("h_2D_Eff_RecoID_Data");
 		TH2D *h_RecoID_MC = (TH2D*)f->Get("h_2D_Eff_RecoID_MC");
 
@@ -336,7 +341,7 @@ public:
 
 	void SetUpSysUnc(TString ROOTFileName)
 	{
-		TFile *f_input = new TFile("/home/kplee/CommonCodes/DrellYanAnalysis/"+ROOTFileName);
+		TFile *f_input = new TFile(this->IncludePath + "/" + ROOTFileName);
 
 		TH2D *h_RelDiff_RecoID_Data = (TH2D*)f_input->Get("h_2D_RelDiff_RecoID_Data_Tot")->Clone();
 		TH2D *h_RelDiff_RecoID_MC = (TH2D*)f_input->Get("h_2D_RelDiff_RecoID_MC_Tot")->Clone();
@@ -850,7 +855,7 @@ public:
 			h_mass_EffPass_Corr_HLTv4p3[i_map] = new TH1D("h_mass_EffPass_Corr_HLTv4p3_"+TString::Format("%d", i_map), "", nMassBin, MassBinEdges);
 		}
 
-		TString BaseLocation = "/data4/Users/kplee/DYntuple";
+		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 		// -- Each ntuple directory & corresponding Tags -- //
 			// -- GenWeights are already taken into account in nEvents -- //
 		vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
@@ -877,6 +882,7 @@ public:
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
@@ -1092,29 +1098,16 @@ public:
 		/////////////////////////////////////////////////////////////////
 		// -- Calculation of the central value: for the cross check -- //
 		/////////////////////////////////////////////////////////////////
-		CalcDiffXsec_GivenEffSF( version, Ver_CMSSW, 
-								 g_Eff_Uncorrected, g_Eff_HLTv4p2_CV, g_Eff_HLTv4p3_CV,
-								 h_DiffXsec_CV);
+		this->CalcDiffXsec_GivenEffSF( g_Eff_Uncorrected, g_Eff_HLTv4p2_CV, g_Eff_HLTv4p3_CV,
+								 	   h_DiffXsec_CV);
 
 		// h_DiffXsec_CV->SetName("h_DiffXsec_CV");
-		TString FileLocation = "";
-		TFile *f_cv = NULL;
-
-		if( Ver_CMSSW == "74X" )
-		{
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles/"+version;
-			f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_74X.root");
-		}
-		else if( Ver_CMSSW == "76X" )
-		{
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/"+version;
-			f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
-		}
+		TFile *f_cv = TFile::Open(this->ROOTFilePath + "/ROOTFile_Results_DYAnalysis_76X.root");
 		f_cv->cd();
 		TH1D *h_DiffXsec_Original = (TH1D*)f_cv->Get("h_DiffXsec_FSRCorr")->Clone(); h_DiffXsec_Original->SetDirectory(0);
-		delete f_cv;
+		f_cv->Close();
 
-		myc_ValidPlot = new MyCanvas("c_CrossCheck_DiffXsec_CV_vs_FromSysUncTool", "Dimuon Mass [GeV]", "d#sigma/dM [pb/GeV]");
+		myc_ValidPlot = new MyCanvas("c_CrossCheck_DiffXsec_CV_vs_FromSysUncTool", "m [GeV]", "d#sigma/dM [pb/GeV]");
 		myc_ValidPlot->SetLogx();
 		myc_ValidPlot->SetLogy(0);
 		myc_ValidPlot->SetRatioRange(0.9, 1.1);
@@ -1126,9 +1119,8 @@ public:
 		//////////////////////////////////////////////////////////////////
 		for(Int_t i_map=0; i_map<nEffMap; i_map++)
 		{
-			CalcDiffXsec_GivenEffSF( version, Ver_CMSSW, 
-									 g_Eff_Uncorrected, g_Eff_HLTv4p2_Smeared[i_map], g_Eff_HLTv4p3_Smeared[i_map],
-									 h_DiffXsec_Smeared[i_map] );
+			this->CalcDiffXsec_GivenEffSF( g_Eff_Uncorrected, g_Eff_HLTv4p2_Smeared[i_map], g_Eff_HLTv4p3_Smeared[i_map],
+										   h_DiffXsec_Smeared[i_map] );
 
 			// h_DiffXsec_Smeared[i_map]->SetName( "h_DiffXsec_Smeared_"+TString::Format("%d", i_map) );
 
@@ -1162,11 +1154,10 @@ public:
 		cout << endl;
 	}
 
-	void CalcDiffXsec_GivenEffSF(TString version, TString Ver_CMSSW, 
-								 TGraphAsymmErrors* g_Eff_UnCorr, TGraphAsymmErrors* g_Eff_HLTv4p2, TGraphAsymmErrors* g_Eff_HLTv4p3,
-								 TH1D *h_DiffXsec)
+	void CalcDiffXsec_GivenEffSF( TGraphAsymmErrors* g_Eff_UnCorr, TGraphAsymmErrors* g_Eff_HLTv4p2, TGraphAsymmErrors* g_Eff_HLTv4p3,
+								  TH1D *h_DiffXsec)
 	{
-		MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
+		MyDiffXsecTool *XsecTool = new MyDiffXsecTool();
 		XsecTool->MakeSignalMCHistograms();
 
 		XsecTool->GetYieldHistograms(isDataDriven);
@@ -1284,109 +1275,109 @@ public:
 		cout << "]\r" << flush;
 	}
 
-	void FpoF_CalcXsec_AllMap(TString version, TString Ver_CMSSW)
-	{
-		cout << "=========================================================" << endl;
-		cout << "[Start the calculation of x-seciton for each Smeared map]" << endl;
-		cout << "=========================================================" << endl;
-		cout << endl;
+	// void FpoF_CalcXsec_AllMap(TString version, TString Ver_CMSSW)
+	// {
+	// 	cout << "=========================================================" << endl;
+	// 	cout << "[Start the calculation of x-seciton for each Smeared map]" << endl;
+	// 	cout << "=========================================================" << endl;
+	// 	cout << endl;
 
-		/////////////////////////////////////////////////////////////////
-		// -- Calculation of the central value: for the cross check -- //
-		/////////////////////////////////////////////////////////////////
-		h_FpoF_DiffXsec_CV = FpoF_CalcDiffXsec_GivenEffSF(version, Ver_CMSSW, g_Eff_Uncorrected, g_Eff_HLTv4p2_CV, g_Eff_HLTv4p3_CV);
+	// 	/////////////////////////////////////////////////////////////////
+	// 	// -- Calculation of the central value: for the cross check -- //
+	// 	/////////////////////////////////////////////////////////////////
+	// 	h_FpoF_DiffXsec_CV = FpoF_CalcDiffXsec_GivenEffSF(version, Ver_CMSSW, g_Eff_Uncorrected, g_Eff_HLTv4p2_CV, g_Eff_HLTv4p3_CV);
 
-		// h_DiffXsec_CV->SetName("h_DiffXsec_CV");
-		TString FileLocation = "";
-		TFile *f_cv = NULL;
+	// 	// h_DiffXsec_CV->SetName("h_DiffXsec_CV");
+	// 	TString FileLocation = "";
+	// 	TFile *f_cv = NULL;
 
-		if( Ver_CMSSW == "74X" )
-		{
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles/"+version;
-			f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_74X.root");
-		}
-		else if( Ver_CMSSW == "76X" )
-		{
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/"+version;
-			f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
-		}
-		f_cv->cd();
-		TH1D *h_DiffXsec_Original = (TH1D*)f_cv->Get("h_FpoF_DiffXsec_Data")->Clone(); h_DiffXsec_Original->SetDirectory(0);
-		delete f_cv;
+	// 	if( Ver_CMSSW == "74X" )
+	// 	{
+	// 		FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles/"+version;
+	// 		f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_74X.root");
+	// 	}
+	// 	else if( Ver_CMSSW == "76X" )
+	// 	{
+	// 		FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/"+version;
+	// 		f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
+	// 	}
+	// 	f_cv->cd();
+	// 	TH1D *h_DiffXsec_Original = (TH1D*)f_cv->Get("h_FpoF_DiffXsec_Data")->Clone(); h_DiffXsec_Original->SetDirectory(0);
+	// 	delete f_cv;
 
-		myc_FpoF_ValidPlot = new MyCanvas("c_CrossCheck_FpoF_DiffXsec_CV_vs_FromSysUncTool", "Dimuon Mass (fiducial, post-FSR) [GeV]", "d#sigma/dM [pb/GeV]");
-		myc_FpoF_ValidPlot->SetLogx();
-		myc_FpoF_ValidPlot->SetLogy(0);
-		myc_FpoF_ValidPlot->SetRatioRange(0.9, 1.1);
-		myc_FpoF_ValidPlot->CanvasWithHistogramsRatioPlot(h_FpoF_DiffXsec_CV, h_DiffXsec_Original, "from SysUncTool", "Central value", "fromSyst/CV");
-		myc_FpoF_ValidPlot->PrintCanvas();
+	// 	myc_FpoF_ValidPlot = new MyCanvas("c_CrossCheck_FpoF_DiffXsec_CV_vs_FromSysUncTool", "Dimuon Mass (fiducial, post-FSR) [GeV]", "d#sigma/dM [pb/GeV]");
+	// 	myc_FpoF_ValidPlot->SetLogx();
+	// 	myc_FpoF_ValidPlot->SetLogy(0);
+	// 	myc_FpoF_ValidPlot->SetRatioRange(0.9, 1.1);
+	// 	myc_FpoF_ValidPlot->CanvasWithHistogramsRatioPlot(h_FpoF_DiffXsec_CV, h_DiffXsec_Original, "from SysUncTool", "Central value", "fromSyst/CV");
+	// 	myc_FpoF_ValidPlot->PrintCanvas();
 
-		//////////////////////////////////////////////////////////////////
-		// -- Calculation of the smeared differential cross sections -- //
-		//////////////////////////////////////////////////////////////////
-		for(Int_t i_map=0; i_map<nEffMap; i_map++)
-		{
-			h_FpoF_DiffXsec_Smeared[i_map] = FpoF_CalcDiffXsec_GivenEffSF( version, Ver_CMSSW, g_Eff_Uncorrected, 
-																		   g_Eff_HLTv4p2_Smeared[i_map], g_Eff_HLTv4p3_Smeared[i_map] );
-		}
+	// 	//////////////////////////////////////////////////////////////////
+	// 	// -- Calculation of the smeared differential cross sections -- //
+	// 	//////////////////////////////////////////////////////////////////
+	// 	for(Int_t i_map=0; i_map<nEffMap; i_map++)
+	// 	{
+	// 		h_FpoF_DiffXsec_Smeared[i_map] = FpoF_CalcDiffXsec_GivenEffSF( version, Ver_CMSSW, g_Eff_Uncorrected, 
+	// 																	   g_Eff_HLTv4p2_Smeared[i_map], g_Eff_HLTv4p3_Smeared[i_map] );
+	// 	}
 
-		cout << "=========================================================" << endl;
-		cout << "[End of the calculation of x-seciton for each Smeared map]" << endl;
-		cout << "=========================================================" << endl;
-		cout << endl;
-	}
+	// 	cout << "=========================================================" << endl;
+	// 	cout << "[End of the calculation of x-seciton for each Smeared map]" << endl;
+	// 	cout << "=========================================================" << endl;
+	// 	cout << endl;
+	// }
 
-	TH1D* FpoF_CalcDiffXsec_GivenEffSF(TString version, TString Ver_CMSSW, 
-								 TGraphAsymmErrors* g_Eff_UnCorr, TGraphAsymmErrors* g_Eff_HLTv4p2, TGraphAsymmErrors* g_Eff_HLTv4p3)
-	{
-		MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
-		XsecTool->MakeSignalMCHistograms();
-		XsecTool->GetYieldHistograms(isDataDriven);
-		XsecTool->UnfoldingCorrection();
+	// TH1D* FpoF_CalcDiffXsec_GivenEffSF(TString version, TString Ver_CMSSW, 
+	// 							 TGraphAsymmErrors* g_Eff_UnCorr, TGraphAsymmErrors* g_Eff_HLTv4p2, TGraphAsymmErrors* g_Eff_HLTv4p3)
+	// {
+	// 	MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
+	// 	XsecTool->MakeSignalMCHistograms();
+	// 	XsecTool->GetYieldHistograms(isDataDriven);
+	// 	XsecTool->UnfoldingCorrection();
 
-		XsecTool->FpoF_GetTheoryHist();
-		XsecTool->FpoF_EffCorrection();
-		XsecTool->FpoF_EfficiencyScaleFactor(g_Eff_UnCorr, g_Eff_HLTv4p2, g_Eff_HLTv4p3);
-		XsecTool->FpoF_CalcXsec();
+	// 	XsecTool->FpoF_GetTheoryHist();
+	// 	XsecTool->FpoF_EffCorrection();
+	// 	XsecTool->FpoF_EfficiencyScaleFactor(g_Eff_UnCorr, g_Eff_HLTv4p2, g_Eff_HLTv4p3);
+	// 	XsecTool->FpoF_CalcXsec();
 
-		return XsecTool->h_FpoF_DiffXsec_Data;
-	}
+	// 	return XsecTool->h_FpoF_DiffXsec_Data;
+	// }
 
-	void FpoF_SaveResults()
-	{
-		TFile *f_output = new TFile("ROOTFile_FpoF_Outputs_SysUncTool_EffCorr.root", "RECREATE"); f_output->cd();
-		// -- Un-corrected efficiencies -- //
-		this->g_Eff_Uncorrected->SetName("g_Eff_Uncorrected");
-		this->g_Eff_Uncorrected->Write();
+	// void FpoF_SaveResults()
+	// {
+	// 	TFile *f_output = new TFile("ROOTFile_FpoF_Outputs_SysUncTool_EffCorr.root", "RECREATE"); f_output->cd();
+	// 	// -- Un-corrected efficiencies -- //
+	// 	this->g_Eff_Uncorrected->SetName("g_Eff_Uncorrected");
+	// 	this->g_Eff_Uncorrected->Write();
 
-		// -- Corrected Efficiencies -- //
-		this->g_Eff_HLTv4p2_CV->SetName("g_Eff_HLTv4p2_CV");
-		this->g_Eff_HLTv4p2_CV->Write();
+	// 	// -- Corrected Efficiencies -- //
+	// 	this->g_Eff_HLTv4p2_CV->SetName("g_Eff_HLTv4p2_CV");
+	// 	this->g_Eff_HLTv4p2_CV->Write();
 
-		this->g_Eff_HLTv4p3_CV->SetName("g_Eff_HLTv4p3_CV");
-		this->g_Eff_HLTv4p3_CV->Write();
+	// 	this->g_Eff_HLTv4p3_CV->SetName("g_Eff_HLTv4p3_CV");
+	// 	this->g_Eff_HLTv4p3_CV->Write();
 
-		myc_FpoF_ValidPlot->c->Write();
+	// 	myc_FpoF_ValidPlot->c->Write();
 
-		for(Int_t i_map=0; i_map<nEffMap; i_map++)
-		{
-			TString Numbering;
-			Numbering.Form("%d", i_map);
+	// 	for(Int_t i_map=0; i_map<nEffMap; i_map++)
+	// 	{
+	// 		TString Numbering;
+	// 		Numbering.Form("%d", i_map);
 
-			this->g_Eff_HLTv4p2_Smeared[i_map]->SetName("g_Eff_HLTv4p2_Smeared_"+Numbering);
-			this->g_Eff_HLTv4p2_Smeared[i_map]->Write();
+	// 		this->g_Eff_HLTv4p2_Smeared[i_map]->SetName("g_Eff_HLTv4p2_Smeared_"+Numbering);
+	// 		this->g_Eff_HLTv4p2_Smeared[i_map]->Write();
 
-			this->g_Eff_HLTv4p3_Smeared[i_map]->SetName("g_Eff_HLTv4p3_Smeared_"+Numbering);
-			this->g_Eff_HLTv4p3_Smeared[i_map]->Write();
-		}
+	// 		this->g_Eff_HLTv4p3_Smeared[i_map]->SetName("g_Eff_HLTv4p3_Smeared_"+Numbering);
+	// 		this->g_Eff_HLTv4p3_Smeared[i_map]->Write();
+	// 	}
 
-		// -- Recalculated cross sections -- //
-		h_FpoF_DiffXsec_CV->SetName("h_FpoF_DiffXsec_CV");
-		h_FpoF_DiffXsec_CV->Write();
-		for(Int_t i_map=0; i_map<nEffMap; i_map++)
-		{
-			h_FpoF_DiffXsec_Smeared[i_map]->SetName("h_FpoF_DiffXsec_Smeared_"+TString::Format("%d", i_map));
-			h_FpoF_DiffXsec_Smeared[i_map]->Write();
-		}
-	}
+	// 	// -- Recalculated cross sections -- //
+	// 	h_FpoF_DiffXsec_CV->SetName("h_FpoF_DiffXsec_CV");
+	// 	h_FpoF_DiffXsec_CV->Write();
+	// 	for(Int_t i_map=0; i_map<nEffMap; i_map++)
+	// 	{
+	// 		h_FpoF_DiffXsec_Smeared[i_map]->SetName("h_FpoF_DiffXsec_Smeared_"+TString::Format("%d", i_map));
+	// 		h_FpoF_DiffXsec_Smeared[i_map]->Write();
+	// 	}
+	// }
 };
