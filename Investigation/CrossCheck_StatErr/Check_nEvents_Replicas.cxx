@@ -126,26 +126,27 @@ void Check_nEvents_Replicas()
 	Double_t Sum_RelDiff_Observed_LargerRelDiff = 0;
 	for(Int_t i=0; i<nTest; i++)
 	{
-		Double_t Observed_CV = Hists_CV->h_data_4p3->GetBinContent(i_bin);
-		Double_t Observed_Smeared = Hists_Smeared[i]->h_data_4p3->GetBinContent(i_bin);
+		printf("[%02d-th test]\n", i);
+		Double_t Observed_CV = Hists_CV->h_data_4p3->GetBinContent(i_bin) + Hists_CV->h_data_4p2->GetBinContent(i_bin);
+		Double_t Observed_Smeared = Hists_Smeared[i]->h_data_4p3->GetBinContent(i_bin) + Hists_Smeared[i]->h_data_4p2->GetBinContent(i_bin);
 		Double_t AbsDiff_Observed = (Observed_Smeared - Observed_CV);
 		Double_t RelDiff_Observed =  AbsDiff_Observed / Observed_CV;
 
-		// printf( "[Observed] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Observed_Smeared, Observed_CV, AbsDiff_Observed, Observed_CV, RelDiff_Observed*100 );
+		printf( "[Observed] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf %%\n", Observed_Smeared, Observed_CV, AbsDiff_Observed, Observed_CV, RelDiff_Observed*100 );
 
-		Double_t BkgSub_CV = Hists_CV->h_BkgSub_4p3->GetBinContent(i_bin);
-		Double_t BkgSub_Smeared = Hists_Smeared[i]->h_BkgSub_4p3->GetBinContent(i_bin);
+		Double_t BkgSub_CV = Hists_CV->h_BkgSub_4p3->GetBinContent(i_bin) + Hists_CV->h_BkgSub_4p2->GetBinContent(i_bin);
+		Double_t BkgSub_Smeared = Hists_Smeared[i]->h_BkgSub_4p3->GetBinContent(i_bin) + Hists_Smeared[i]->h_BkgSub_4p2->GetBinContent(i_bin);
 		Double_t AbsDiff_BkgSub = BkgSub_Smeared - BkgSub_CV; 
 		Double_t RelDiff_BkgSub = AbsDiff_Observed / BkgSub_CV;
 
-		// printf( "[BkgSub] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", BkgSub_Smeared, BkgSub_CV, AbsDiff_BkgSub, BkgSub_CV, RelDiff_BkgSub*100 );
+		printf( "[BkgSub] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf %%\n", BkgSub_Smeared, BkgSub_CV, AbsDiff_BkgSub, BkgSub_CV, RelDiff_BkgSub*100 );
 
-		Double_t Unfolded_CV = Hists_CV->h_Unfolded_4p3->GetBinContent(i_bin);
-		Double_t Unfolded_Smeared = Hists_Smeared[i]->h_Unfolded_4p3->GetBinContent(i_bin);
+		Double_t Unfolded_CV = Hists_CV->h_Unfolded_4p3->GetBinContent(i_bin) + Hists_CV->h_Unfolded_4p2->GetBinContent(i_bin);
+		Double_t Unfolded_Smeared = Hists_Smeared[i]->h_Unfolded_4p3->GetBinContent(i_bin) + Hists_Smeared[i]->h_Unfolded_4p2->GetBinContent(i_bin);
 		Double_t AbsDiff_Unfolded = Unfolded_Smeared - Unfolded_CV;
 		Double_t RelDiff_Unfolded = AbsDiff_Unfolded / Unfolded_CV;
 
-		// printf( "[Unfolded] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf\n", Unfolded_Smeared, Unfolded_CV, AbsDiff_Unfolded, Unfolded_CV, RelDiff_Unfolded*100 );
+		printf( "[Unfolded] Rel.Diff = (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf %%\n", Unfolded_Smeared, Unfolded_CV, AbsDiff_Unfolded, Unfolded_CV, RelDiff_Unfolded*100 );
 
 		Sum_RelDiff_Observed += RelDiff_Observed;
 		if( fabs(RelDiff_Unfolded) > fabs(RelDiff_BkgSub) )

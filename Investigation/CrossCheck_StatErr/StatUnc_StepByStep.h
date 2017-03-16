@@ -1253,4 +1253,238 @@ public:
 
 		c->SaveAs(".pdf");
 	}
+
+	void DrawCanvas_CV_vs_Smeared( TString Type, Int_t i_smeared )
+	{
+		HistInfo *Hist_CV = new HistInfo( kBlack, "Central value" );
+		Hist_CV->Set_Histogram( this->Hists_CV->Get_Histogram( Type ) );
+		Hist_CV->Set();
+
+		HistInfo *Hist_Smeared = new HistInfo( kRed, TString::Format("Smeared (%dth)", i_smeared));
+		Hist_Smeared->Set_Histogram( this->Hists_Smeared[i_smeared]->Get_Histogram( Type ) );
+		Hist_Smeared->Set();
+		Hist_Smeared->CalcRatio_DEN( Hist_CV->h );
+
+		// -- draw canvas -- //
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = TString::Format("c_%s_CV_vs_Smeared_%03d", Type.Data(), i_smeared);
+		SetCanvas_Ratio(c, CanvasName, TopPad, BottomPad, 1, 1);
+
+		c->cd();
+		TopPad->cd();
+
+		Hist_CV->Draw("EPSAME");
+		Hist_Smeared->Draw("EPSAME");
+
+		SetHistFormat_TopPad( Hist_CV->h, "Entries per bin");
+		Hist_CV->h->GetYaxis()->SetRangeUser( 0.5, 1e8 );
+
+		TLegend *legend;
+		SetLegend( legend, 0.55, 0.80, 0.95, 0.95 );
+		Hist_CV->AddToLegend( legend );
+		Hist_Smeared->AddToLegend( legend );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, 2.8, 13 );
+		latex.DrawLatexNDC( 0.15, 0.91, TString::Format("#font[42]{#scale[0.8]{%s}}", Type.Data()) );
+
+		c->cd();
+		BottomPad->cd();
+
+		Hist_Smeared->DrawRatio("EPSAME");
+		SetHistFormat_BottomPad( Hist_Smeared->h_ratio, "m [GeV]", "Smeared/CV", 0.4, 1.6 );
+
+		// -- only Z-peak -- //
+		Hist_CV->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Smeared->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Smeared->h_ratio->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Smeared->h_ratio->GetYaxis()->SetRangeUser( 0.995, 1.005 );
+		Hist_Smeared->h_ratio->GetYaxis()->SetNdivisions( 505 );
+
+		c->cd();
+		TopPad->cd();
+		TopPad->SetLogx(kFALSE);
+
+		c->cd();
+		BottomPad->cd();
+		BottomPad->SetLogx(kFALSE);
+		////////////////////////////
+
+		c->SaveAs(".pdf");
+
+		// Print_Histogram( Hist_CV->h );
+		// Print_Histogram( Hist_Smeared->h );
+	}
+
+	void DrawCanvas_BkgSub_vs_Unfolded_CV()
+	{
+		HistInfo *Hist_BkgSub = new HistInfo( kBlack, "Bkg.Sub." );
+		Hist_BkgSub->Set_Histogram( this->Hists_CV->Get_Histogram( "BkgSub" ) );
+		Hist_BkgSub->Set();
+
+		HistInfo *Hist_Unfolded = new HistInfo( kRed, "Unfolded");
+		Hist_Unfolded->Set_Histogram( this->Hists_CV->Get_Histogram( "Unfolded" ) );
+		Hist_Unfolded->Set();
+		Hist_Unfolded->CalcRatio_DEN( Hist_BkgSub->h );
+
+		// -- draw canvas -- //
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = "c_BkgSub_vs_Unfolded_CV";
+		SetCanvas_Ratio(c, CanvasName, TopPad, BottomPad, 1, 1);
+
+		c->cd();
+		TopPad->cd();
+
+		Hist_BkgSub->Draw("EPSAME");
+		Hist_Unfolded->Draw("EPSAME");
+
+		SetHistFormat_TopPad( Hist_BkgSub->h, "Entries per bin");
+		Hist_BkgSub->h->GetYaxis()->SetRangeUser( 0.5, 1e8 );
+
+		TLegend *legend;
+		SetLegend( legend, 0.75, 0.85, 0.95, 0.95 );
+		Hist_BkgSub->AddToLegend( legend );
+		Hist_Unfolded->AddToLegend( legend );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, 2.8, 13 );
+		latex.DrawLatexNDC( 0.15, 0.91, TString::Format("#font[42]{#scale[0.8]{%s}}", "Central value") );
+
+		c->cd();
+		BottomPad->cd();
+
+		Hist_Unfolded->DrawRatio("EPSAME");
+		SetHistFormat_BottomPad( Hist_Unfolded->h_ratio, "m [GeV]", "Unfolded/BkgSub", 0.4, 1.6 );
+
+		// -- only Z-peak -- //
+		Hist_BkgSub->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h_ratio->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h_ratio->GetYaxis()->SetRangeUser( 0.7, 1.3 );
+		Hist_Unfolded->h_ratio->GetYaxis()->SetNdivisions( 506 );
+
+		c->cd();
+		TopPad->cd();
+		TopPad->SetLogx(kFALSE);
+
+		c->cd();
+		BottomPad->cd();
+		BottomPad->SetLogx(kFALSE);
+		////////////////////////////
+
+		c->SaveAs(".pdf");
+	}
+
+	void DrawCanvas_BkgSub_vs_Unfolded_Smeared( Int_t i_smeared )
+	{
+		HistInfo *Hist_BkgSub = new HistInfo( kBlack, "Bkg.Sub." );
+		Hist_BkgSub->Set_Histogram( this->Hists_Smeared[i_smeared]->Get_Histogram( "BkgSub" ) );
+		Hist_BkgSub->Set();
+
+		HistInfo *Hist_Unfolded = new HistInfo( kRed, "Unfolded");
+		Hist_Unfolded->Set_Histogram( this->Hists_Smeared[i_smeared]->Get_Histogram( "Unfolded" ) );
+		Hist_Unfolded->Set();
+		Hist_Unfolded->CalcRatio_DEN( Hist_BkgSub->h );
+
+		// -- draw canvas -- //
+		TCanvas *c; TPad *TopPad; TPad *BottomPad;
+		TString CanvasName = TString::Format("c_BkgSub_vs_Unfolded_Smeared_%03d", i_smeared);
+		SetCanvas_Ratio(c, CanvasName, TopPad, BottomPad, 1, 1);
+
+		c->cd();
+		TopPad->cd();
+
+		Hist_BkgSub->Draw("EPSAME");
+		Hist_Unfolded->Draw("EPSAME");
+
+		SetHistFormat_TopPad( Hist_BkgSub->h, "Entries per bin");
+		Hist_BkgSub->h->GetYaxis()->SetRangeUser( 0.5, 1e8 );
+
+		TLegend *legend;
+		SetLegend( legend, 0.75, 0.85, 0.95, 0.95 );
+		Hist_BkgSub->AddToLegend( legend );
+		Hist_Unfolded->AddToLegend( legend );
+		legend->Draw();
+
+		TLatex latex;
+		Latex_Preliminary( latex, 2.8, 13 );
+		latex.DrawLatexNDC( 0.15, 0.91, TString::Format("#font[42]{#scale[0.8]{Smeared_%d}}", i_smeared) );
+
+		c->cd();
+		BottomPad->cd();
+
+		Hist_Unfolded->DrawRatio("EPSAME");
+		SetHistFormat_BottomPad( Hist_Unfolded->h_ratio, "m [GeV]", "Unfolded/BkgSub", 0.4, 1.6 );
+
+		// -- only Z-peak -- //
+		Hist_BkgSub->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h_ratio->GetXaxis()->SetRangeUser( 60, 120 );
+		Hist_Unfolded->h_ratio->GetYaxis()->SetRangeUser( 0.7, 1.3 );
+		Hist_Unfolded->h_ratio->GetYaxis()->SetNdivisions( 506 );
+
+		c->cd();
+		TopPad->cd();
+		TopPad->SetLogx(kFALSE);
+
+		c->cd();
+		BottomPad->cd();
+		BottomPad->SetLogx(kFALSE);
+		////////////////////////////
+
+		c->SaveAs(".pdf");
+	}
+
+	void Print_BkgSub_Unfolded_CV_Smeared( Int_t i_bin, Int_t i_smeared )
+	{
+		printf("[Central value]\n");
+		TH1D* h_BkgSub_CV = this->Hists_CV->Get_Histogram( "BkgSub" );
+		TH1D* h_Unfolded_CV = this->Hists_CV->Get_Histogram( "Unfolded" );
+		this->Print_BkgSub_Unfolded( h_BkgSub_CV, h_Unfolded_CV, i_bin );
+
+		printf("[Smeared value: %03d-th]\n", i_smeared);
+		TH1D* h_BkgSub_Smeared = this->Hists_Smeared[i_smeared]->Get_Histogram( "BkgSub" );
+		TH1D* h_Unfolded_Smeared = this->Hists_Smeared[i_smeared]->Get_Histogram( "Unfolded" );
+		this->Print_BkgSub_Unfolded( h_BkgSub_Smeared, h_Unfolded_Smeared, i_bin );
+
+		printf("[Bkg.sub. step]\n");
+		this->Print_CV_Smeared( h_BkgSub_CV, h_BkgSub_Smeared, i_bin );
+		printf("[Unfolded step]\n");
+		this->Print_CV_Smeared( h_Unfolded_CV, h_Unfolded_Smeared, i_bin );
+		printf("\n");
+	}
+
+	void Print_CV_Smeared( TH1D* h_CV, TH1D* h_Smeared, Int_t i_bin )
+	{
+		Double_t CV = h_CV->GetBinContent(i_bin);
+		Double_t Smeared = h_Smeared->GetBinContent(i_bin);
+		Double_t AbsDiff = Smeared - CV;
+		Double_t RelDiff = AbsDiff / CV;
+
+		printf( "\t[RelDiff] (%.1lf - %.1lf = %.1lf) / %.1lf = %.3lf %%\n", Smeared, CV, AbsDiff, CV, RelDiff*100 );
+	}
+
+	void Print_BkgSub_Unfolded( TH1D* h_BkgSub, TH1D* h_Unfolded, Int_t i_bin )
+	{
+		Double_t BkgSub = h_BkgSub->GetBinContent(i_bin);
+		Double_t Unfolded = h_Unfolded->GetBinContent(i_bin);
+		Double_t AbsDiff = Unfolded - BkgSub;
+		Double_t RelDiff = AbsDiff / BkgSub;
+
+		Double_t BkgSub_PreBin = h_BkgSub->GetBinContent(i_bin-1);
+		Double_t Unfolded_PreBin = h_Unfolded->GetBinContent(i_bin-1);
+		Double_t AbsDiff_PreBin = Unfolded_PreBin - BkgSub_PreBin;
+		Double_t RelDiff_PreBin = AbsDiff_PreBin / BkgSub_PreBin;
+
+		Double_t BkgSub_NextBin = h_BkgSub->GetBinContent(i_bin+1);
+		Double_t Unfolded_NextBin = h_Unfolded->GetBinContent(i_bin+1);
+		Double_t AbsDiff_NextBin = Unfolded_NextBin - BkgSub_NextBin;
+		Double_t RelDiff_NextBin = AbsDiff_NextBin / BkgSub_NextBin;
+
+		printf("\t[BkgSub -> Unfolded]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub, Unfolded, AbsDiff, RelDiff*100 );
+		printf("\t[Previous bin]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub_PreBin, Unfolded_PreBin, AbsDiff_PreBin, RelDiff_PreBin*100 );
+		printf("\t[Next bin]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub_NextBin, Unfolded_NextBin, AbsDiff_NextBin, RelDiff_NextBin*100 );
+	}
 };

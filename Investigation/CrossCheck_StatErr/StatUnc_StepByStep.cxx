@@ -44,8 +44,15 @@ void StatUnc_StepByStep()
 		TFile *f_input = TFile::Open("ROOTFile_Output_StatUnc_StepByStep.root");
 		testTool->Load_Histograms_RelStatUnc( f_input );
 
-		TFile *f_test = TFile::Open("ROOTFile_Test_StatUnc_StepByStep.root", "RECREATE");
-		testTool->Test_SaveResults( f_test );
-		f_test->Close();
+		// TFile *f_test = TFile::Open("ROOTFile_Test_StatUnc_StepByStep.root", "RECREATE");
+		// testTool->Test_SaveResults( f_test );
+		// f_test->Close();
+
+		testTool->DrawCanvas_CV_vs_Smeared( "BkgSub", 38 );
+		testTool->DrawCanvas_CV_vs_Smeared( "Unfolded", 38 );
+		// testTool->DrawCanvas_BkgSub_vs_Unfolded_CV();
+		// for(Int_t i=0; i<100; i++)
+		// 	testTool->DrawCanvas_BkgSub_vs_Unfolded_Smeared( i );
+		testTool->Print_BkgSub_Unfolded_CV_Smeared( 15, 38 );
 	}
 }
