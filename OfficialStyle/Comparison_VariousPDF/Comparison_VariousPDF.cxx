@@ -1,8 +1,5 @@
 #include <Include/PlotTools.h>
-
 #include <TPad.h>
-
-TString FileName = "ROOTFile_Input_Comparison_VariousPDF.root";
 
 TString HistName_Data = "h_DXSec";
 TString HistName_RelStatUnc = "h_RelStatUnc";
@@ -63,8 +60,8 @@ void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistIn
 	// X_axis->SetTickLength( xTickWidth );
 
 	TAxis *Y_axis = Hist_Theory->h_ratio->GetYaxis();
-	Double_t ratio_Min = 0.51;
-	Double_t ratio_Max = 1.49;
+	Double_t ratio_Min = 0.31;
+	Double_t ratio_Max = 1.69;
 	Y_axis->SetTitle( Hist_Theory->LegendName+"/Data" );
 	Y_axis->CenterTitle();
 	Y_axis->SetTitleOffset( 0.45 );
@@ -91,8 +88,11 @@ void DrawOnPad_Data_vs_MC( TVirtualPad *Pad, HistInfo *Hist_Data_StatUnc, HistIn
 	
 }
 
-void Comparison_VariousPDF()
+void Comparison_VariousPDF(TString TStr_Channel = "LL")
 {
+	TString FileName = TString::Format("ROOTFile_Input_Comparison_VariousPDF_%s.root", TStr_Channel.Data() );
+	printf( "[FileName = %s]\n", FileName.Data() );
+
 	// -- data x-section with stat. unc. only -- //
 	HistInfo *Hist_Data_StatUnc = new HistInfo( kBlack, "Data" );
 	Hist_Data_StatUnc->Set_FileName_ObjectName( FileName, HistName_Data );
@@ -190,7 +190,7 @@ void Comparison_VariousPDF()
 
 	// -- Draw Canvas -- //
 	TCanvas *c;
-	SetCanvas_Square( c, "c_Comparison_VariousPDF" );
+	SetCanvas_Square( c, "c_Comparison_VariousPDF_"+TStr_Channel );
 
 	gStyle->SetPadBorderMode(0);
 	gStyle->SetFrameBorderMode(0);
@@ -250,7 +250,7 @@ void Comparison_VariousPDF()
 	Hist_ABM->h_ratio->GetYaxis()->SetTitleOffset( yTitleOffset * (ySize_LastPad / ySize_Pads) );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleSize( 0.2 );
 	Hist_ABM->h_ratio->GetXaxis()->SetTitleOffset( 0.8 );
-	Hist_ABM->h_ratio->GetXaxis()->SetTitle( "m (#mu#mu) [GeV]" );
+	Hist_ABM->h_ratio->GetXaxis()->SetTitle( "m [GeV]" );
 	TLegend *legend_lastPad = (TLegend*)LastPad->GetPrimitive("TPave");
 	legend_lastPad->SetY1NDC(0.3);
 	legend_lastPad->SetY2NDC(0.6);
@@ -259,9 +259,20 @@ void Comparison_VariousPDF()
 	TLatex latex;
 	Double_t lumi = 2.8;
 	Int_t E_CM = 13;
-	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
-	latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
-	latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	if( TStr_Channel == "MM" )
+	{
+		latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
+		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
+		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	}
+	else if( TStr_Channel == "LL" )
+	{
+		latex.DrawLatexNDC( 0.55, 0.96, "#font[42]{#scale[0.8]{2.3 fb^{-1} (ee)}}");
+		latex.DrawLatexNDC( 0.75, 0.96, "#font[42]{#scale[0.8]{2.8 fb^{-1} (#mu#mu)}}");
+		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
+		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	}
+
 	// latex.DrawLatexNDC( 0.76, 0.004, "#font[42]{#scale[0.8]{m (#mu#mu) [GeV]}}");
 
 	c->SaveAs(".pdf");
