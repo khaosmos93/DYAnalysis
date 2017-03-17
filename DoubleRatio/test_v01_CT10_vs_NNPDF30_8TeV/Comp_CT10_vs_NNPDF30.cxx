@@ -15,7 +15,7 @@ void Comp_CT10_vs_NNPDF30()
 	TH1D* h_NNPDF = Get_Hist(FileName_NNPDF, "h_DiffXsec");
 
 	// -- differential cross section comparison -- //
-	TH1D* h_CT10_AbsXSec = Get_Hist("../../Local/1Dabsxsec_NNLO_CTEQ12NNLO.root", "invm_FEWZ");
+	TH1D* h_CT10_AbsXSec = Get_Hist("../../Input_8TeV/1Dabsxsec_NNLO_CTEQ12NNLO.root", "invm_FEWZ");
 	TH1D* h_CT10 = (TH1D*)h_CT10_AbsXSec->Clone();
 	Int_t nBin = h_CT10_AbsXSec->GetNbinsX();
 	for(Int_t i=0; i<nBin; i++)
@@ -59,7 +59,7 @@ void Comp_CT10_vs_NNPDF30()
 	legend->Draw();
 
 	TLatex latex;
-	Latex_Simulation( latex );
+	Latex_Simulation( latex, 8 );
 
 	c->cd();
 	BottomPad->cd();
@@ -121,7 +121,7 @@ void DrawCanvas_DoubleR( TString AnalyzerPath, TH1D* h_CT10, TH1D* h_NNPDF )
 	// -- double ratio calculation -- //
 	TH1D* h_NormXSec_NNPDF_8 = NormXSec_Theory( h_NNPDF );
 	TH1D* h_NormXSec_CT_8 = NormXSec_Theory( h_CT10 );
-	TH1D* h_NormXSec_NNPDF_13 = Get_Hist( AnalyzerPath+"/DoubleRatio/ROOTFile_Input_DoubleRatio.root", "h_NormXSec_NNLO_13");
+	TH1D* h_NormXSec_NNPDF_13 = Get_Hist( AnalyzerPath+"/DoubleRatio/ROOTFile_Input_DoubleRatio_LL.root", "h_NormXSec_NNLO_13");
 
 	TH1D* h_DoubleR_NNPDF = (TH1D*)h_NormXSec_NNPDF_13->Clone();
 	h_DoubleR_NNPDF->Divide( h_NormXSec_NNPDF_13, h_NormXSec_NNPDF_8 );
@@ -153,7 +153,8 @@ void DrawCanvas_DoubleR( TString AnalyzerPath, TH1D* h_CT10, TH1D* h_NNPDF )
 	legend->Draw();
 
 	TLatex latex;
-	Latex_Simulation( latex );
+	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
+	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
 
 	c->SaveAs(".pdf");
 }

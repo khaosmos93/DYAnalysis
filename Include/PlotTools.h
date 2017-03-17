@@ -502,6 +502,13 @@ void Latex_Simulation( TLatex &latex )
 	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
 }
 
+void Latex_Simulation( TLatex &latex, Double_t E_CM )
+{
+	latex.DrawLatexNDC(0.82, 0.96, TString::Format("#font[42]{#scale[0.8]{%.0lf TeV}}", E_CM));
+	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
+	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+}
+
 void SetAxis_SinglePad( TAxis *X_axis, TAxis *Y_axis, TString XTitle, TString YTitle )
 {
 	X_axis->SetTitle( XTitle );
