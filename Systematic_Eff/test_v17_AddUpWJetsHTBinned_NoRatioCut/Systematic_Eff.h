@@ -408,10 +408,18 @@ protected:
 		Hist_diboson->Set();
 		Hist_diboson->h->SetFillColorAlpha( Hist_diboson->Color, 1 );
 
+		// -- W+jets -- //
+		TH1D* h_WJets = Get_Hist( this->InputFileName, "WJets/"+HistName_MC );
+		HistInfo *Hist_WJets = new HistInfo( kGreen+2, "W+jets (H_{T} >100 GeV)");
+		Hist_WJets->Set_Histogram( h_WJets );
+		Hist_WJets->Set();
+		Hist_WJets->h->SetFillColorAlpha( Hist_WJets->Color, 1 );
+
 		// -- scale dowwn if it is RunB-F or RunG-H -- //
 		Hist_DY->h->Scale( this->Lumi_Scale );
 		Hist_top->h->Scale( this->Lumi_Scale );
 		Hist_diboson->h->Scale( this->Lumi_Scale );
+		Hist_WJets->h->Scale( this->Lumi_Scale );
 
 		// -- rebin -- //
 		Int_t RebinSize = 50;
@@ -420,6 +428,7 @@ protected:
 		Hist_DY->h->Rebin( RebinSize );
 		Hist_top->h->Rebin( RebinSize );
 		Hist_diboson->h->Rebin( RebinSize );
+		Hist_WJets->h->Rebin( RebinSize );
 		Double_t xMin = 50;
 
 		// TString YTitle = "Entries per bin";
@@ -435,9 +444,11 @@ protected:
 		Hist_DY->h->Scale( SF );
 		Hist_top->h->Scale( SF );
 		Hist_diboson->h->Scale( SF );
+		Hist_WJets->h->Scale( SF );
 
 		// -- MC stack -- //
 		THStack *hs = new THStack("hs", "");
+		hs->Add( Hist_WJets->h );
 		hs->Add( Hist_diboson->h );
 		hs->Add( Hist_top->h );
 		hs->Add( Hist_DY->h );
@@ -446,6 +457,7 @@ protected:
 		TH1D* h_totMC = (TH1D*)Hist_DY->h->Clone("h_totMC"); h_totMC->Sumw2();
 		h_totMC->Add( Hist_top->h );
 		h_totMC->Add( Hist_diboson->h );
+		h_totMC->Add( Hist_WJets->h );
 
 		// -- draw canvas -- //
 		TCanvas *c; TPad *TopPad; TPad *BottomPad;
@@ -467,12 +479,13 @@ protected:
 		h_format->GetYaxis()->SetRangeUser(1e-3, 1e7);
 
 		TLegend *legend;
-		SetLegend( legend, 0.65, 0.80, 0.95, 0.95 );
+		SetLegend( legend, 0.62, 0.77, 0.95, 0.95 );
 		legend->SetTextFont(62);
 		legend->AddEntry( Hist_data->h, Hist_data->LegendName );
 		legend->AddEntry( Hist_DY->h, Hist_DY->LegendName );
 		legend->AddEntry( Hist_top->h, Hist_top->LegendName );
 		legend->AddEntry( Hist_diboson->h, Hist_diboson->LegendName );
+		legend->AddEntry( Hist_WJets->h, Hist_WJets->LegendName );
 		legend->Draw();
 
 		TLatex latex;
@@ -497,12 +510,12 @@ protected:
 		if( Type == this->DENStr )
 		{
 			this->h_DY_DEN = (TH1D*)Hist_DY->h->Clone(); // -- after applying SF -- //
-			this->h_data_DEN_BkgSub = this->BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h );
+			this->h_data_DEN_BkgSub = this->BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h, Hist_WJets->h );
 		}
 		else if( Type == this->NUMStr )
 		{
 			this->h_DY_NUM = (TH1D*)Hist_DY->h->Clone(); // -- after applying SF -- //
-			this->h_data_NUM_BkgSub = this->BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h );
+			this->h_data_NUM_BkgSub = this->BackgroundSubtraction( Hist_data->h, Hist_top->h, Hist_diboson->h, Hist_WJets->h );
 		}
 	}
 
@@ -593,6 +606,7 @@ protected:
 		*this->outFile << TString::Format("Fraction = %1.lf / %1.lf = %.2lf", nPassEntries, TotEntries, Frac*100) << endl;
 	}
 
+	// -- no W+jets contribution -- //
 	TH1D* BackgroundSubtraction( TH1D* h_data, TH1D* h_top, TH1D* h_diboson )
 	{
 		TString HistName = h_data->GetName();
@@ -605,6 +619,38 @@ protected:
 
 		h_BkgSub->Add( h_top, -1 );
 		h_BkgSub->Add( h_diboson, -1);
+
+		// -- remove negative bins -- //
+		Int_t nBin = h_BkgSub->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+			
+			Double_t value = h_BkgSub->GetBinContent(i_bin);
+			if( value < 0 )
+			{
+				h_BkgSub->SetBinContent(i_bin, 0);
+				h_BkgSub->SetBinError(i_bin, 0);
+			}
+		}
+
+		return h_BkgSub;
+	}
+
+	TH1D* BackgroundSubtraction( TH1D* h_data, TH1D* h_top, TH1D* h_diboson, TH1D* h_WJets )
+	{
+		TString HistName = h_data->GetName();
+		HistName = HistName  + "_BkgSub";
+		TH1D* h_BkgSub = (TH1D*)h_data->Clone(HistName);
+
+		h_BkgSub->Sumw2();
+		h_top->Sumw2();
+		h_diboson->Sumw2();
+		h_WJets->Sumw2();
+
+		h_BkgSub->Add( h_top, -1 );
+		h_BkgSub->Add( h_diboson, -1);
+		h_BkgSub->Add( h_WJets, -1 );
 
 		// -- remove negative bins -- //
 		Int_t nBin = h_BkgSub->GetNbinsX();
