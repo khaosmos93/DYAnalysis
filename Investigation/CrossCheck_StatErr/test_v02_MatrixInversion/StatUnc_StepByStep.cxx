@@ -7,9 +7,9 @@ void StatUnc_StepByStep()
 	gSystem->cd( "./Local" );
 	
 
-	Bool_t Do_Calc = kFALSE;
-	Bool_t Do_ReCalcAll = kFALSE;
-	Bool_t Do_Test = kTRUE;
+	Bool_t Do_Calc = kTRUE;
+	Bool_t Do_ReCalcAll = kTRUE;
+	Bool_t Do_Test = kFALSE;
 
 	TFile *f_IO;
 	if( Do_ReCalcAll )

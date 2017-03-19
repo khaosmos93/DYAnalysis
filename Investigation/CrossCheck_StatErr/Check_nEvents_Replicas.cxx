@@ -122,6 +122,7 @@ void Check_nEvents_Replicas()
 	Int_t i_bin = 15; // -- 81 < M < 86 GeV -- //
 
 	Int_t nEvent_largerRelDiff = 0;
+	Int_t nEvent_2times = 0;
 	Double_t Sum_RelDiff_Observed = 0;
 	Double_t Sum_RelDiff_Observed_LargerRelDiff = 0;
 	for(Int_t i=0; i<nTest; i++)
@@ -171,8 +172,14 @@ void Check_nEvents_Replicas()
 		printf("[Smeared] (Observed, BkgSub, Unfolded) = (%.1lf, %.1lf, %.1lf)\n", Observed_Smeared, BkgSub_Smeared, Unfolded_Smeared);
 		Double_t RelDiff_Observed_BkgSub_Smeared = (BkgSub_Smeared - Observed_Smeared) / Observed_Smeared;
 		Double_t RelDiff_BkgSub_Unfolded_Smeared = (Unfolded_Smeared - BkgSub_Smeared) / BkgSub_Smeared;
-		printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf %%, %.3lf %%)\n", RelDiff_Observed_BkgSub_Smeared*100, RelDiff_BkgSub_Unfolded_Smeared*100 ); 
+		printf("[Diff. in each step] (Observed->BkgSub, BkgSub->Unfolded) = (%.3lf %%, %.3lf %%)\n", RelDiff_Observed_BkgSub_Smeared*100, RelDiff_BkgSub_Unfolded_Smeared*100 );
 
+		if( fabs(RelDiff_Unfolded) > fabs(RelDiff_BkgSub*2) )
+		{
+			printf("Rel.Diff in unfolding step is 2-times larger than the one in bkg.sub. step\n");
+			nEvent_2times++;
+		}
+		
 		printf( "\n" );
 	}
 
@@ -183,4 +190,6 @@ void Check_nEvents_Replicas()
 
 	Double_t Average_RelDiff_Observed_SmallerRelDiff = (Sum_RelDiff_Observed - Sum_RelDiff_Observed_LargerRelDiff) / (nTest - nEvent_largerRelDiff );
 	printf("Average rel. diff at observed yield of the events with smaller deviation in unfolding step: %.3lf\n",Average_RelDiff_Observed_SmallerRelDiff*100);
+
+	printf("[nEvent_2times = %d]\n", nEvent_2times);
 }
