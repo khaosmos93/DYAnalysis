@@ -26,6 +26,28 @@ def Add_DYPowheg( _List_Samples ):
 	_List_Samples.append( ["DYPowheg_M4500to6000", 1, 1] )
 	_List_Samples.append( ["DYPowheg_M6000toInf", 1, 1] )
 
+def Add_DYMuMu( _List_Samples ):
+	_List_Samples.append( ["DYMuMu_M10to50", 1, 5] )
+	_List_Samples.append( ["DYMuMu_M50to100", 1, 5] )
+	_List_Samples.append( ["DYMuMu_M100to200", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M200to400", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M400to500", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M500to700", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M700to800", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M800to1000", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M1000to1500", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M1500to2000", 1, 1] )
+	_List_Samples.append( ["DYMuMu_M2000to3000", 1, 1] )
+
+def Add_WJetsHTBinned( _List_Samples ):
+	_List_Samples.append( ["WJets_HT100to200", 1, 1] )
+	_List_Samples.append( ["WJets_HT200to400", 1, 2] )
+	_List_Samples.append( ["WJets_HT400to600", 1, 1] )
+	_List_Samples.append( ["WJets_HT600to800", 1, 1] )
+	_List_Samples.append( ["WJets_HT800to1200", 1, 1] )
+	_List_Samples.append( ["WJets_HT1200to2500", 1, 1] )
+	_List_Samples.append( ["WJets_HT2500toInf", 1, 1] )
+
 def MakeScript_Sub(_OutDir, _List_Samples, _TIME):
 	f = open("./script_qsub_ALL.sh", "w")
 	f.write( "#!bin/bash\n" )
@@ -75,19 +97,21 @@ except:
 
 # -- SampleName, isMC, nJobs -- #
 List_Samples = []
-# List_Samples.append( ["Data", 0, 20] )
-# Add_DYPowheg( List_Samples )
-# List_Samples.append( ["WWTo2L2Nu", 1, 1] )
-# List_Samples.append( ["WZ", 1, 1] )
+List_Samples.append( ["Data", 0, 10] )
+Add_DYMuMu( List_Samples )
+List_Samples.append( ["WJets", 1, 2] )
+List_Samples.append( ["WWTo2L2Nu", 1, 1] )
+List_Samples.append( ["WZ", 1, 1] )
 List_Samples.append( ["ZZ", 1, 1] )
-# List_Samples.append( ["ttbarTo2L2Nu", 1, 10] )
-# List_Samples.append( ["tW", 1, 2] )
-# List_Samples.append( ["tbarW", 1, 2] )
+List_Samples.append( ["ttbarTo2L2Nu", 1, 5] )
+List_Samples.append( ["tW", 1, 2] )
+List_Samples.append( ["tbarW", 1, 2] )
 
 # -- output directory -- //
+AnalyzerPATH = os.environ['KP_ANALYZER_PATH']
 TIME = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
-OutDir = "~/Physics/DYAnalysis_80X/Outputs/v%s_%s" % (TIME, MainOpts['--code'].split('.cxx')[0] )
-OutDir = os.path.expanduser( OutDir )
+OutDir = "%s/Outputs/v%s_%s" % (AnalyzerPATH, TIME, MainOpts['--code'].split('.cxx')[0] )
+# OutDir = os.path.expanduser( OutDir )
 os.mkdir( OutDir )
 
 # -- convert path for code to absolute path -- #
@@ -97,7 +121,7 @@ CodeAbsPath = os.path.abspath( MainOpts['--code'] )
 MakeScript_Sub( OutDir, List_Samples, TIME )
 MakeScript_GetOutput( OutDir, List_Samples, TIME )
 
-sys.path.append( "/home/kplee/Physics/DYAnalysis_80X/Include" )
+sys.path.append( "%s/Include" % (AnalyzerPATH) )
 from Split_BatchJobs import SplitJobs
 
 for Samples in List_Samples:

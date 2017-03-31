@@ -213,6 +213,19 @@ echo "job is completed"
 			MassRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
+		elif "DYMuMu" in self.Sample:
+			MassRange = self.Sample.split("_")[-1]
+			if "M50to" in MassRange: MassRange = "M50toInf" # -- for M50to100, M50to200 cases -- #
+
+			if MassRange == "M100to200":
+				List_FullPath.append( BasePath + "DYntuple_v20170219_80XMoriond17_AddZprimeVar_DYLL_M100to200 )
+			elif MassRange == "M200to400":
+				List_FullPath.append( BasePath + "DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_M200to400 )
+			elif MassRange == "M400to500":
+				List_FullPath.append( BasePath + "DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_M400to500 )
+			else:
+				List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_"+MassRange )
+			
 		elif "WJets_HT" in self.Sample:
 			HTRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
@@ -221,6 +234,9 @@ echo "job is completed"
 		# 	MassRange = self.Sample.split("_")[-1]
 		# 	if MassRange == "M50to100": MassRange = "M50toInf"
 		# 	List_FullPath.append( BasePath + "v20160304_76X_MINIAODv2_DYLL_"+MassRange+"_25ns" )
+
+		elif "WJets" == self.Sample:
+			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_WJets" )
 
 		elif "ZZ" == self.Sample:
 			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZ" )
@@ -346,6 +362,8 @@ echo "job is completed"
 
 		xSecSumW_Others["tW"] = [35.6, 6952830]
 		xSecSumW_Others["tbarW"] = [35.6, 6933093]
+
+		xSecSumW_Others["WJets"] = [6.15e4, -1]
 
 
 		if "DYPowheg" in self.Sample:
