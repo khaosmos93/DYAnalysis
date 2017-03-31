@@ -18,8 +18,14 @@ export KP_DATA_PATH=""
 if [ $HOSTNAME == "cms.snu.ac.kr" ]; # -- 147.47.242.42 -- # 
 then 
 	KP_DATA_PATH="/data1/kplee/DYntuple/80X"
-	
-	# -- cmssw setup (for ROOT6) -- #
+
+elif [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then # -- 147.47.242.67 -- #
+	KP_DATA_PATH="/data5/Users/kplee/DYntuple/80X"
+fi
+
+# -- cmssw setup (for ROOT6) -- #
+if [ $HOSTNAME == "cms.snu.ac.kr" ] || [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then
+	echo "Setup CMSSW_8_0_13 for ROOT6"
 	export SCRAM_ARCH=slc6_amd64_gcc530
 	export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 	source $VO_CMS_SW_DIR/cmsset_default.sh
