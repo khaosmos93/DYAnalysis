@@ -61,22 +61,23 @@ void Calc_SumWeights()
 
 	vector< TString > vec_NtupleDir; vector< TString > vec_Tag;
 
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M10to50"); vec_Tag.push_back("DYMuMu_M10to50");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50toInf");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50to100");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50to200");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M100to200"); vec_Tag.push_back("DYMuMu_M100to200");
-	vec_NtupleDir.push_back("DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_M200to400"); vec_Tag.push_back("DYMuMu_M200to400");
-	vec_NtupleDir.push_back("DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_M400to500"); vec_Tag.push_back("DYMuMu_M400to500");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M500to700"); vec_Tag.push_back("DYMuMu_M500to700");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M700to800"); vec_Tag.push_back("DYMuMu_M700to800");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M800to1000"); vec_Tag.push_back("DYMuMu_M800to1000");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1000to1500"); vec_Tag.push_back("DYMuMu_M1000to1500");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1500to2000"); vec_Tag.push_back("DYMuMu_M1500to2000");
-	vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M2000to3000"); vec_Tag.push_back("DYMuMu_M2000to3000");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M10to50"); vec_Tag.push_back("DYMuMu_M10to50");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50toInf");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50to100");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf"); vec_Tag.push_back("DYMuMu_M50to200");
+	vec_NtupleDir.push_back("DYntuple_v20170219_80XMoriond17_AddZprimeVar_DYLL_M100to200"); vec_Tag.push_back("DYMuMu_M100to200");
+	// vec_NtupleDir.push_back("DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_M200to400"); vec_Tag.push_back("DYMuMu_M200to400");
+	// vec_NtupleDir.push_back("DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_M400to500"); vec_Tag.push_back("DYMuMu_M400to500");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M500to700"); vec_Tag.push_back("DYMuMu_M500to700");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M700to800"); vec_Tag.push_back("DYMuMu_M700to800");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M800to1000"); vec_Tag.push_back("DYMuMu_M800to1000");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1000to1500"); vec_Tag.push_back("DYMuMu_M1000to1500");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M1500to2000"); vec_Tag.push_back("DYMuMu_M1500to2000");
+	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M2000to3000"); vec_Tag.push_back("DYMuMu_M2000to3000");
 
 	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZto4L"); vec_Tag.push_back("ZZto4L");
 	// vec_NtupleDir.push_back("DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZTo3LNu"); vec_Tag.push_back("WZTo3LNu");
+	vec_NtupleDir.push_back("DYntuple_v20170207_80XMoriond17_AddZprimeVar_WJets"); vec_Tag.push_back("WJets");
 
 	const Int_t nNtuple = vec_NtupleDir.size();
 	for(Int_t i_ntuple = 0; i_ntuple<nNtuple; i_ntuple++)
