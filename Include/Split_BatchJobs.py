@@ -12,7 +12,7 @@ def usage():
     print "   --isMC isMC                      MC or data"
     print "   --outdir Dir                     Directory where outputs are stored"
     print "  Optional options :"
-    print "   --queue queueName                      queue name (default: fastq)"
+    print "   --queue queueName                      queue name (default: fastq or bigq)"
     sys.exit()
 
 # Parse arguments
@@ -37,6 +37,8 @@ class SplitJobs:
 		self.CodeName = self.CodeFullPath.split('/')[-1]
 
 		self.queue = "fastq"
+		if os.environ["HOSTNAME"] == "tamsa2.snu.ac.kr":
+			self.queue = "bigq"
 		if '--queue' in _opts:
 			self.queue = _opts['--queue']
 
@@ -118,7 +120,7 @@ class SplitJobs:
 		BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
 
 		cmd_cd = "cd ${cwd}/%s" % (DirName)
-		cmd_sub = "qsub -q %s %s" % (self.queue, BatchFileName)
+		cmd_sub = "qsub -V -q %s %s" % (self.queue, BatchFileName)
 		List_cmd_qsub.append( [cmd_cd, cmd_sub] )
 
 		cmd_hadd = "${cwd}/%s/*.root \\" % (DirName)
@@ -187,8 +189,6 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13
 cmsenv
 
-export ROOT_INCLUDE_PATH=$ROOT_INCLUDE_PATH:/home/kplee/Physics/
-
 cd ${{cwd}}
 
 {_cmd_execute}
@@ -207,23 +207,15 @@ echo "job is completed"
 
 	def GetListOfROOTFiles( self ):
 		List_FullPath = []
-		BasePath = "/data1/kplee/DYntuple/80X/"
+		BasePath = os.environ['KP_DATA_PATH'] + "/"
 
 		if "DYPowheg" in self.Sample:
 			MassRange = self.Sample.split("_")[-1]
 			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
-		if "DYMuMu" in self.Sample:
-			MassRange = self.Sample.split("_")[-1]
-			if "M50to" in MassRange: # -- ex> M50to100, M50to200 ... -- #
-				MassRange = "M50toInf"
-
-			if MassRange == "M200to400":
-				List_FullPath.append( BasePath + "DYntuple_v20170130_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
-			elif MassRange == "M400to500":
-				List_FullPath.append( BasePath + "DYntuple_v20170129_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
-			else:
-				List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_"+MassRange);
+		elif "WJets_HT" in self.Sample:
+			HTRange = self.Sample.split("_")[-1]
+			List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
 
 		# elif "DYMuMu" in self.Sample:
 		# 	MassRange = self.Sample.split("_")[-1]
@@ -262,14 +254,26 @@ echo "job is completed"
 			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
 
 		elif self.Sample == "Data":
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80XRereco_AddZprimeVar_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170117_80X_AddZprimeVar_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170118_80X_AddZprimeVar_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+
+		elif self.Sample == "DataRunBtoF":
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+
+		elif self.Sample == "DataRunGtoH":
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
 		List_ROOTFiles = []
 		for fullpath in List_FullPath:
@@ -299,20 +303,29 @@ echo "job is completed"
 		XSecSumW_Powheg["M4500to6000"] = [4.56E-07, 100000]
 		XSecSumW_Powheg["M6000toInf"] = [2.066E-08, 100000]
 
-		XSecSumW_DYMMaMCNLO = {}
-		XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M50to200"] = [6095.58346/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 1.0]
-		XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 1.0]
+		xSecSumW_WJetsHTBinned = {}
+		xSecSumW_WJetsHTBinned["HT70to100"] = [-1, 10094300.0]
+		xSecSumW_WJetsHTBinned["HT100to200"] = [1345, 39617782.0]
+		xSecSumW_WJetsHTBinned["HT200to400"] = [359.7, 4950372.0]
+		xSecSumW_WJetsHTBinned["HT400to600"] = [48.91, 5796237.0]
+		xSecSumW_WJetsHTBinned["HT600to800"] = [12.05, 14908337.0]
+		xSecSumW_WJetsHTBinned["HT800to1200"] = [5.501, 6200954.0]
+		xSecSumW_WJetsHTBinned["HT1200to2500"] = [1.329, 6474309.0]
+		xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, 2384259.0]
+
+		# XSecSumW_DYMMaMCNLO = {}
+		# XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]
+		# XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 6311695]
+		# XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 6061181]
+		# XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 227522]
+		# XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 170955]
+		# XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 50136]
+		# XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 47833]
+		# XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 44740]
+		# XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 43496]
+		# XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 40783]
+		# XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 37176]
+		# XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 23078]
 
 		XSec = -1
 		SumW = -1
@@ -328,7 +341,7 @@ echo "job is completed"
 		xSecSumW_Others["WZ"] = [47.13, 2995828]
 		xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
 
-		xSecSumW_Others["ttbar"] = [831.76, -1.0]
+		xSecSumW_Others["ttbar"] = [831.76, 77229334+76175894]
 		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
 
 		xSecSumW_Others["tW"] = [35.6, 6952830]
@@ -344,15 +357,22 @@ echo "job is completed"
 				XSec = -1
 				SumW = -1
 
-		elif "DYMuMu" in self.Sample:
-			MassRange = self.Sample.split("_")[1]
-			if MassRange in XSecSumW_DYMMaMCNLO:
-				XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
-				SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
+		elif "WJets_HT" in self.Sample:
+			HTRange = self.Sample.split("_")[-1]
+			if HTRange in xSecSumW_WJetsHTBinned:
+				XSec = xSecSumW_WJetsHTBinned[ HTRange ][0]
+				SumW = xSecSumW_WJetsHTBinned[ HTRange ][1]
 			else:
 				XSec = -1
 				SumW = -1
-
+		# elif "DYMuMu" in self.Sample:
+		# 	MassRange = self.Sample.split("_")[1]
+		# 	if MassRange in XSecSumW_DYMMaMCNLO:
+		# 		XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
+		# 		SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
+		# 	else:
+		# 		XSec = -1
+		# 		SumW = -1
 		elif self.Sample in xSecSumW_Others:
 			XSec = xSecSumW_Others[ self.Sample ][0]
 			SumW = xSecSumW_Others[ self.Sample ][1]
