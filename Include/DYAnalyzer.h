@@ -2,8 +2,8 @@
 // -- Author: KyoengPil Lee, 05 Dec. 2015 -- //
 #pragma once
 
-#include <DYAnalysis_80X/Include/Object.h>
-#include <DYAnalysis_80X/Include/NtupleHandle.h>
+#include <Include/Object.h>
+#include <Include/NtupleHandle.h>
 #include <fstream>
 #include <iostream>
 #include <utility>
@@ -11,7 +11,9 @@
 
 // #define Lumi 4423.577 // -- Up to Run 275125 (2016 Data), MuonPhysJSON. unit: /pb, Updated at 2016.08.08 -- //
 // #define Lumi 16141.063 // -- Up to Run 277148 (2016 Data), MuonPhysJSON. unit: /pb, Updated at 2016.08.12 -- //
-#define Lumi 36459.0 // -- Rereco B-G and prompt H(v2+v3) -- //
+#define Lumi 35867.060 // -- Rereco B-G and prompt H(v2+v3) -- //
+#define Lumi_RunBtoF 19720.882
+#define Lumi_RunGtoH 16146.178
 #define Lumi_afterTkMu50 33618.689 // -- Rereco B-G and prompt H(v2+v3) after TkMu50 is implemented (run >= 274954) -- //
 #define Lumi_BeforeL2Fix 656.977 // -- integrated luminosity before Run 274094 -- //
 #define Lumi_RunG 7554.454 // -- integrated luminosity for Run2016G -- //
@@ -20,9 +22,10 @@
 
 TString GetBasePath()
 {
-	TString BasePath = gSystem->HomeDirectory();
-	BasePath = BasePath + "/Physics/DYAnalysis_80X/";
+	// TString BasePath = gSystem->HomeDirectory();
+	// BasePath = BasePath + "/Physics/DYAnalysis_80X/";
 
+	TString BasePath = gSystem->Getenv("KP_ANALYZER_PATH");
 	return BasePath;
 }
 
@@ -532,7 +535,7 @@ Double_t DYAnalyzer::PileUpWeightValue(Int_t PileUp_MC)
 
 void DYAnalyzer::SetupEfficiencyScaleFactor()
 {
-	TString Location_TnP = "/home/kplee/CommonCodes/DrellYanAnalysis/ROOTFile_TagProbeEfficiency_v20160329.root";
+	TString Location_TnP = GetBasePath() + "/ROOTFile_TagProbeEfficiency_v20160329.root";
 	cout << "[Tag&Probe efficiency is from " << Location_TnP << " (Default, 74X)]" << endl;
 	
 	TFile *f = new TFile( Location_TnP );
@@ -589,7 +592,7 @@ void DYAnalyzer::SetupEfficiencyScaleFactor()
 
 void DYAnalyzer::SetupEfficiencyScaleFactor(TString ROOTFileName)
 {
-	TString Location_TnP = "/home/kplee/CommonCodes/DrellYanAnalysis/"+ROOTFileName;
+	TString Location_TnP = GetBasePath()+ROOTFileName;
 	cout << "[Tag&Probe efficiency is from " << Location_TnP << "]" << endl; 
 
 	TFile *f = new TFile( Location_TnP );
