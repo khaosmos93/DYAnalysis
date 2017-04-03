@@ -7,9 +7,9 @@ void StatUnc_StepByStep()
 	gSystem->cd( "./Local" );
 	
 
-	Bool_t Do_Calc = kFALSE;
-	Bool_t Do_ReCalcAll = kFALSE;
-	Bool_t Do_Test = kTRUE;
+	Bool_t Do_Calc = kTRUE;
+	Bool_t Do_ReCalcAll = kTRUE;
+	Bool_t Do_Test = kFALSE;
 
 	TFile *f_IO;
 	if( Do_ReCalcAll )
@@ -45,13 +45,6 @@ void StatUnc_StepByStep()
 		// 	testTool->Print_BkgSub_Unfolded_CV_Smeared(15, i_smeared);
 
 		testTool->Validate_MatrixInversion();
-		// testTool->Test_InvertMDiagAs1();
-		// testTool->Print_Compare_nEvents_CV_Smeared(15);
-		// testTool->Print_Compare_nEvents_CV_Smeared(16);
-		// testTool->Print_Compare_nEvents_CV_Smeared(17);
-		// testTool->Print_Compare_nEvents_CV_Smeared(18);
-		// testTool->Print_Compare_nEvents_CV_Smeared(19);
-		// testTool->Print_Compare_nEvents_CV_Smeared(20);
-		// testTool->DrawCanvas_ContributionFromNextBin();
+		testTool->Test_InvertMDiagAs1();
 	}
 }

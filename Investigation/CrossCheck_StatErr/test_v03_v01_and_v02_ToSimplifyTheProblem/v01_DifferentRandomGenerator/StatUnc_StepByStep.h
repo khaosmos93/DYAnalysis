@@ -13,6 +13,8 @@
 #include <Include/PlotTools.h>
 #include <Include/DYAnalyzer.h> // -- nMassBin, Lumi, Lumi_HLTv4p2 is defined -- //
 
+#include <TRandom1.h>
+
 #define nMap 1000
 
 using namespace RooFit;
@@ -819,6 +821,8 @@ protected:
 
 	void Smearing()
 	{
+		TRandom1 *random = new TRandom1();
+
 		for(Int_t i_map=0; i_map<nMap; i_map++)
 		{
 			TH1D* h_data_smeared = (TH1D*)this->Hists_CV->h_data->Clone();
@@ -829,7 +833,7 @@ protected:
 				Int_t i_bin = i+1;
 				Double_t CV = this->Hists_CV->h_data->GetBinContent(i_bin);
 
-				Double_t Smeared = (Double_t)gRandom->Poisson( CV );
+				Double_t Smeared = (Double_t)random->Poisson( CV );
 
 				h_data_smeared->SetBinContent(i_bin, Smeared );
 				h_data_smeared->SetBinError(i_bin, sqrt(Smeared) );
@@ -1207,18 +1211,13 @@ public:
 		TH1D *h_CV = this->Hists_Test_CV->Get_Histogram( Type );
 		Double_t value_CV = h_CV->GetBinContent(i_bin);
 
-		Double_t value_CV_Ref = this->Hists_CV->Get_Histogram( Type )->GetBinContent(i_bin);
-
 		for(Int_t i_map=0; i_map<nMap; i_map++)
 		{
 			TH1D *h_Smeared = this->Hists_Test_Smeared[i_map]->Get_Histogram( Type );
 
 			Double_t value_Smeared = h_Smeared->GetBinContent(i_bin);
-			Double_t value_Smeared_Ref = this->Hists_Smeared[i_map]->Get_Histogram( Type )->GetBinContent(i_bin);
 
-			// *RelDiff = ( value_Smeared - value_CV ) / value_CV;
-			// *RelDiff = ( value_Smeared - value_CV ) / value_CV_Ref; // -- denominator: ref -- //
-			*RelDiff = ( value_Smeared_Ref - value_CV_Ref ) / value_CV; // -- numerator: ref -- //
+			*RelDiff = ( value_Smeared - value_CV ) / value_CV;
 
 			// printf("[\t%d th RelDiff = %lf]\n", i, *RelDiff);
 
@@ -1317,10 +1316,6 @@ public:
 
 		TCanvas *c = new TCanvas("c_RespM_fromTMatrixD", "", 800, 800);
 		c->cd();
-		c->SetTopMargin(0.03);
-		c->SetBottomMargin(0.05);
-		c->SetLeftMargin(0.06);
-		c->SetRightMargin(0.13);
 		TH2D* h_RespM = new TH2D(RespM);
 		h_RespM->Draw("COLZ");
 		h_RespM->SetStats(kFALSE);
@@ -1328,14 +1323,9 @@ public:
 
 		TCanvas *c2 = new TCanvas("c_InvertedM_fromTMatrixD", "", 800, 800);
 		c2->cd();
-		c2->SetTopMargin(0.03);
-		c2->SetBottomMargin(0.05);
-		c2->SetLeftMargin(0.06);
-		c2->SetRightMargin(0.13);
 		TH2D* h_InvertedM = new TH2D(TMatx_InvertedM);
 		h_InvertedM->Draw("COLZ");
 		h_InvertedM->SetStats(kFALSE);
-		h_InvertedM->GetZaxis()->SetRangeUser(-0.5, 1.5);
 		c2->SaveAs(".pdf");
 
 		for(Int_t i=0; i<nMassBin; i++)
@@ -1361,12 +1351,6 @@ public:
 			this->Print_BkgSub_Unfolded_CV_Smeared( 15, i_smeared);
 			this->Print_UnfoldingStep_CV_Smeared( i_smeared, 15, TMatx_InvertedM, Fakes, Measured );
 		}
-
-		this->Print_EachComponent( 15, TMatx_InvertedM );
-		this->Print_EachComponent( 16, TMatx_InvertedM );
-		this->Print_EachComponent( 17, TMatx_InvertedM );
-		this->Print_EachComponent( 18, TMatx_InvertedM );
-		this->Print_EachComponent( 19, TMatx_InvertedM );
 	}
 
 	void CheckNevents_InvertedM( HistogramContainer *Hists, Int_t BinNum, TMatrixD TMatx_InvertedM, TVectorD TVec_Fake, TVectorD TVec_MeasuredMC )
@@ -1576,108 +1560,5 @@ public:
 		printf("\t[BkgSub -> Unfolded]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub, Unfolded, AbsDiff, RelDiff*100 );
 		printf("\t[Previous bin]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub_PreBin, Unfolded_PreBin, AbsDiff_PreBin, RelDiff_PreBin*100 );
 		printf("\t[Next bin]: %.1lf -> %.1lf (%.1lf, %.3lf %%)\n", BkgSub_NextBin, Unfolded_NextBin, AbsDiff_NextBin, RelDiff_NextBin*100 );
-	}
-
-	void Print_Compare_nEvents_CV_Smeared(Int_t BinNum)
-	{
-		TString Type = "Observed";
-		Int_t nEvents_Large = 0;
-		Int_t nEvents_Small = 0;
-
-		Int_t nEvents_Large_Large = 0;
-		Int_t nEvents_Large_Small = 0;
-		Int_t nEvents_Small_Large = 0;
-		Int_t nEvents_Small_Small = 0;
-
-		Double_t CV = this->Hists_CV->Get_Histogram(Type)->GetBinContent(BinNum);
-		Double_t CV_Next = this->Hists_CV->Get_Histogram(Type)->GetBinContent(BinNum+1);
-		for(Int_t i_map=0; i_map<nMap; i_map++)
-		{
-			TH1D* h_Smeared = this->Hists_Smeared[i_map]->Get_Histogram(Type);
-			Double_t Smeared = h_Smeared->GetBinContent(BinNum);
-			Double_t Smeared_Next = h_Smeared->GetBinContent(BinNum+1);
-
-			if( Smeared > CV )
-			{
-				nEvents_Large++;
-				if( Smeared_Next > CV_Next ) nEvents_Large_Large++;
-				else nEvents_Large_Small++;
-
-			}
-			else
-			{
-				nEvents_Small++;
-				if( Smeared_Next > CV_Next ) nEvents_Small_Large++;
-				else nEvents_Small_Small++;
-			}
-
-		}
-
-		printf("[Type = %s, BinNum = %02d] (Smeared > CV case: %02d events, Smeared < CV case: %02d events\n", Type.Data(), BinNum, nEvents_Large, nEvents_Small );
-		printf("\t[(Large, Large), (Large, Small), (Small, Large), (Small, Small)] = %03d, %03d, %03d, %03d\n", 
-			nEvents_Large_Large, nEvents_Large_Small, nEvents_Small_Large, nEvents_Small_Small);
-	}
-
-	void DrawCanvas_ContributionFromNextBin()
-	{
-		TString Type = "BkgSub";
-		for(Int_t i=0; i<nMassBin; i++)
-		{
-			Int_t i_bin = i+1;
-
-			TH1D* h_RelDiff = new TH1D("h", "", 100, -0.1, 0.1);
-
-			Double_t CV = this->Hists_CV->Get_Histogram(Type)->GetBinContent(i_bin);
-			Double_t CV_Next = this->Hists_CV->Get_Histogram(Type)->GetBinContent(i_bin+1);
-			for(Int_t i_map=0; i_map<nMap; i_map++)
-			{
-				// Double_t Smeared = this->Hists_Smeared[i_map]->Get_Histogram(Type)->GetBinContent(i_bin);
-				Double_t Smeared_Next = this->Hists_Smeared[i_map]->Get_Histogram(Type)->GetBinContent(i_bin+1);
-				Double_t RelDiff_Next = (Smeared_Next - CV_Next) / CV;
-				h_RelDiff->Fill( RelDiff_Next );
-			}
-
-			TString CanvasName = TString::Format("c_Test_RelDiff_%02d", i_bin);
-			TCanvas *c;
-			SetCanvas_Square( c, CanvasName );
-			c->cd();
-			h_RelDiff->SetStats(kFALSE);
-			h_RelDiff->Draw("HISTLP");
-			c->SaveAs(".pdf");
-		}
-	}
-
-	void Print_EachComponent(Int_t BinNum, TMatrixD TMatx_InvertedM)
-	{
-		printf("\n===================[Print_EachComponent]==========================\n");
-
-		TString Type = "BkgSub";
-
-		TH1D* h_CV = this->Hists_CV->Get_Histogram(Type);
-		Double_t CV = h_CV->GetBinContent(BinNum);
-		Double_t CV_Next = h_CV->GetBinContent(BinNum+1);
-		Int_t nEvent_Increases = 0;
-		for(Int_t i_map=0; i_map<nMap; i_map++)
-		{
-			TH1D* h_Smeared = this->Hists_Smeared[i_map]->Get_Histogram(Type);
-			Double_t Smeared = h_Smeared->GetBinContent(BinNum);
-			Double_t Smeared_Next = h_Smeared->GetBinContent(BinNum+1);
-
-			Double_t Ratio_EntryM = TMatx_InvertedM[BinNum+1][BinNum] / TMatx_InvertedM[BinNum][BinNum];
-			Double_t RelDiff_Next = (Smeared_Next - CV_Next) / CV;
-			Double_t RelDiff = (Smeared - CV ) / Smeared;
-			Double_t RelDiff_Unfold = Ratio_EntryM*RelDiff_Next + RelDiff;
-
-			printf("[RelDiff_Unfold] = Ratio_EntryM * RelDiff_Next + RelDiff = %9.5lf * %9.5lf + %9.5lf = %9.5lf", Ratio_EntryM, RelDiff_Next, RelDiff, RelDiff_Unfold);
-			if( fabs(RelDiff_Unfold) > fabs(RelDiff) )
-			{
-				nEvent_Increases++;
-				printf(": Rel.Diff increases\n");
-			}
-			else
-				printf("\n");
-		}
-
-		printf("[nEvent_Increases = %d]\n\n", nEvent_Increases);
 	}
 };
