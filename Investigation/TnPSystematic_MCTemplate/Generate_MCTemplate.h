@@ -180,12 +180,12 @@ public:
 
 			ntuple->GetPair( i_ev );
 
-			cout << "[" << i_ev << "th event]" << endl;
-			cout << "\ttag_IsoMu20: " << ntuple->tag_IsoMu20 << endl;
-			cout << "\ttag_pt: " << ntuple->tag_pt << endl;
-			cout << "\ttag_eta: " << ntuple->tag_eta << endl;
-			cout << "\tmass: " << ntuple->mass << endl;
-			cout << "\tmcTrue: " << ntuple->mcTrue << endl;
+			// cout << "[" << i_ev << "th event]" << endl;
+			// cout << "\ttag_IsoMu20: " << ntuple->tag_IsoMu20 << endl;
+			// cout << "\ttag_pt: " << ntuple->tag_pt << endl;
+			// cout << "\ttag_eta: " << ntuple->tag_eta << endl;
+			// cout << "\tmass: " << ntuple->mass << endl;
+			// cout << "\tmcTrue: " << ntuple->mcTrue << endl;
 
 			if( ntuple->tag_IsoMu20 == 1 &&
 				ntuple->tag_pt > 22 &&
