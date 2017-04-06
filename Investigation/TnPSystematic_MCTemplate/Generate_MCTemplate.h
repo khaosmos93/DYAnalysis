@@ -295,6 +295,9 @@ protected:
 	{
 		TString OutputName = TString::Format("ROOTFile_MCTemplates_%s.root", this->Type.Data());
 
+		TFile *f_output = TFile::Open(OutputName, "RECREATE");
+		f_output->cd();
+
 		for(Int_t i_pt=0; i_pt<nPtBin; i_pt++)
 		{
 			for(Int_t i_eta=0; i_eta<nEtaBin; i_eta++)
@@ -303,5 +306,7 @@ protected:
 				this->h_Fail[i_pt][i_eta]->Write();
 			}
 		}
+
+		f_output->Close();
 	}
 };
