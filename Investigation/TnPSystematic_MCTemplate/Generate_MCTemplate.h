@@ -108,11 +108,11 @@ public:
 	{
 		this->Type = _Type;
 		if( this->Type == "ID" || this->Type == "Iso" )
-			this->FileLocation = "/home/kplee/data/TagProbe/76X/v20160425_First76XTrees/";
+			this->FileLocation = "/share_home/kplee/data/TagProbe/76X/v20160425_First76XTrees/ROOTFile_TPTree_DYLL_M50_76X_WithWeights.root";
 		else if( this->Type == "HLTv4p2" )
-			this->FileLocation = "/home/kplee/data/TagProbe/76X/v20160425_First76XTrees/HLTv4p2/";
+			this->FileLocation = "/share_home/kplee/data/TagProbe/76X/v20160425_First76XTrees/HLTv4p2/ROOTFile_TPTree_DYLL_M50_76X_WithWeights.root";
 		else if( this->Type == "HLTv4p3" )
-			this->FileLocation = "/home/kplee/data/TagProbe/76X/v20160425_First76XTrees/HLTv4p3/";
+			this->FileLocation = "/share_home/kplee/data/TagProbe/76X/v20160425_First76XTrees/HLTv4p3/ROOTFile_TPTree_DYLL_M50_76X_WithWeights.root";
 		else
 			this->FileLocation = "";
 
@@ -135,13 +135,17 @@ public:
 	void Produce( Int_t nTestEvent )
 	{
 		TChain *chain = new TChain("muonEffs/fitter_tree");
-		chain->Add(this->FileLocation + "*.root");
+		chain->Add(this->FileLocation);
 
 		TnPTree *ntuple = new TnPTree( chain );
 
 		Int_t nTotEvent = chain->GetEntries();
+		cout << "[# total events = " << nTotEvent << "]";
 		if( nTestEvent > 0 )
+		{
 			nTotEvent = nTestEvent;
+			cout << "\t[# test events = "<< nTotEvent << "]";
+		}
 		
 		for(Int_t i_ev=0; i_ev<nTotEvent; i_ev++)
 		{
