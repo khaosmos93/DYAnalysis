@@ -42,17 +42,17 @@ class TnPTree
 {
 public:
 	TChain *chain;
-	Double_t mass;
-	Double_t pt;
-	Double_t eta;
-	Double_t weight;
+	Float_t mass;
+	Float_t pt;
+	Float_t eta;
+	Float_t weight;
 
 	Int_t tag_IsoMu20;
-	Double_t tag_pt;
-	Double_t tag_eta;
+	Float_t tag_pt;
+	Float_t tag_eta;
 
 	Int_t IDFlag_HighPtMuon;
-	Double_t RelTrkIso;
+	Float_t RelTrkIso;
 	Int_t IsoMu20;
 	Int_t IsoTkMu20;
 
