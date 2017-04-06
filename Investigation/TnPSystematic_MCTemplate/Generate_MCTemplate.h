@@ -143,7 +143,7 @@ public:
 		else
 			this->FileLocation = "";
 
-		cout << "\t[Type = " << this->Type << "] Ntuple location: " << this->FileLocation << endl;
+		cout << "\t[Type = " << this->Type << "] ntuple location: " << this->FileLocation << endl;
 		this->Init_AllHist();
 	}
 
@@ -179,6 +179,13 @@ public:
 			loadBar(i_ev+1, nTotEvent, 100, 100);
 
 			ntuple->GetPair( i_ev );
+
+			cout << "[" << i_ev << "th event]" << endl;
+			cout << "\ttag_IsoMu20: " << ntuple->tag_IsoMu20 << endl;
+			cout << "\ttag_pt: " << ntuple->tag_pt << endl;
+			cout << "\ttag_eta: " << ntuple->tag_eta << endl;
+			cout << "\tmass: " << ntuple->mass << endl;
+			cout << "\tmcTrue: " << ntuple->mcTrue << endl;
 
 			if( ntuple->tag_IsoMu20 == 1 &&
 				ntuple->tag_pt > 22 &&

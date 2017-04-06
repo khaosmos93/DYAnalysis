@@ -11,7 +11,7 @@ void Generate_MCTemplate()
 	for( auto &Type : vec_Type )
 	{
 		MCTemplateTool *tool = new MCTemplateTool( Type );
-		tool->Produce( -1 ); // -- negative value: all events -- //
+		tool->Produce( 100 ); // -- negative value: all events -- //
 
 		delete tool;
 	}
