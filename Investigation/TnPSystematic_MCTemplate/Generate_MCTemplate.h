@@ -1,8 +1,91 @@
+#include <TChain.h>
+#include <TFile.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TString.h>
+#include <TApplication.h>
+#include <vector>
+#include <TMath.h>
+
 #define nPtBin 4
 #define nEtaBin 5
-#define nBin 20 // -- # pt bin = 4, # eta bin = 5 -- //
 
-class TnPTree;
+class TnPTree
+{
+public:
+	TChain *chain;
+	Double_t mass;
+	Double_t pt;
+	Double_t eta;
+	Double_t weight;
+
+	Int_t tag_IsoMu20;
+	Int_t tag_pt;
+	Int_t tag_eta;
+
+	Int_t IDFlag_HighPtMuon;
+	Double_t RelTrkIso;
+	Int_t IsoMu20;
+	Int_t IsoTkMu20;
+
+	Int_t mcTrue;
+
+	TnPTree()
+	{
+
+	}
+
+	TnPTree( TChain *_chain ): TnPTree()
+	{
+		this->chain = _chain;
+
+		this->chain->SetBranchStatus("*", 0);
+
+		this->chain->SetBranchStatus("mass", 1);
+		this->chain->SetBranchAddress("mass", &mass);
+
+		this->chain->SetBranchStatus("pt", 1);
+		this->chain->SetBranchAddress("pt", &pt);
+
+		this->chain->SetBranchStatus("eta", 1);
+		this->chain->SetBranchAddress("eta", &eta);
+
+		this->chain->SetBranchStatus("weight", 1);
+		this->chain->SetBranchAddress("weight", &weight);
+
+		this->chain->SetBranchStatus("tag_IsoMu20", 1);
+		this->chain->SetBranchAddress("tag_IsoMu20", &tag_IsoMu20);
+
+		this->chain->SetBranchStatus("tag_pt", 1);
+		this->chain->SetBranchAddress("tag_pt", &tag_pt);
+
+		this->chain->SetBranchStatus("tag_eta", 1);
+		this->chain->SetBranchAddress("tag_eta", &tag_eta);
+
+		this->chain->SetBranchStatus("IDFlag_HighPtMuon", 1);
+		this->chain->SetBranchAddress("IDFlag_HighPtMuon", &IDFlag_HighPtMuon);
+
+		this->chain->SetBranchStatus("RelTrkIso", 1);
+		this->chain->SetBranchAddress("RelTrkIso", &RelTrkIso);
+
+		this->chain->SetBranchStatus("IsoMu20", 1);
+		this->chain->SetBranchAddress("IsoMu20", &IsoMu20);
+
+		this->chain->SetBranchStatus("IsoTkMu20", 1);
+		this->chain->SetBranchAddress("IsoTkMu20", &IsoTkMu20);
+
+		this->chain->SetBranchStatus("mcTrue", 1);
+		this->chain->SetBranchAddress("mcTrue", &mcTrue);
+
+		// this->chain->SetBranchStatus("asdf", 1);
+		// this->chain->SetBranchAddress("asdf", &asdf);
+	}
+
+	void GetPair( Int_t i_event )
+	{
+		chain->GetEntry( i_event );
+	}
+};
 
 class MCTemplateTool
 {
@@ -198,7 +281,7 @@ protected:
 		{
 			for(Int_t i_eta=0; i_eta<nEtaBin; i_eta++)
 			{
-				TString BinName = TString::Format("PtBin%d_EtaBin%d", i_pt, i_eta)
+				TString BinName = TString::Format("PtBin%d_EtaBin%d", i_pt, i_eta);
 				this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 60, 70, 130);
 				this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 60, 70, 130);
 			}
@@ -219,82 +302,5 @@ protected:
 				this->h_Fail[i_pt][i_eta]->Write();
 			}
 		}
-	}
-};
-
-class TnPTree
-{
-public:
-	TChain *chain;
-	Double_t mass;
-	Double_t pt;
-	Double_t eta;
-	Double_t weight;
-
-	Int_t tag_IsoMu20;
-	Int_t tag_pt;
-	Int_t tag_eta;
-
-	Int_t IDFlag_HighPtMuon;
-	Double_t RelTrkIso;
-	Int_t IsoMu20;
-	Int_t IsoTkMu20;
-
-	Int_t mcTrue;
-
-	TnPTree()
-	{
-
-	}
-
-	TnPTree( TChain *_chain ): TnPTree()
-	{
-		this->chain = _chain;
-
-		this->chain->SetBranchStatus("*", 0);
-
-		this->chain->SetBranchStatus("mass", 1);
-		this->chain->SetBranchAddress("mass", &mass);
-
-		this->chain->SetBranchStatus("pt", 1);
-		this->chain->SetBranchAddress("pt", &pt);
-
-		this->chain->SetBranchStatus("eta", 1);
-		this->chain->SetBranchAddress("eta", &eta);
-
-		this->chain->SetBranchStatus("weight", 1);
-		this->chain->SetBranchAddress("weight", &weight);
-
-		this->chain->SetBranchStatus("tag_IsoMu20", 1);
-		this->chain->SetBranchAddress("tag_IsoMu20", &tag_IsoMu20);
-
-		this->chain->SetBranchStatus("tag_pt", 1);
-		this->chain->SetBranchAddress("tag_pt", &tag_pt);
-
-		this->chain->SetBranchStatus("tag_eta", 1);
-		this->chain->SetBranchAddress("tag_eta", &tag_eta);
-
-		this->chain->SetBranchStatus("IDFlag_HighPtMuon", 1);
-		this->chain->SetBranchAddress("IDFlag_HighPtMuon", &IDFlag_HighPtMuon);
-
-		this->chain->SetBranchStatus("RelTrkIso", 1);
-		this->chain->SetBranchAddress("RelTrkIso", &RelTrkIso);
-
-		this->chain->SetBranchStatus("IsoMu20", 1);
-		this->chain->SetBranchAddress("IsoMu20", &IsoMu20);
-
-		this->chain->SetBranchStatus("IsoTkMu20", 1);
-		this->chain->SetBranchAddress("IsoTkMu20", &IsoTkMu20);
-
-		this->chain->SetBranchStatus("mcTrue", 1);
-		this->chain->SetBranchAddress("mcTrue", &mcTrue);
-
-		// this->chain->SetBranchStatus("asdf", 1);
-		// this->chain->SetBranchAddress("asdf", &asdf);
-	}
-
-	void GetPair( Int_t i_event )
-	{
-		chain->GetEntry( i_event );
 	}
 };

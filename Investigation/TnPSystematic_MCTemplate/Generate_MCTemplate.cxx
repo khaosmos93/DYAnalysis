@@ -2,7 +2,8 @@
 
 void Generate_MCTemplate()
 {
-	TString Arr_Type[3] = {"ID", "Iso", "HLTv4p2", "HLTv4p3"};
+	const Int_t nType = 4;
+	TString Arr_Type[nType] = {"ID", "Iso", "HLTv4p2", "HLTv4p3"};
 
 	for( auto &Type : Arr_Type )
 	{
