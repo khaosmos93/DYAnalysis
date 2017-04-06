@@ -11,6 +11,33 @@
 #define nPtBin 4
 #define nEtaBin 5
 
+static inline void loadBar(int x, int n, int r, int w)
+{
+    // Only update r times.
+    if( x == n )
+    	cout << endl;
+
+    if ( x % (n/r +1) != 0 ) return;
+
+ 
+    // Calculuate the ratio of complete-to-incomplete.
+    float ratio = x/(float)n;
+    int   c     = ratio * w;
+ 
+    // Show the percentage complete.
+    printf("%3d%% [", (int)(ratio*100) );
+ 
+    // Show the load bar.
+    for (int x=0; x<c; x++) cout << "=";
+ 
+    for (int x=c; x<w; x++) cout << " ";
+ 
+    // ANSI Control codes to go back to the
+    // previous line and clear it.
+	cout << "]\r" << flush;
+
+}
+
 class TnPTree
 {
 public:
@@ -21,8 +48,8 @@ public:
 	Double_t weight;
 
 	Int_t tag_IsoMu20;
-	Int_t tag_pt;
-	Int_t tag_eta;
+	Double_t tag_pt;
+	Double_t tag_eta;
 
 	Int_t IDFlag_HighPtMuon;
 	Double_t RelTrkIso;
@@ -149,6 +176,8 @@ public:
 		
 		for(Int_t i_ev=0; i_ev<nTotEvent; i_ev++)
 		{
+			loadBar(i_ev+1, nTotEvent, 100, 100);
+
 			ntuple->GetPair( i_ev );
 
 			if( ntuple->tag_IsoMu20 == 1 &&
