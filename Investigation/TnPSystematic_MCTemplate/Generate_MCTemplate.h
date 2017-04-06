@@ -140,11 +140,11 @@ public:
 		TnPTree *ntuple = new TnPTree( chain );
 
 		Int_t nTotEvent = chain->GetEntries();
-		cout << "[# total events = " << nTotEvent << "]";
+		cout << "[# total events = " << nTotEvent << "]" << endl;
 		if( nTestEvent > 0 )
 		{
 			nTotEvent = nTestEvent;
-			cout << "\t[# test events = "<< nTotEvent << "]";
+			cout << "\t[# test events = "<< nTotEvent << "]" << endl;
 		}
 		
 		for(Int_t i_ev=0; i_ev<nTotEvent; i_ev++)
