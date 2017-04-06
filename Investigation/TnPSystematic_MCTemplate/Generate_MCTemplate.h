@@ -120,6 +120,18 @@ public:
 		this->Init_AllHist();
 	}
 
+	~MCTemplateTool()
+	{
+		for(Int_t i_pt=0; i_pt<nPtBin; i_pt++)
+		{
+			for(Int_t i_eta=0; i_eta<nEtaBin; i_eta++)
+			{
+				delete this->h_Pass[i_pt][i_eta];
+				delete this->h_Fail[i_pt][i_eta];
+			}
+		}
+	}
+
 	void Produce( Int_t nTestEvent )
 	{
 		TChain *chain = new TChain("muonEffs/fitter_tree");
