@@ -189,7 +189,7 @@ public:
 
 			if( ntuple->tag_IsoMu20 == 1 &&
 				ntuple->tag_pt > 22 &&
-				fabs(ntuple->tag_eta) > 2.4 &&
+				fabs(ntuple->tag_eta) < 2.4 &&
 				ntuple->mass > 70 && 
 				ntuple->mass < 130 && 
 				ntuple->mcTrue == 1 ) // -- common conditions -- //
