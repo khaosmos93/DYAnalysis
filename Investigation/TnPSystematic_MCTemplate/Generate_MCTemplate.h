@@ -308,5 +308,6 @@ protected:
 		}
 
 		f_output->Close();
+		cout << "All histograms are saved in " << OutputName << endl;
 	}
 };
