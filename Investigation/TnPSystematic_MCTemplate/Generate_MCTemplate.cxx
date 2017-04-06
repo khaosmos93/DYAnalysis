@@ -2,13 +2,18 @@
 
 void Generate_MCTemplate()
 {
-	const Int_t nType = 4;
-	TString Arr_Type[nType] = {"ID", "Iso", "HLTv4p2", "HLTv4p3"};
+	vector<TString> vec_Type;
+	vec_Type.push_back("ID");
+	vec_Type.push_back("Iso");
+	vec_Type.push_back("HLTv4p2");
+	vec_Type.push_back("HLTv4p3");
 
-	for( auto &Type : Arr_Type )
+	for( auto &Type : vec_Type )
 	{
 		MCTemplateTool *tool = new MCTemplateTool( Type );
 		tool->Produce( 10000 ); // -- negative value: all events -- //
+
+		delete tool;
 	}
 }
 
