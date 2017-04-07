@@ -40,7 +40,7 @@ fi
 
 # -- TnP CMSSW path -- #
 export KP_TNP_PATH=""
-if [ $HOSTNAME == "tamsa2.snu.ac.kr"] || [ $HOSTNAME =~ "compute-" ]; then # -- 147.47.242.67 -- #
+if [ $HOSTNAME == "tamsa2.snu.ac.kr" ] || [ $HOSTNAME =~ "compute-" ]; then # -- 147.47.242.67 -- #
 	KP_TNP_PATH="/share_home/kplee/TagProbe/v20160131_1st_76X/TagAndProbe/DYAnalysis_76X/"
 fi
 
