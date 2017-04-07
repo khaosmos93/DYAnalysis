@@ -38,10 +38,17 @@ then
 	export ROOT_INCLUDE_PATH=${KP_ROOUNFOLD_PATH}:${ROOT_INCLUDE_PATH}
 fi
 
+# -- TnP CMSSW path -- #
+export KP_TNP_PATH=""
+if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; then # -- 147.47.242.67 -- #
+	KP_TNP_PATH="/share_home/kplee/TagProbe/v20160131_1st_76X/TagAndProbe/DYAnalysis_76X/"
+fi
+
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
 echo "KP_INCLUDE_PATH:" ${KP_INCLUDE_PATH}
 echo "KP_ROOTFILE_PATH:" ${KP_ROOTFILE_PATH}
+echo "KP_TNP_PATH:" ${KP_TNP_PATH}
 
 echo "KP_DATA_PATH:" ${KP_DATA_PATH}
 if [ -z $KP_DATA_PATH ]; then

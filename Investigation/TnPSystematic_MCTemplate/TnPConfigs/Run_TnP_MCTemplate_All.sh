@@ -1,9 +1,10 @@
 #!/bin/bash
 
+KP_CWD=$(pwd)
 # -- move to CMSSW area -- #
-cd /share_home/kplee/TagProbe/v20160131_1st_76X/TagAndProbe/DYAnalysis_76X/v20170407_1st_MCTemplate
+cd ${KP_TNP_PATH}/v20170407_1st_MCTemplate
 
-# -- copy all related configuration in github-- #
+# -- copy all related configuration in github -- #
 cp -r $KP_ANALYZER_PATH/Investigation/TnPSystematic_MCTemplate/TnPConfigs ./
 
 # -- setup CMSSSW -- #
@@ -50,5 +51,7 @@ echo "RecoID(MC) is completed"
 
 
 echo "[job is completed]"
+
+cd $KP_CWD
 
 # -- PLEASE ENTER AFTER THE LAST LINE! ... IF YOU DON'T, LAST LINE WILL NOT BE EXECUTED BY BATCH JOB -- # 
