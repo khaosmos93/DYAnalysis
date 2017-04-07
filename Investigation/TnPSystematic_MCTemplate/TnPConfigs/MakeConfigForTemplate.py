@@ -30,7 +30,7 @@ class MakeConfigTool:
 		self.outputFile.write( '\n' )
 		self.outputFile.write( '"RooGaussian::signalResFail(mass, meanF[90, 80, 100], sigmaF[0.5, 0.001, 5.000])",' )
 		self.outputFile.write( '\n' )
-		self.outputFile.write( '"ZGeneratorLineShape::signalPhyPass(mass,\"%s/%s\", \"h_Pass_%s\")",' % (TemplatePath, self.ROOTFileName, BinName) )
+		self.outputFile.write( '"ZGeneratorLineShape::signalPhyPass(mass,\\"%s/%s\\", \"h_Pass_%s\")",' % (TemplatePath, self.ROOTFileName, BinName) )
 		self.outputFile.write( '\n' )
 		self.outputFile.write( '"ZGeneratorLineShape::signalPhyFail(mass,\"%s/%s\", \"h_Fail_%s\")",' % (TemplatePath, self.ROOTFileName, BinName) )
 		self.outputFile.write( '\n' )
