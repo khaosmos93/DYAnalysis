@@ -1,9 +1,17 @@
 #!/bin/bash
+
+# -- move to CMSSW area -- #
+cd /share_home/kplee/TagProbe/v20160131_1st_76X/TagAndProbe/DYAnalysis_76X/v20170407_1st_MCTemplate
+
+# -- copy all related configuration in github-- #
+cp -r $KP_ANALYZER_PATH/Investigation/TnPSystematic_MCTemplate/TnPConfigs ./
+
+# -- setup CMSSSW -- #
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=slc6_amd64_gcc491
-
 cmsenv
 
+# -- Run -- #
 cmsRun MuonEffs_MCTemplate.py mc_weight HighPtMuon >&log_mc_weight_HighPtMuon
 
 echo "RecoID(MC) is completed"
