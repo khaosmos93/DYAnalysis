@@ -1,3 +1,4 @@
+import os
 import FWCore.ParameterSet.Config as cms
 ### USAGE:
 ###    cmsRun TriggerEff.py <scenario> [ <id> [ <binning1> ... <binningN> ] ]
@@ -9,7 +10,6 @@ import FWCore.ParameterSet.Config as cms
 #######################
 # -- Setup by hand -- #
 #######################
-Machine = "SNU" # -- SNU, KISTI, KNU -- #
 Sample = "Run2015D" # -- Run2015C, Run2015D, HLTv4p2, HLTv4p3 -- #
 nBin = 40
 LowerEdge = "70"
@@ -21,7 +21,7 @@ Tag_pT = 22
 # -- Dependence on the machine -- #
 Machine = ""
 BaseLocation = ""
-if os.environ["HOSTNAME"] = "ui10.sdfarm.kr":
+if os.environ["HOSTNAME"] == "ui10.sdfarm.kr":
     Machine = "KISTI"
     BaseLocation = "/cms/home/kplee/scratch/TagProbeTrees/76X/"
 
@@ -326,7 +326,7 @@ else:
     PassingProbe = args[1]
 print "PassingProbe: " + PassingProbe
 
-import PhysicsTools.TagAndProbe.Def_AllTemplatePDF as TemplatePDFs
+import Def_AllTemplatePDF as TemplatePDFs
 
 if PassingProbe == "HighPtMuon":
     Template.PDFs = TemplatePDFs.all_pdfs_ID
