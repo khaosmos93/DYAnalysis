@@ -1,11 +1,15 @@
 #!/bin/bash
 
 KP_CWD=$(pwd)
+
+# -- make config. containing all MC templates (based on env. variables) -- #
+python MakeConfigForTemplate.py
+
 # -- move to CMSSW area -- #
 cd ${KP_TNP_PATH}/v20170407_1st_MCTemplate
 
 # -- copy all related configuration in github -- #
-cp -r $KP_ANALYZER_PATH/Investigation/TnPSystematic_MCTemplate/TnPConfigs ./
+cp -r ${KP_ANALYZER_PATH}/Investigation/TnPSystematic_MCTemplate/TnPConfigs ./
 
 # -- setup CMSSSW -- #
 source /cvmfs/cms.cern.ch/cmsset_default.sh

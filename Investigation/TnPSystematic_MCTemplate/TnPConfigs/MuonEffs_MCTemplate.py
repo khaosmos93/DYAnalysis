@@ -19,13 +19,18 @@ Tag_pT = 22
 ########################
 
 # -- Dependence on the machine -- #
+Machine = ""
 BaseLocation = ""
-
-if Machine == "SNU":
-    BaseLocation = "/share_home/kplee/data/TagProbe/76X/"
-elif Machine == "KISTI":
+if os.environ["HOSTNAME"] = "ui10.sdfarm.kr":
+    Machine = "KISTI"
     BaseLocation = "/cms/home/kplee/scratch/TagProbeTrees/76X/"
-elif Machine == "KNU":
+
+elif "tamsa2" in os.environ["HOSTNAME"] or "compute-" in os.environ["HOSTNAME"]:
+    Machine = "SNU"
+    BaseLocation = "/share_home/kplee/data/TagProbe/76X/"
+
+elif "knu" in os.environ["HOSTNAME"]:
+    Machine = "KNU"
     BaseLocation = "/u/user/kplee/TagProbeTrees/"
 
 # -- Dependence on the kind of sample to be measured -- #
