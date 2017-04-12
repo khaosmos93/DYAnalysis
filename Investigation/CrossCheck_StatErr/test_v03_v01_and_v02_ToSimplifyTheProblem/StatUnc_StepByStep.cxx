@@ -44,7 +44,7 @@ void StatUnc_StepByStep()
 		// for(Int_t i_smeared=0; i_smeared<nMap; i_smeared++)
 		// 	testTool->Print_BkgSub_Unfolded_CV_Smeared(15, i_smeared);
 
-		testTool->Validate_MatrixInversion();
+		// testTool->Validate_MatrixInversion();
 		// testTool->Test_InvertMDiagAs1();
 		// testTool->Print_Compare_nEvents_CV_Smeared(15);
 		// testTool->Print_Compare_nEvents_CV_Smeared(16);
@@ -53,5 +53,7 @@ void StatUnc_StepByStep()
 		// testTool->Print_Compare_nEvents_CV_Smeared(19);
 		// testTool->Print_Compare_nEvents_CV_Smeared(20);
 		// testTool->DrawCanvas_ContributionFromNextBin();
+
+		testTool->Print_CompContribution_Diag_OtherTerm( 15 );
 	}
 }

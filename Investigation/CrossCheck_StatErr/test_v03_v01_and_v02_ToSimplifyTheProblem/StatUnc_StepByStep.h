@@ -1096,6 +1096,18 @@ public:
 		TDecompSVD* SVD = new TDecompSVD(RespM);
 		TMatrixD TMatx_InvertedM = SVD->Invert();
 
+		for(Int_t i_massbin=1; i_massbin<=nMassBin; i_massbin++)
+		{
+			Double_t Entry_Pre = TMatx_InvertedM[i_massbin][i_massbin-1];
+			Double_t Entry_Diag = TMatx_InvertedM[i_massbin][i_massbin];
+			Double_t Entry_Next = TMatx_InvertedM[i_massbin][i_massbin+1];
+
+			printf("[%d bin] (Previous, Diagonal, Next entry) = (%9.5lf, %9.5lf, %9.5lf)\n", i_massbin, Entry_Pre, Entry_Diag, Entry_Next);
+		}
+		cout << endl;
+
+		this->Print_UnfoldingStep_AddTerms( this->Hists_Test_CV, TMatx_InvertedM, TVec_Fake, TVec_MeasuredMC );
+
 		this->ReCalc_UnfoldedHist_DiagAs1( this->Hists_Test_CV, TMatx_InvertedM, TVec_Fake, TVec_MeasuredMC );
 		for(Int_t i_smeared=0; i_smeared<nMap; i_smeared++)
 			this->ReCalc_UnfoldedHist_DiagAs1( this->Hists_Test_Smeared[i_smeared], TMatx_InvertedM, TVec_Fake, TVec_MeasuredMC );
@@ -1125,8 +1137,8 @@ public:
 				// if( i_massbin == i_bin )
 				// 	Entry_InvertedM = 1.0; // -- diagonal term: set as 1 -- //
 
-				// if( i_massbin != i_bin )
-				// 	Entry_InvertedM = 0.0; // -- only consider diagonal term -- //
+				if( i_massbin != i_bin )
+					Entry_InvertedM = 0.0; // -- only consider diagonal term -- //
 
 				// if( !(i_massbin == i_bin || i_massbin == i_bin-1 || i_massbin == i_bin+1)  )
 				// 	Entry_InvertedM = 0.0; // -- only consider diagonal and the nearest off-diagonal terms -- //
@@ -1137,8 +1149,8 @@ public:
 				// if( !(i_massbin == i_bin || i_massbin == i_bin-1)  )
 				// 	Entry_InvertedM = 0.0; // -- only consider diagonal and the nearest off-diagonal term from previous bin-- //
 
-				if( !(i_massbin == i_bin || i_massbin == i_bin+1)  )
-					Entry_InvertedM = 0.0; // -- only consider diagonal and the nearest off-diagonal term from next bin-- //
+				// if( !(i_massbin == i_bin || i_massbin == i_bin+1)  )
+				// 	Entry_InvertedM = 0.0; // -- only consider diagonal and the nearest off-diagonal term from next bin-- //
 
 
 
@@ -1149,6 +1161,131 @@ public:
 		}
 
 		Hists->h_Unfolded = (TH1D*)h_Unfolded->Clone();
+	}
+
+	void Print_CompContribution_Diag_OtherTerm( Int_t i_massbin )
+	{
+		TString FileName = this->BasePath + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root";
+		TFile *f_Unfold = TFile::Open( FileName );
+
+		RooUnfoldResponse *UnfoldRes = (RooUnfoldResponse*)f_Unfold->Get("h_RecoMass_h_GenMass")->Clone();
+
+		// -- http://hepunx.rl.ac.uk/~adye/software/unfold/htmldoc/RooUnfoldResponse.html#RooUnfoldResponse:Mresponse -- //
+		// -- Response matrix as a TMatrixD: (row,column)=(measured,truth) -- //
+		TMatrixD RespM = UnfoldRes->Mresponse();
+		TVectorD TVec_Fake = UnfoldRes->Vfakes();
+		TVectorD TVec_MeasuredMC = UnfoldRes->Vmeasured();
+
+		// --Get unfolded distribution by SVD -- //
+		TDecompSVD* SVD = new TDecompSVD(RespM);
+		TMatrixD TMatx_InvertedM = SVD->Invert();
+
+		Double_t nUnfolded_CV = 0;
+		Double_t nUnfolded_Diag_CV = 0;
+		this->Print_Contribution_Diagonal( i_massbin, this->Hists_CV, TMatx_InvertedM, TVec_Fake, TVec_MeasuredMC, nUnfolded_CV, nUnfolded_Diag_CV );
+		Double_t nUnfolded_Other_CV = nUnfolded_CV - nUnfolded_Diag_CV;
+
+		printf("[Central value (denominator)]");
+		printf("[%20s] (RelCont_Diag, RelCont_Other) = (%6.3lf, %6.3lf)\n", "# events", nUnfolded_Diag_CV/nUnfolded_CV, nUnfolded_Other_CV/nUnfolded_CV);
+
+		for(Int_t i_map=0; i_map<nMap; i_map++)
+		{
+			Double_t nUnfolded_Smeared = 0;
+			Double_t nUnfolded_Diag_Smeared = 0;
+			this->Print_Contribution_Diagonal( i_massbin, this->Hists_Smeared[i_map], TMatx_InvertedM, TVec_Fake, TVec_MeasuredMC, nUnfolded_Smeared, nUnfolded_Diag_Smeared );
+			Double_t nUnfolded_Other_Smeared = nUnfolded_Smeared - nUnfolded_Diag_Smeared;
+
+			Double_t AbsDiff = nUnfolded_CV - nUnfolded_Smeared;
+			Double_t AbsDiff_Diag = nUnfolded_Diag_CV - nUnfolded_Diag_Smeared;
+			Double_t AbsDiff_Other = nUnfolded_Other_CV - nUnfolded_Other_Smeared;
+
+			Double_t RelCont_Diag = AbsDiff_Diag / AbsDiff;
+			Double_t RelCont_Other = AbsDiff_Other / AbsDiff;
+
+			printf("[%d-th map]\n", i_map);
+			printf("\t[%20s] (RelCont_Diag, RelCont_Other) = (%6.3lf, %6.3lf)\n", "Diff", RelCont_Diag, RelCont_Other);
+		}
+	}
+
+	void Print_Contribution_Diagonal( 
+		Int_t i_massbin, HistogramContainer *Hists, TMatrixD TMatx_InvertedM, TVectorD TVec_Fake, TVectorD TVec_MeasuredMC,
+		Double_t &nUnfolded, Double_t &nUnfolded_Diag )
+	{
+		TVectorD TVec_BkgSub_beforeFake = this->ConvertHistToTVector( Hists->h_BkgSub );
+		TVectorD TVec_BkgSub = this->Subtract_Fakes( TVec_BkgSub_beforeFake, TVec_Fake, TVec_MeasuredMC );
+
+		Int_t nBin = TMatx_InvertedM.GetNrows();
+
+		nUnfolded_Diag = TMatx_InvertedM[i_massbin][i_massbin]*TVec_BkgSub[i_massbin];
+
+		nUnfolded = 0;
+		// -- Ax = b -> x = A^-1 * b -- //
+		for(Int_t i_bin=0; i_bin<nBin; i_bin++)
+		{
+			Double_t nEvent_BkgSub = TVec_BkgSub[i_bin];
+			Double_t Entry_InvertedM = TMatx_InvertedM[i_massbin][i_bin];
+
+			nUnfolded = nUnfolded + Entry_InvertedM*nEvent_BkgSub;
+		}
+	}
+
+	void Print_UnfoldingStep_AddTerms(HistogramContainer *Hists, TMatrixD TMatx_InvertedM, TVectorD TVec_Fake, TVectorD TVec_MeasuredMC)
+	{
+		TVectorD TVec_BkgSub_beforeFake = this->ConvertHistToTVector( Hists->h_BkgSub );
+		TVectorD TVec_BkgSub = this->Subtract_Fakes( TVec_BkgSub_beforeFake, TVec_Fake, TVec_MeasuredMC );
+
+		Int_t nBin = TMatx_InvertedM.GetNrows();
+
+		Double_t nTotEvent_BkgSub = 0;
+		Double_t nTotEvent_Unfolded = 0;
+		for(Int_t i_massbin=1; i_massbin<=nMassBin; i_massbin++)
+		{
+			Double_t nBkgSub = TVec_BkgSub[i_massbin];
+
+			Double_t nUnfolded_Diag = 0;
+			Double_t nUnfolded_1st = 0;
+			Double_t nUnfolded_2nd = 0;
+			Double_t nUnfolded_ThisBin = 0;
+
+			// -- Ax = b -> x = A^-1 * b -- //
+			for(Int_t i_bin=0; i_bin<nBin; i_bin++)
+			{
+				Double_t nEvent_BkgSub = TVec_BkgSub[i_bin];
+				Double_t Entry_InvertedM = TMatx_InvertedM[i_massbin][i_bin];
+
+				if( i_massbin == i_bin )
+				{
+					nUnfolded_Diag = nUnfolded_Diag + Entry_InvertedM*nEvent_BkgSub;
+					nUnfolded_1st = nUnfolded_1st + Entry_InvertedM*nEvent_BkgSub;
+					nUnfolded_2nd = nUnfolded_2nd + Entry_InvertedM*nEvent_BkgSub;
+				}
+
+				if( i_massbin == i_bin-1 || i_massbin == i_bin+1  )
+				{
+					nUnfolded_1st = nUnfolded_1st + Entry_InvertedM*nEvent_BkgSub;
+					nUnfolded_2nd = nUnfolded_2nd + Entry_InvertedM*nEvent_BkgSub;
+				}
+
+				if( i_massbin == i_bin-2 || i_massbin == i_bin+2  )
+					nUnfolded_2nd = nUnfolded_2nd + Entry_InvertedM*nEvent_BkgSub;
+
+				nUnfolded_ThisBin = nUnfolded_ThisBin + Entry_InvertedM*nEvent_BkgSub;
+			}
+
+			printf("[%02d bin]\n", i_massbin);
+			printf("[# events] (Bkg.Sub., Diagonal, up to 1st off-diag, up to 2nd off-diag, all) = (%8.1lf, %8.1lf, %8.1lf, %8.1lf, %8.1lf)\n",
+				nBkgSub, nUnfolded_Diag, nUnfolded_1st, nUnfolded_2nd, nUnfolded_ThisBin);
+
+			printf("[ratios ] (Bkg.Sub., Diagonal, up to 1st off-diag, up to 2nd off-diag, all) = (%8.3lf, %8.3lf, %8.3lf, %8.3lf, %8.3lf)\n",
+				nBkgSub/nBkgSub, nUnfolded_Diag/nBkgSub, nUnfolded_1st/nBkgSub, nUnfolded_2nd/nBkgSub, nUnfolded_ThisBin/nBkgSub);
+
+			printf("\n");
+
+			nTotEvent_BkgSub += nBkgSub;
+			nTotEvent_Unfolded += nUnfolded_ThisBin;
+		}
+
+		printf("[nTotEvent_BkgSub, nTotEvent_Unfolded] = (%9.1lf, %9.1lf)\n", nTotEvent_BkgSub, nTotEvent_Unfolded);
 	}
 
 	void Test_Calc_RelStatUnc( TString Type, TH1D* h_RelStatUnc)
@@ -1206,6 +1343,8 @@ public:
 
 		TH1D *h_CV = this->Hists_Test_CV->Get_Histogram( Type );
 		Double_t value_CV = h_CV->GetBinContent(i_bin);
+
+		Type = "BkgSub";
 
 		Double_t value_CV_Ref = this->Hists_CV->Get_Histogram( Type )->GetBinContent(i_bin);
 
