@@ -335,8 +335,10 @@ protected:
 			for(Int_t i_eta=0; i_eta<nEtaBin; i_eta++)
 			{
 				TString BinName = TString::Format("PtBin%d_EtaBin%d", i_pt, i_eta);
-				this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 60, 70, 130);
-				this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 60, 70, 130);
+				// this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 60, 70, 130);
+				// this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 60, 70, 130);
+				this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 20, 70, 130);
+				this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 20, 70, 130);
 			}
 		}
 
