@@ -206,6 +206,7 @@ public:
 		}
 
 		this->Remove_NegativeBins_All();
+		this->Remove_EmptyBins_All();
 		cout << "Generation of MC Templates for " << this->Type << " is done" << endl;
 
 		this->Save_All();
@@ -311,6 +312,35 @@ protected:
 
 	}
 
+	void Remove_EmptyBins_All()
+	{
+		for(Int_t i_pt=0; i_pt<nPtBin; i_pt++)
+		{
+			for(Int_t i_eta=0; i_eta<nEtaBin; i_eta++)
+			{
+				this->Remove_EmtpyBins( this->h_Pass[i_pt][i_eta] );
+				this->Remove_EmtpyBins( this->h_Fail[i_pt][i_eta] );
+			}
+		}
+	}
+
+	void Remove_EmtpyBins( TH1D* h )
+	{
+		Int_t nBin = h->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+			Double_t entry = h->GetBinContent(i_bin);
+
+			// -- if there's a empty bin in MC template (because of gen-weight), fitting will not work -- //
+			if( entry == 0 )
+			{
+				h->SetBinContent(i_bin, 1e-3);
+				h->SetBinError(i_bin, 1e-3);
+			}
+		}
+	}
+
 	void Remove_NegativeBins( TH1D* h )
 	{
 		Int_t nBin = h->GetNbinsX();
@@ -337,8 +367,8 @@ protected:
 				TString BinName = TString::Format("PtBin%d_EtaBin%d", i_pt, i_eta);
 				// this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 60, 70, 130);
 				// this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 60, 70, 130);
-				this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 20, 70, 130);
-				this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 20, 70, 130);
+				this->h_Pass[i_pt][i_eta] = new TH1D("h_Pass_"+BinName, "", 30, 70, 130);
+				this->h_Fail[i_pt][i_eta] = new TH1D("h_Fail_"+BinName, "", 30, 70, 130);
 			}
 		}
 
