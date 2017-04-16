@@ -21,37 +21,37 @@ cmsRun MuonEffs_MCTemplate.py mc_weight HighPtMuon >&log_mc_weight_HighPtMuon
 
 echo "RecoID(MC) is completed"
 
-# cmsRun MuonEffs_MCTemplate.py data_25ns HighPtMuon >&log_data_25ns_HighPtMuon
+cmsRun MuonEffs_MCTemplate.py data_25ns HighPtMuon >&log_data_25ns_HighPtMuon
 
-# echo "RecoID(Data) is completed"
+echo "RecoID(Data) is completed"
 
-# cmsRun MuonEffs_MCTemplate.py mc_weight TrkIso_010_from_HighPtMuon >&log_mc_weight_TrkIso_010_from_HighPtMuon
+cmsRun MuonEffs_MCTemplate.py mc_weight TrkIso_010_from_HighPtMuon >&log_mc_weight_TrkIso_010_from_HighPtMuon
 
-# echo "Isolation(MC) is completed"
+echo "Isolation(MC) is completed"
 
-# cmsRun MuonEffs_MCTemplate.py data_25ns TrkIso_010_from_HighPtMuon >&log_data_25ns_TrkIso_010_from_HighPtMuon
+cmsRun MuonEffs_MCTemplate.py data_25ns TrkIso_010_from_HighPtMuon >&log_data_25ns_TrkIso_010_from_HighPtMuon
 
-# echo "Isolation(Data) is completed"
+echo "Isolation(Data) is completed"
 
-# cd HLTv4p2
+cd HLTv4p2
 
-# cmsRun MuonEffs_MCTemplate.py mc_weight IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_mc_weight_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
+cmsRun MuonEffs_MCTemplate.py mc_weight IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_mc_weight_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
 
-# echo "Trigger_HLTv4p2(MC) is completed"
+echo "Trigger_HLTv4p2(MC) is completed"
 
-# cmsRun MuonEffs_MCTemplate.py data_25ns IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_data_25ns_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
+cmsRun MuonEffs_MCTemplate.py data_25ns IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_data_25ns_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
 
-# echo "Trigger_HLTv4p2(Data) is completed"
+echo "Trigger_HLTv4p2(Data) is completed"
 
-# cd ../HLTv4p3
+cd ../HLTv4p3
 
-# cmsRun MuonEffs_MCTemplate.py mc_weight IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_mc_weight_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
+cmsRun MuonEffs_MCTemplate.py mc_weight IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_mc_weight_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
 
-# echo "Trigger_HLTv4p3(MC) is completed"
+echo "Trigger_HLTv4p3(MC) is completed"
 
-# cmsRun MuonEffs_MCTemplate.py data_25ns IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_data_25ns_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
+cmsRun MuonEffs_MCTemplate.py data_25ns IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010 >&log_data_25ns_IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and_TrkIso_010
 
-# echo "Trigger_HLTv4p3(Data) is completed"
+echo "Trigger_HLTv4p3(Data) is completed"
 
 
 echo "[job is completed]"
