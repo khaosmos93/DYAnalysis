@@ -45,6 +45,8 @@ cmsRun MuonEffs_MCTemplate.py data_25ns IsoMu20_OR_IsoTkMu20_from_HighPtMuon_and
 
 echo "Trigger_HLTv4p3(Data) is completed"
 
+cd ../
+
 echo "[job is completed]"
 
 # -- PLEASE ENTER AFTER THE LAST LINE! ... IF YOU DON'T, LAST LINE WILL NOT BE EXECUTED BY BATCH JOB -- # 

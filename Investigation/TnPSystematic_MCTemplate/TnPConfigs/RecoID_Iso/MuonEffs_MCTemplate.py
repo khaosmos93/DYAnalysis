@@ -10,13 +10,19 @@ import FWCore.ParameterSet.Config as cms
 #######################
 # -- Setup by hand -- #
 #######################
-Sample = "Run2015D" # -- Run2015C, Run2015D, HLTv4p2, HLTv4p3 -- #
+Sample = "" # -- Run2015C, Run2015D, HLTv4p2, HLTv4p3 : will be automatically set -- #
 nBin = 40
 LowerEdge = "70"
 UpperEdge = "130"
 Tag_pT = 22
 ########################
 ########################
+
+DirName = os.getcwd().split("/")[-1]
+if DirName == "RecoID_Iso": Sample = "Run2015D"
+elif DirName == "HLTv4p2": Sample = "HLTv4p2"
+elif DirName == "HLTv4p3": Sample = "HLTv4p3"
+print "Sample: %s" % (Sample)
 
 # -- Dependence on the machine -- #
 Machine = ""
