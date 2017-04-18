@@ -111,7 +111,7 @@ def SaveGraph_2D(FileName, outputFile):
 	i_absetabin = 0
 	List_Graphs = []
 	for key in Dir2.GetListOfKeys():
-		if "pt_PLOT_abseta_bin" in key.GetName():
+		if "pt_PLOT_eta_bin" in key.GetName():
 			# print key.GetName()
 
 			canvas = key.ReadObj()
