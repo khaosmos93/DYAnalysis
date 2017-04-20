@@ -334,7 +334,7 @@ echo "job is completed"
 		XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 6471039.0]
 		XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 6214080.0]
 		XSecSumW_DYMMaMCNLO["M50to200"] = [6095.58346/3.0, 6461647.0]
-		XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, -1]
+		XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 233822.0]
 		XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 56340.0]
 		XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 50136.0]
 		XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 48188.0]
@@ -364,7 +364,7 @@ echo "job is completed"
 		xSecSumW_Others["tW"] = [35.6, 6952830]
 		xSecSumW_Others["tbarW"] = [35.6, 6933093]
 
-		xSecSumW_Others["WJets"] = [6.15e4, -1]
+		xSecSumW_Others["WJets"] = [6.15e4, 16335574.0]
 
 
 		if "DYPowheg" in self.Sample:
