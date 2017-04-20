@@ -1098,6 +1098,7 @@ public:
 
 	Bool_t isOS;
 
+	// -- default contructor -- //
 	MuPair() {};
 	MuPair( Muon mu1, Muon mu2 )
 	{

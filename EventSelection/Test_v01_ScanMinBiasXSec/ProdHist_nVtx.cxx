@@ -21,11 +21,13 @@
 #include <TRandom.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include "DYAnalysis_80X/Include/RochesterMomCorr_80X/RoccoR.cc"
+// #include <Include/RochesterMomCorr_80X/RoccoR.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include "DYAnalysis_80X/Include/DYAnalyzer.h"
-#include "ControlPlots.h"
+#include <Include/DYAnalyzer.h>
+#include <Include/PlotTools.h>
+
+#define nXSec 9
 
 class HistogramProducer;
 
@@ -44,6 +46,9 @@ public:
 	TString FileName_ROOTFileList;
 	TString Tag;
 
+	Double_t Arr_MinBiasXSec[nXSec];
+	Double_t Arr_PUWeights[nXSec][nPUBin];
+
 	HistogramProducer( Int_t _isMC, TString _FileName_ROOTFileList, Double_t _NormFactor)
 	{
 		this->isMC = _isMC;
@@ -58,6 +63,8 @@ public:
 		printf("===============[HistogramProducer]===============\n");
 		printf("[isMC = %d] Tag = %s, NormFactor = %lf\n", this->isMC, this->Tag.Data(), this->NormFactor);
 		printf("=================================================\n");
+
+		this->Init();
 	}
 
 	void Producer()
@@ -78,24 +85,21 @@ public:
 			ntuple->TurnOnBranches_GenLepton();
 
 		// -- plot container -- //
-		ControlPlots *Plots = new ControlPlots( "", this->isMC );
+		// ControlPlots *Plots = new ControlPlots( "", this->isMC );
 		// TH1D *h_PU = new TH1D("h_PU_"+Tag[i_tup], "", 50, 0, 50);
-		// TH1D *h_nVertices_before = new TH1D("h_nVertices_before_"+Tag[i_tup], "", 50, 0, 50);
-		// TH1D *h_nVertices_after = new TH1D("h_nVertices_after_"+Tag[i_tup], "", 50, 0, 50);
-
-
-		// -- Rochester momentum correction -- //
-		TString DirPath_RoccoR = GetBasePath() + "Include/RochesterMomCorr_80X/rcdata.2016.v3";
-		RoccoR rmcor(DirPath_RoccoR.Data());
+		TH1D *h_nVertices_before = new TH1D("h_nVtx_before", "", 50, 0, 50);
+		TH1D *h_nVertices_after[nXSec];
+		for(Int_t i=0; i<nXSec; i++)
+			h_nVertices_after[i] = new TH1D(TString::Format("h_nVtx_after_XSec_%.0lf", Arr_MinBiasXSec[i]), "", 50, 0, 50);
 
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
 
-		for(Int_t i=0; i<nTotEvent; i++)
+		for(Int_t i_event=0; i_event<nTotEvent; i_event++)
 		{
-			this->loadBar(i+1, nTotEvent, 100, 100);
+			this->loadBar(i_event+1, nTotEvent, 100, 100);
 			
-			ntuple->GetEvent(i);
+			ntuple->GetEvent(i_event);
 
 			//Bring weights for NLO MC events
 			Double_t GenWeight;
@@ -105,26 +109,6 @@ public:
 
 			Bool_t GenFlag = kFALSE;
 			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(this->Tag, ntuple); // -- for DY->tautau process -- //
-
-			// // -- Fill the histogram for gen-level information (signal sample) -- //
-			// if( GenFlag == 1 && Tag[i_tup].Contains("DYMuMu") )
-			// {
-			// 	vector<GenLepton> GenLeptonCollection;
-			// 	Int_t NGenLeptons = ntuple->gnpair;
-			// 	for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
-			// 	{
-			// 		GenLepton genlep;
-			// 		genlep.FillFromNtuple(ntuple, i_gen);
-			// 		if( genlep.isMuon() && genlep.isHardProcess )
-			// 		{
-			// 			GenLeptonCollection.push_back( genlep );
-
-			// 			if( GenLeptonCollection.size() ==  2 )
-			// 				break;
-			// 		}
-			// 	}
-			// 	Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
-			// }
 
 			if( GenFlag == kTRUE )
 			{
@@ -138,25 +122,6 @@ public:
 					for(Int_t i_reco=0; i_reco<nLepton; i_reco++)
 					{
 						Muon mu(ntuple, i_reco);
-
-						// -- Apply Rochester momentum scale correction -- //
-						Double_t SF_rmcor = 0;
-						if( isMC )
-						{
-							Double_t u1 = gRandom->Rndm();
-							Double_t u2 = gRandom->Rndm();
-							SF_rmcor = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, mu.trackerLayers, u1, u2);
-						}
-						else // -- data -- //
-							SF_rmcor = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi);
-
-						mu.Pt = mu.Pt * SF_rmcor;
-
-						TLorentzVector momentum_rmcor;
-						momentum_rmcor.SetPtEtaPhiM(mu.Pt, mu.eta, mu.phi, M_Mu);
-						mu.Momentum = momentum_rmcor;
-						// -- end of correction -- //
-
 						MuonCollection.push_back( mu );
 					}
 
@@ -166,18 +131,15 @@ public:
 
 					if( isPassEventSelection == kTRUE )
 					{
-						// printf("\t[Pass event selection condition]\n");
-						// PrintRecoMuonInfo( SelectedPair.First );
-						// PrintRecoMuonInfo( SelectedPair.Second );
+						Int_t nVertices = ntuple->nVertices;
+						h_nVertices_before->Fill(nVertices, GenWeight);
 
-						Plots->FillHistograms_MuPair( SelectedPair, ntuple->runNum, TotWeight );
-
-						// Int_t PU = ntuple->nPileUp;
-						// h_PU->Fill( PU, PUWeight );
-
-						// Int_t nVertices = ntuple->nVertices;
-						// h_nVertices_before->Fill(nVertices, GenWeight);
-						// h_nVertices_after->Fill(nVertices, GenWeight*PUWeight);
+						Int_t PU = ntuple->nPileUp;
+						for(Int_t i_XSec=0; i_XSec<nXSec; i_XSec++)
+						{
+							Double_t PUWeight = Arr_PUWeights[i_XSec][PU];
+							h_nVertices_after->Fill( nVertices, GenWeight*PUWeight );
+						}
 					}
 
 				} // -- end of if( ntuple->isTriggered( analyzer->HLT ) ) -- //
@@ -230,5 +192,56 @@ protected:
 	    // previous line and clear it.
 		cout << "]\r" << flush;
 
+	}
+
+	// -- Fill PU weight array -- //
+	void Set_PUWeights( Bool_t isMC )
+	{
+		if( isMC == kFALSE ) // -- for data: no weights -- //
+		{
+			for(Int_t i_XSec=0; i_XSec<nXSec; i_XSec++)
+				for(Int_t i=0; i<nPUBin; i++)
+					PileUpWeight[i_XSec][i] = 1;
+
+			return;
+		}
+		
+		// -- Only for the MC -- //
+		TString IncludePath = gSystem->Getenv("KP_INCLUDE_PATH");
+		TString BaseFilePath = IncludePath+"/PUWeights";
+
+		for(Int_t i_XSec=0; i_XSec<nXSec; i_XSec++)
+		{
+			TString FileName = BaseFilePath + TString::Format("/ROOTFile_PUDist_MinBiasXSec_%.0lf.root\n", Arr_MinBiasXSec[i_XSec]);
+			printf("[Min-bias cross section = %.0lf] FileName = %s\n", Arr_MinBiasXSec[i_XSec], FileName);
+			TH1D* h_PUWeight = Get_Hist(FileName, "h_PUWeight");
+
+			printf("[PU weight values]\n");
+			for(Int_t i=0; i<nPUBin; i++)
+			{
+				Int_t i_bin = i+1;
+				Arr_PUWeights[i_XSec][i] = h_PUWeight->GetBinContent(i_bin);
+				printf("%7.3lf\t", Arr_PUWeights[i_XSec][i]);
+				if( i_bin % 10 == 0 && i_bin != 0 )
+					printf("\n");
+			}
+		}
+
+		printf("[Setup for PU weights are finished]\n");
+	}
+
+	void Init()
+	{
+		Arr_MinBiasXSec[0] = 65;
+		Arr_MinBiasXSec[1] = 66;
+		Arr_MinBiasXSec[2] = 67;
+		Arr_MinBiasXSec[3] = 68;
+
+		Arr_MinBiasXSec[4] = 69;
+
+		Arr_MinBiasXSec[5] = 70;
+		Arr_MinBiasXSec[6] = 71;
+		Arr_MinBiasXSec[7] = 72;
+		Arr_MinBiasXSec[8] = 73;
 	}
 };

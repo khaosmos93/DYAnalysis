@@ -384,14 +384,14 @@ echo "job is completed"
 			else:
 				XSec = -1
 				SumW = -1
-		# elif "DYMuMu" in self.Sample:
-		# 	MassRange = self.Sample.split("_")[1]
-		# 	if MassRange in XSecSumW_DYMMaMCNLO:
-		# 		XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
-		# 		SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
-		# 	else:
-		# 		XSec = -1
-		# 		SumW = -1
+		elif "DYMuMu" in self.Sample:
+			MassRange = self.Sample.split("_")[1]
+			if MassRange in XSecSumW_DYMMaMCNLO:
+				XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
+				SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
+			else:
+				XSec = -1
+				SumW = -1
 		elif self.Sample in xSecSumW_Others:
 			XSec = xSecSumW_Others[ self.Sample ][0]
 			SumW = xSecSumW_Others[ self.Sample ][1]
