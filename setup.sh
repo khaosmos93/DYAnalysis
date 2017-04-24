@@ -18,11 +18,20 @@ export KP_DATA_PATH=""
 if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- # 
 then 
 	KP_DATA_PATH="/data4/Users/kplee/DYntuple"
-	
+
 	# -- cmssw setup (for ROOT6) -- #
-	export SCRAM_ARCH=slc6_amd64_gcc530
+	export SCRAM_ARCH=slc6_amd64_gcc493
 	export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 	source $VO_CMS_SW_DIR/cmsset_default.sh
+
+	cd /share_home/kplee/ntupleMaker/DYntupleMaker/v20160421_1st_76X/CMSSW_7_6_3_patch2
+	eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
+	cd $KP_ANALYZER_PATH
+		
+	# -- cmssw setup (for ROOT6) -- #
+	# export SCRAM_ARCH=slc6_amd64_gcc530
+	# export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+	# source $VO_CMS_SW_DIR/cmsset_default.sh
 
 	# cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src
 	# eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
@@ -47,7 +56,8 @@ export KP_ROOT6_PATH=""
 if [ $HOME == "/Users/KyeongPil_Lee" ]; then
 	KP_ROOT5_PATH="/Users/KyeongPil_Lee/ROOT5/root/bin/thisroot.sh"
 	KP_ROOT6_PATH="/Users/KyeongPil_Lee/ROOT6/root/bin/thisroot.sh"
-elif [ "$HOSTNAME" == "tamsa2.snu.ac.kr" -o "$HOSTNAME" == "cms.snu.ac.kr" ]; then
+# elif [ "$HOSTNAME" == "tamsa2.snu.ac.kr" -o "$HOSTNAME" == "cms.snu.ac.kr" ]; then
+elif [ "$HOSTNAME" == "cms.snu.ac.kr" ]; then
 	KP_ROOT5_PATH="/share/apps/root_v5-34-32/root/bin/thisroot.sh"
 	KP_ROOT6_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/bin/thisroot.sh" # -- CMSSW_8_0_25 -- #
 fi
