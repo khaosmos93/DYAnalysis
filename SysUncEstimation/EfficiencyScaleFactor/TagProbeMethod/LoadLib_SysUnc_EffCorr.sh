@@ -1,9 +1,26 @@
+#!/bin/bash
+
+echo "Change ROOT version: ROOT6 -> ROOT5"
+source ${KP_ROOT5_PATH}
+
 root -l -b << EOF
 
-gSystem->Load("/home/kplee/Unfolding/libRooUnfold.so")
+TString IncludePath = gSystem->Getenv("KP_ANALYZER_PATH")
+gInterpreter->AddIncludePath( TString::Format("%s", IncludePath.Data()) )
 
-.x SysUnc_EffCorr.C++("v20160708_1st_ApplyAdditionalSF")
+TString IncludePath2 = gSystem->Getenv("KP_ROOUNFOLD_PATH")
+gInterpreter->AddIncludePath( TString::Format("%s", IncludePath2.Data()) )
+
+.include
+
+TString BasePath = gSystem->Getenv("KP_ROOUNFOLD_PATH")
+gSystem->Load(BasePath+"/libRooUnfold.so")
+
+.x SysUnc_EffCorr.C++
 
 .q
 
 EOF
+
+echo "Return to latest ROOT version: ROOT5 -> ROOT6"
+source ${KP_ROOT6_PATH}
