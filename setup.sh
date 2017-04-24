@@ -38,19 +38,23 @@ then
 	export ROOT_INCLUDE_PATH=${KP_ROOUNFOLD_PATH}:${ROOT_INCLUDE_PATH}
 fi
 
-# -- TnP CMSSW path -- #
-export KP_TNP_PATH=""
-if [ $HOSTNAME == "tamsa2.snu.ac.kr" ] || [[ $HOSTNAME =~ "compute-" ]]; then # -- 147.47.242.67 -- #
-	KP_TNP_PATH="/share_home/kplee/TagProbe/v20160131_1st_76X/TagAndProbe/DYAnalysis_76X/"
-elif [ $HOSTNAME == "ui10.sdfarm.kr" ]; then
-	KP_TNP_PATH="/cms/home/kplee/TagProbe/v20160417_1st_76X/WorkArea/DYAnalysis_76X"
+# -- ROOT thisroot.sh PATH -- #
+export KP_ROOT5_PATH=""
+export KP_ROOT6_PATH=""
+if [ $HOME == "/Users/KyeongPil_Lee" ]; then
+	KP_ROOT5_PATH="/Users/KyeongPil_Lee/ROOT5/root/bin/thisroot.sh"
+	KP_ROOT6_PATH="/Users/KyeongPil_Lee/ROOT6/root/bin/thisroot.sh"
+elif [ "$HOSTNAME" == "tamsa2.snu.ac.kr" -o "$HOSTNAME" == "cms.snu.ac.kr" ]; then
+	KP_ROOT5_PATH="/share/apps/root_v5-34-32/root/bin/thisroot.sh"
+	KP_ROOT6_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/bin/thisroot.sh" # -- CMSSW_8_0_25 -- #
 fi
 
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
 echo "KP_INCLUDE_PATH:" ${KP_INCLUDE_PATH}
 echo "KP_ROOTFILE_PATH:" ${KP_ROOTFILE_PATH}
-echo "KP_TNP_PATH:" ${KP_TNP_PATH}
+echo "KP_ROOT5_PATH:" ${KP_ROOT5_PATH}
+echo "KP_ROOT6_PATH:" ${KP_ROOT6_PATH}
 
 echo "KP_DATA_PATH:" ${KP_DATA_PATH}
 if [ -z $KP_DATA_PATH ]; then
