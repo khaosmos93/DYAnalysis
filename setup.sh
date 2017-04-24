@@ -28,6 +28,8 @@ then
 	# eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
 	# #cmsenv # -- this doesn't work. why?? -- #
 	# cd $KP_ANALYZER_PATH
+elif [ $HOSTNAME == "cms.snu.ac.kr" ]; then
+	KP_DATA_PATH=/home/kplee/data1/DYntuple/76X
 fi
 
 # -- RooUnfold package path -- #
