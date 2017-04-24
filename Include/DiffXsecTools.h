@@ -1,18 +1,17 @@
 #pragma once
 
-// -- 2016.10.24 (v01): Change pathes for 42 server & include DYAnalyzer_v01.h
-// -- 2016.11.04 (v02): include v02 headers
-
 #include "MyCanvas.C"
 #include "UncertantyCalcTool.h"
 #include "DYAnalyzer.h"
+#include <src/RooUnfold.cxx>
+#include <src/RooUnfoldResponse.cxx>
+#include <src/RooUnfoldBayes.cxx>
+#include <src/RooUnfoldInvert.cxx>
 
 class DiffXsecTools
 {
 public:
 	Double_t MassBinEdges[nMassBin+1];
-
-	TString Ver_CMSSW;
 
 	TString FileLocation;
 	TFile *f_MC;
@@ -103,7 +102,6 @@ public:
 
 	TH1D *h_FpoF_DiffXsec_Data;
 
-	DiffXsecTools(TString version, TString _Ver_CMSSW);
 	DiffXsecTools();
 	// ~DiffXsecTools();
 	virtual void MakeSignalMCHistograms();
@@ -130,7 +128,7 @@ public:
 	virtual void SaveCanvas_CalcXsec();
 
 	virtual void SaveHistograms();
-	virtual void EstimationUncertainty();
+	// virtual void EstimationUncertainty();
 
 	// -- fiducial, post-FSR -- //
 	virtual void FpoF_AllAnalysisProcedure();
@@ -182,25 +180,6 @@ protected:
 // -- default contructor -- //
 DiffXsecTools::DiffXsecTools()
 {
-
-}
-
-DiffXsecTools::DiffXsecTools(TString version, TString _Ver_CMSSW)
-{
-	Ver_CMSSW = _Ver_CMSSW;
-	// SampleType = _SampleType;
-	
-	cout << "=====================================" << endl;
-	cout << "Ver_CMSSW = " << Ver_CMSSW << endl;
-	// cout << "Sample Type = " << SampleType << endl;
-	cout << "=====================================\n" << endl;
-
-	if( Ver_CMSSW != "74X" && Ver_CMSSW != "76X" )
-	{
-		cout << "Wrong input for Ver_CMSSW ... Possible argument: 74X, 76X" << endl;
-		return;
-	}
-
 	// Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 	// 									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
 	// 									 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
@@ -231,38 +210,18 @@ DiffXsecTools::DiffXsecTools(TString version, TString _Ver_CMSSW)
 	h_RelUnc_Stat = NULL;
 
 	// -- Setup input files -- //
-	TString Path_CommonCodes = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/";
-	FileLocation = "";
-	if( Ver_CMSSW == "74X" )
-		FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles/" + version; // -- 74X -- //
-	else if( Ver_CMSSW == "76X" )
-		FileLocation = Path_CommonCodes + "Results_ROOTFiles_76X/" + version; // -- 76X -- //
+	TString Path_CommonCodes = gSystem->Getenv("KP_INCLUDE_PATH");
+	FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 	// -- Setup sample information -- //
 	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	if( Ver_CMSSW == "74X" )
-		analyzer->SetupMCsamples_v20160131_MiniAODv2("Full", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 74X -- //
-	else if( Ver_CMSSW == "76X" )
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //
+	analyzer->SetupMCsamples_v20160309_76X_MiniAODv2( "Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents );
 
 	TH1::AddDirectory(kFALSE);
 }
 
-// DiffXsecTools::~DiffXsecTools()
-// {
-// 	f_MC->Close();
-// 	f_data->Close();
-// 	f_bkg_dataDriven->Close();
-// 	f_yield->Close();
-// 	f_AccEff->Close();
-// 	f_Unfold->Close();
-// 	f_FSR->Close();
-// 	f_theory->Close();
-// }
-
 void DiffXsecTools::MakeSignalMCHistograms()
 {
-	// f_MC = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root");
 	f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root"); f_MC->cd();
 
 	if( f_MC == NULL )
@@ -1335,7 +1294,7 @@ void DiffXsecTools::SaveCanvas_DiffXsec_Data_vs_aMCNLO()
 void DiffXsecTools::SaveHistograms()
 {
 	// -- output file -- //	
-	f_output = new TFile("ROOTFile_Results_DYAnalysis_"+Ver_CMSSW+".root", "RECREATE");
+	f_output = new TFile("ROOTFile_Results_DYAnalysis_76X.root", "RECREATE");
 
 	//////////////////////////
 	// -- Save histogram -- //
@@ -1453,74 +1412,74 @@ void DiffXsecTools::SaveHistograms()
 	h_RelUnc_Stat->Write();
 }
 
-void DiffXsecTools::EstimationUncertainty()
-{
-	//////////////////////////////////
-	// -- Uncertainty Estimation -- //
-	//////////////////////////////////
-	UncertantyCalcTool *UncTool = new UncertantyCalcTool();
+// void DiffXsecTools::EstimationUncertainty()
+// {
+// 	//////////////////////////////////
+// 	// -- Uncertainty Estimation -- //
+// 	//////////////////////////////////
+// 	UncertantyCalcTool *UncTool = new UncertantyCalcTool();
 
-	///////////////////////////////////
-	// -- Statistical Uncertainty -- //
-	///////////////////////////////////
-	f_data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
-	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
-	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
-	UncTool->StatUnc( h_yield_Unfolded, h_data );
+// 	///////////////////////////////////
+// 	// -- Statistical Uncertainty -- //
+// 	///////////////////////////////////
+// 	f_data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
+// 	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
+// 	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
+// 	UncTool->StatUnc( h_yield_Unfolded, h_data );
 
-	/////////////////////////////////////////////////
-	// -- Uncertainty from background estimation-- //
-	/////////////////////////////////////////////////
-	f_bkg_dataDriven = new TFile(FileLocation + "/ROOTFile_Bkg_DataDrivenMethod.root"); f_bkg_dataDriven->cd();
-	TH1D* h_ttbar = (TH1D*)f_bkg_dataDriven->Get("ttbar")->Clone();
-	TH1D* h_DYTauTau = (TH1D*)f_bkg_dataDriven->Get("DYtautau")->Clone();
-	TH1D* h_tW = (TH1D*)f_bkg_dataDriven->Get("tW")->Clone();
-	TH1D* h_WJets = (TH1D*)f_bkg_dataDriven->Get("wjets")->Clone();
-	TH1D* h_QCD = (TH1D*)f_bkg_dataDriven->Get("dijet")->Clone();
+// 	/////////////////////////////////////////////////
+// 	// -- Uncertainty from background estimation-- //
+// 	/////////////////////////////////////////////////
+// 	f_bkg_dataDriven = new TFile(FileLocation + "/ROOTFile_Bkg_DataDrivenMethod.root"); f_bkg_dataDriven->cd();
+// 	TH1D* h_ttbar = (TH1D*)f_bkg_dataDriven->Get("ttbar")->Clone();
+// 	TH1D* h_DYTauTau = (TH1D*)f_bkg_dataDriven->Get("DYtautau")->Clone();
+// 	TH1D* h_tW = (TH1D*)f_bkg_dataDriven->Get("tW")->Clone();
+// 	TH1D* h_WJets = (TH1D*)f_bkg_dataDriven->Get("wjets")->Clone();
+// 	TH1D* h_QCD = (TH1D*)f_bkg_dataDriven->Get("dijet")->Clone();
 
-	f_MC->cd();
-	TH1D *h_ZZ = (TH1D*)f_MC->Get("h_mass_OS_ZZ")->Clone();
-	h_ZZ = (TH1D*)h_ZZ->Rebin(nMassBin, h_ZZ->GetName(), MassBinEdges);
-	TH1D *h_WZ = (TH1D*)f_MC->Get("h_mass_OS_WZ")->Clone();
-	h_WZ = (TH1D*)h_WZ->Rebin(nMassBin, h_WZ->GetName(), MassBinEdges);
-	TH1D *h_WW = (TH1D*)f_MC->Get("h_mass_OS_WW")->Clone();
-	h_WW = (TH1D*)h_WW->Rebin(nMassBin, h_WW->GetName(), MassBinEdges);
+// 	f_MC->cd();
+// 	TH1D *h_ZZ = (TH1D*)f_MC->Get("h_mass_OS_ZZ")->Clone();
+// 	h_ZZ = (TH1D*)h_ZZ->Rebin(nMassBin, h_ZZ->GetName(), MassBinEdges);
+// 	TH1D *h_WZ = (TH1D*)f_MC->Get("h_mass_OS_WZ")->Clone();
+// 	h_WZ = (TH1D*)h_WZ->Rebin(nMassBin, h_WZ->GetName(), MassBinEdges);
+// 	TH1D *h_WW = (TH1D*)f_MC->Get("h_mass_OS_WW")->Clone();
+// 	h_WW = (TH1D*)h_WW->Rebin(nMassBin, h_WW->GetName(), MassBinEdges);
 
-	Int_t nTag = (Int_t)Tag.size();
-	for(Int_t i_tag=0; i_tag<nTag; i_tag++)
-	{
-		Double_t norm = ( Lumi * Xsec[i_tag] ) / nEvents[i_tag];
-		if( Tag[i_tag] == "ZZ" )
-			h_ZZ->Scale( norm );
-		else if( Tag[i_tag] == "WZ" )
-			h_WZ->Scale( norm );
-		else if( Tag[i_tag] == "WW" )
-			h_WW->Scale( norm );
-	}
+// 	Int_t nTag = (Int_t)Tag.size();
+// 	for(Int_t i_tag=0; i_tag<nTag; i_tag++)
+// 	{
+// 		Double_t norm = ( Lumi * Xsec[i_tag] ) / nEvents[i_tag];
+// 		if( Tag[i_tag] == "ZZ" )
+// 			h_ZZ->Scale( norm );
+// 		else if( Tag[i_tag] == "WZ" )
+// 			h_WZ->Scale( norm );
+// 		else if( Tag[i_tag] == "WW" )
+// 			h_WW->Scale( norm );
+// 	}
 
-	UncTool->BkgUnc( h_yield_Unfolded, h_ttbar, h_DYTauTau, h_tW, h_WJets, h_QCD, h_ZZ, h_WZ, h_WW);
+// 	UncTool->BkgUnc( h_yield_Unfolded, h_ttbar, h_DYTauTau, h_tW, h_WJets, h_QCD, h_ZZ, h_WZ, h_WW);
 
-	vector< TH1D* > Histos_Unc; vector< TString > Names_Unc;
-	TH1D *h_Unc_Stat = (TH1D*)UncTool->h_RelUnc_Stat->Clone(); Histos_Unc.push_back( h_Unc_Stat ); Names_Unc.push_back( "Stat." );
-	TH1D *h_Unc_Bkg = (TH1D*)UncTool->h_RelUnc_Bkg->Clone(); Histos_Unc.push_back( h_Unc_Bkg ); Names_Unc.push_back( "Bkg.Syst." );
+// 	vector< TH1D* > Histos_Unc; vector< TString > Names_Unc;
+// 	TH1D *h_Unc_Stat = (TH1D*)UncTool->h_RelUnc_Stat->Clone(); Histos_Unc.push_back( h_Unc_Stat ); Names_Unc.push_back( "Stat." );
+// 	TH1D *h_Unc_Bkg = (TH1D*)UncTool->h_RelUnc_Bkg->Clone(); Histos_Unc.push_back( h_Unc_Bkg ); Names_Unc.push_back( "Bkg.Syst." );
 
-	h_Unc_Stat->Scale( 100 );
-	h_Unc_Bkg->Scale( 100 );
+// 	h_Unc_Stat->Scale( 100 );
+// 	h_Unc_Bkg->Scale( 100 );
 
-	MyCanvas *myc = new MyCanvas("c_Unc", "Dimuon Mass [GeV]", "Uncertainty (%)");
-	myc->SetLogx();
-	myc->Legend_x1 = 0.20; myc->Legend_x2 = 0.50;
+// 	MyCanvas *myc = new MyCanvas("c_Unc", "Dimuon Mass [GeV]", "Uncertainty (%)");
+// 	myc->SetLogx();
+// 	myc->Legend_x1 = 0.20; myc->Legend_x2 = 0.50;
 
-	myc->CanvasWithMultipleHistograms( Histos_Unc, Names_Unc, "LP" );
-	myc->PrintCanvas();
+// 	myc->CanvasWithMultipleHistograms( Histos_Unc, Names_Unc, "LP" );
+// 	myc->PrintCanvas();
 
-	//////////////////////////////////////////
-	// -- Store Uncertainty distribution -- //
-	//////////////////////////////////////////
-	f_output->cd();
-	h_Unc_Stat->Write();
-	h_Unc_Bkg->Write();
-}
+// 	//////////////////////////////////////////
+// 	// -- Store Uncertainty distribution -- //
+// 	//////////////////////////////////////////
+// 	f_output->cd();
+// 	h_Unc_Stat->Write();
+// 	h_Unc_Bkg->Write();
+// }
 
 Double_t DiffXsecTools::ReturnLargerValue(Double_t a, Double_t b)
 {
