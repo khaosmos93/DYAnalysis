@@ -1088,7 +1088,7 @@ public:
 		cout << "[End Time(local time): " << ts_end.AsString("l") << "]" << endl;
 	}
 
-	void CalcXsec_AllMap(TString version, TString Ver_CMSSW)
+	void CalcXsec_AllMap()
 	{
 		cout << "=========================================================" << endl;
 		cout << "[Start the calculation of x-seciton for each Smeared map]" << endl;
