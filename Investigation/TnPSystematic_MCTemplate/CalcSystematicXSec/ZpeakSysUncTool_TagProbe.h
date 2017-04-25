@@ -158,7 +158,7 @@ public:
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
-			ntuple->TurnOnBranches_HLT():
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
