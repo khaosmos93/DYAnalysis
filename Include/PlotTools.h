@@ -502,13 +502,6 @@ void Latex_Simulation( TLatex &latex )
 	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
 }
 
-void Latex_Simulation( TLatex &latex, Double_t E_CM )
-{
-	latex.DrawLatexNDC(0.82, 0.96, TString::Format("#font[42]{#scale[0.8]{%.0lf TeV}}", E_CM));
-	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
-	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
-}
-
 void SetAxis_SinglePad( TAxis *X_axis, TAxis *Y_axis, TString XTitle, TString YTitle )
 {
 	X_axis->SetTitle( XTitle );
@@ -880,3 +873,213 @@ TH1D* ConvertHist_AbsToRel( TH1D* h_CenV, TH1D* h_AbsUnc, Bool_t ConvertToPercen
 
 	return h_RelUnc;
 }
+
+void SaveAsTVector( Double_t var, TString Name, TFile *f_output )
+{
+	TVectorD *Vec = new TVectorD(1);
+	Vec[0] = var;
+
+	f_output->cd();
+	Vec->Write( Name );
+}
+
+class DrawCanvas_TwoHistRatio
+{
+public:
+	TString CanvasName;
+	HistInfo *Hist_1st;
+	HistInfo *Hist_2nd;
+
+	TString DrawOp;
+
+	TString XTitle;
+	TString YTitle;
+	TString RatioTitle;
+
+	TCanvas *c;
+	TPad *TopPad;
+	TPad *BottomPad;
+
+	Bool_t Flag_SetXRange;
+	Double_t xMin;
+	Double_t xMax;
+
+	Bool_t Flag_SetYRange;
+	Double_t yMin;
+	Double_t yMax;
+
+	Bool_t Flag_SetRatioRange;
+	Double_t ratioMin;
+	Double_t ratioMax;
+
+	Bool_t Flag_SetLegendPosition;
+	Double_t legend_xMin;
+	Double_t legend_xMax;
+	Double_t legend_yMin;
+	Double_t legend_yMax;
+
+	TLatex latex;
+	TString LatexType;
+	Double_t Lumi;
+	Double_t E_CM;
+
+	DrawCanvas_TwoHistRatio()
+	{
+		// -- initialization -- //
+		this->DrawOp = "EPSAME";
+		this->Flag_SetXRange = kFALSE;
+		this->xMin = 0;
+		this->xMax = 0;
+
+		this->Flag_SetYRange = kFALSE;
+		this->yMin = 0;
+		this->yMax = 0;
+
+		this->Flag_SetRatioRange = kFALSE;
+		this->ratioMin = 0;
+		this->ratioMax = 0;
+
+		this->legend_xMin = 0;
+		this->legend_xMax = 0;
+		this->legend_yMin = 0;
+		this->legend_yMax = 0;
+
+		this->Lumi = 0;
+		this->E_CM = 0;
+	}
+
+	DrawCanvas_TwoHistRatio(TString _CanvasName, HistInfo *_Hist_1st, HistInfo *_Hist_2nd): DrawCanvas_TwoHistRatio()
+	{
+		this->CanvasName = _CanvasName;
+		this->Hist_1st = _Hist_1st;
+		this->Hist_2nd = _Hist_2nd;
+	}
+
+	void SetTitle( TString _XTitle, TString _YTitle, TString _RatioTitle)
+	{
+		this->XTitle = _XTitle;
+		this->YTitle = _YTitle;
+		this->RatioTitle = _RatioTitle;
+	}
+
+	void SetXRange( Double_t _xMin, Double_t _xMax )
+	{
+		this->Flag_SetXRange = kTRUE;
+		this->xMin = _xMin;
+		this->xMax = _xMax;
+	}
+
+	void SetYRange( Double_t _yMin, Double_t _yMax )
+	{
+		this->Flag_SetYRange = kTRUE;
+		this->yMin = _yMin;
+		this->yMax = _yMax;
+	}
+
+	void SetRatioRange( Double_t _ratioMin, Double_t _ratioMax )
+	{
+		this->Flag_SetRatioRange = kTRUE;
+		this->ratioMin = _ratioMin;
+		this->ratioMax = _ratioMax;
+	}
+
+	void SetLegendPosition( Double_t _xMin, Double_t _yMin, Double_t _xMax, Double_t _yMax )
+	{
+		this->Flag_SetLegendPosition = kTRUE;
+		this->legend_xMin = _xMin;
+		this->legend_xMax = _xMax;
+		this->legend_yMin = _yMin;
+		this->legend_yMax = _yMax;
+	}
+
+	void SetLegendXRange( Double_t _xMin, Double_t _xMax )
+	{
+		this->Flag_SetLegendPosition = kTRUE;
+		this->legend_xMin = _xMin;
+		this->legend_xMax = _xMax;
+	}
+
+	void SetLegendYRange( Double_t _yMin, Double_t _yMax )
+	{
+		this->Flag_SetLegendPosition = kTRUE;
+		this->legend_yMin = _yMin;
+		this->legend_yMax = _yMax;
+	}
+
+	void SetLatex(TString _LatexType, Double_t _Lumi = 0, Double_t _E_CM = 0)
+	{
+		// -- LatexType: Simulation, Preliminary, NoDataInfo -- //
+		this->LatexType = _LatexType;
+		this->Lumi = _Lumi;
+		this->E_CM = _E_CM;
+	}
+
+	void SetDrawOption( TString _DrawOp )
+	{
+		this->DrawOp = _DrawOp;
+	}
+
+	void Draw(Bool_t isLogX = 0, Bool_t isLogY = 0)
+	{
+		// -- calc. ratio: 1st / 2nd -- //
+		this->Hist_1st->CalcRatio_DEN( this->Hist_2nd->h );
+
+		SetCanvas_Ratio(c, this->CanvasName, this->TopPad, this->BottomPad, isLogX, isLogY );
+
+		///////////////////
+		// -- top pad -- //
+		///////////////////
+		c->cd();
+		TopPad->cd();
+
+		this->Hist_1st->Draw(this->DrawOp);
+		this->Hist_2nd->Draw(this->DrawOp);
+		SetHistFormat_TopPad( this->Hist_1st->h, this->YTitle );
+
+		if( this->Flag_SetXRange )
+			Hist_1st->h->GetXaxis()->SetRangeUser( this->xMin, this->xMax );
+
+		if( this->Flag_SetYRange )
+			Hist_1st->h->GetYaxis()->SetRangeUser( this->yMin, this->yMax );
+
+		// -- legend setting -- //
+		TLegend *legend;
+		if( this->Flag_SetLegendPosition )
+			SetLegend( legend, this->legend_xMin, this->legend_yMin, this->legend_xMax, this->legend_yMax );
+		else
+			SetLegend( legend );
+
+		this->Hist_1st->AddToLegend( legend );
+		this->Hist_2nd->AddToLegend( legend );
+		legend->Draw();
+
+		// -- latex -- //
+		if( this->LatexType == "Simulation" )
+			Latex_Simulation( this->latex );
+		else if( this->LatexType == "Preliminary" )
+			Latex_Preliminary( this->latex, this->Lumi, this->E_CM );
+		else if( this->LatexType == "NoDataInfo" )
+			Latex_Preliminary_NoDataInfo( this->latex );
+
+
+		//////////////////////
+		// -- bottom pad -- //
+		//////////////////////
+		c->cd();
+		BottomPad->cd();
+
+		Hist_1st->DrawRatio(this->DrawOp);
+		if( this->Flag_SetRatioRange )
+			SetHistFormat_BottomPad( Hist_1st->h_ratio, this->XTitle, this->RatioTitle, this->ratioMin, this->ratioMax );
+		else
+			SetHistFormat_BottomPad( Hist_1st->h_ratio, this->XTitle, this->RatioTitle);
+
+		if( this->Flag_SetXRange )
+			Hist_1st->h_ratio->GetXaxis()->SetRangeUser( this->xMin, this->xMax );
+
+		TF1 *f_line;
+		DrawLine( f_line );
+
+		this->c->SaveAs(".pdf");
+	}
+};
