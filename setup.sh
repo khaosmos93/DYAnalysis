@@ -19,24 +19,15 @@ if [ $HOSTNAME == "tamsa2.snu.ac.kr" ]; # -- 147.47.242.67 -- #
 then 
 	KP_DATA_PATH="/data4/Users/kplee/DYntuple"
 
-	# -- cmssw setup (for ROOT6) -- #
+	# -- cmssw setup (for ROOT6 & compatible with RooUnfold in tamsa2) -- #
 	export SCRAM_ARCH=slc6_amd64_gcc493
 	export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 	source $VO_CMS_SW_DIR/cmsset_default.sh
 
 	cd /share_home/kplee/ntupleMaker/DYntupleMaker/v20160421_1st_76X/CMSSW_7_6_3_patch2
-	eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
+	eval `scramv1 runtime -sh` # -- equivalent to cmsenv (cmsenv doesn't work. why?) -- #
 	cd $KP_ANALYZER_PATH
 		
-	# -- cmssw setup (for ROOT6) -- #
-	# export SCRAM_ARCH=slc6_amd64_gcc530
-	# export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-	# source $VO_CMS_SW_DIR/cmsset_default.sh
-
-	# cd /cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_13/src
-	# eval `scramv1 runtime -sh` # -- equivalent to cmsenv -- #
-	# #cmsenv # -- this doesn't work. why?? -- #
-	# cd $KP_ANALYZER_PATH
 elif [ $HOSTNAME == "cms.snu.ac.kr" ]; then
 	KP_DATA_PATH=/home/kplee/data1/DYntuple/76X
 fi
