@@ -1068,6 +1068,8 @@ public:
 		c->cd();
 		BottomPad->cd();
 
+		Hist_1st->h_ratio->SetMarkerColor( kBlack );
+		Hist_1st->h_ratio->SetLineColor( kBlack );
 		Hist_1st->DrawRatio(this->DrawOp);
 		if( this->Flag_SetRatioRange )
 			SetHistFormat_BottomPad( Hist_1st->h_ratio, this->XTitle, this->RatioTitle, this->ratioMin, this->ratioMax );
