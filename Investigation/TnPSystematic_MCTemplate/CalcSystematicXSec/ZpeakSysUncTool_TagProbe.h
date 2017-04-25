@@ -463,7 +463,7 @@ public:
 
 	Double_t Calc_ZpeakXsec_GivenEffSF(Double_t _Acc, Double_t _Eff, Double_t EffSF_HLTv4p2, Double_t EffSF_HLTv4p3)
 	{
-		MyZpeakXsecTool *XsecTool = new MyZpeakXsecTool();
+		MyZpeakXsecTool *XsecTool = new MyZpeakXsecTool(this->HLTname);
 		XsecTool->ObtainYield( isDataDriven );
 		XsecTool->ApplyAccEffCorrection(_Acc, _Eff);
 		XsecTool->EfficiencyScaleFactor(EffSF_HLTv4p2, EffSF_HLTv4p3);
