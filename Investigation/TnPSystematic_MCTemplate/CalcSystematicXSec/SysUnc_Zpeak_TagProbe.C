@@ -14,7 +14,8 @@ void SysUnc_Zpeak_TagProbe(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	ZpeakSysUncTool_TagProbe *tool_TagProbe = new ZpeakSysUncTool_TagProbe(HLTname);
 
 	TString ROOTFile_TnPEff_CV = "ROOTFile_TagProbeEfficiency_76X_v20160502.root";
-	TString ROOTFile_TnPEff_SysUnc = "../CalcSystematicTnP/ROOTFile_SysUnc_TagProbeMethod.root";
+	TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+	TString ROOTFile_TnPEff_SysUnc = AnalyzerPath+"/Investigation/TnPSystematic_MCTemplate/CalcSystematicTnP/ROOTFile_SysUnc_TagProbeMethod.root";
 	tool_TagProbe->SetupROOTFile_TagProbeEff(ROOTFile_TnPEff_CV, ROOTFile_TnPEff_SysUnc);
 
 	tool_TagProbe->SetIsDataDriven( kTRUE );
