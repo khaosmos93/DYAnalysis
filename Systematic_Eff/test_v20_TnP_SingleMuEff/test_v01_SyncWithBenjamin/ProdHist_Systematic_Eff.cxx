@@ -219,14 +219,14 @@ public:
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
 
-		for(Int_t i=0; i<10000; i++)
-		// for(Int_t i=0; i<nTotEvent; i++)
+		// for(Int_t i=0; i<10000; i++)
+		for(Int_t i=0; i<nTotEvent; i++)
 		{
 			this->loadBar(i+1, nTotEvent, 100, 100);
 			
 			ntuple->GetEvent(i);
 
-			cout << i << "th event, Flag_noBadMuons: " << Flag_noBadMuons << endl;
+			// cout << i << "th event, Flag_noBadMuons: " << Flag_noBadMuons << endl;
 
 			//Bring weights for NLO MC events
 			Double_t GenWeight;
