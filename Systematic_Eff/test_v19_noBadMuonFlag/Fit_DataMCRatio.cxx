@@ -62,6 +62,13 @@ void Fit_DataMCRatio()
 			func->SetParameter(1, -0.03);
 			func->FixParameter(2, 0);
 		}
+		else
+		{
+			func->SetParameter(0, 1);
+			func->SetParameter(1, -0.005);
+			func->SetParameter(2, -0.001);
+			func->FixParameter(2, 0);
+		}
 
 		g->Fit( "CustomizedBkg", "R", "", 60, 2500);
 
@@ -69,7 +76,7 @@ void Fit_DataMCRatio()
 		SetCanvas_Square( c, "c_Fit_"+Region );
 		c->cd();
 		g->Draw("APSAME");
-		g->GetYaxis()->SetRangeUser(0.9, 1.1);
+		g->GetYaxis()->SetRangeUser(0.9, 1.05);
 
 		SetGraphFormat_SinglePad( g, "m [GeV]", "data/MC" );
 		TLatex latex;
