@@ -242,7 +242,7 @@ public:
 				////////////////////////////////
 				// -- reco-level selection -- //
 				////////////////////////////////
-				if( ntuple->isTriggered( analyzer->HLT ) )
+				if( ntuple->isTriggered( analyzer->HLT ) && Flag_noBadMuons )
 				{
 					vector< Muon > MuonCollection;
 					Int_t NLeptons = ntuple->nMuon;

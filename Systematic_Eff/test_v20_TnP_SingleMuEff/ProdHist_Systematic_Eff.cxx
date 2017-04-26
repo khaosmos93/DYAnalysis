@@ -219,14 +219,14 @@ public:
 		Int_t nTotEvent = chain->GetEntries();
 		cout << "\t[Total Events: " << nTotEvent << "]" << endl;
 
-		for(Int_t i=0; i<10000; i++)
-		// for(Int_t i=0; i<nTotEvent; i++)
+		// for(Int_t i=0; i<10000; i++)
+		for(Int_t i=0; i<nTotEvent; i++)
 		{
 			this->loadBar(i+1, nTotEvent, 100, 100);
 			
 			ntuple->GetEvent(i);
 
-			cout << i << "th event, Flag_noBadMuons: " << Flag_noBadMuons << endl;
+			// cout << i << "th event, Flag_noBadMuons: " << Flag_noBadMuons << endl;
 
 			//Bring weights for NLO MC events
 			Double_t GenWeight;
@@ -242,7 +242,7 @@ public:
 				////////////////////////////////
 				// -- reco-level selection -- //
 				////////////////////////////////
-				if( ntuple->isTriggered( analyzer->HLT ) )
+				if( ntuple->isTriggered( analyzer->HLT ) && Flag_noBadMuons )
 				{
 					vector< Muon > MuonCollection;
 					Int_t NLeptons = ntuple->nMuon;
@@ -269,20 +269,6 @@ public:
 						// }
 						
 						MuonCollection.push_back( mu );
-					}
-
-					// -- single muon selection: Denominator, numerator -- //
-					vector< Muon > QMuonCollection_DEN;
-					vector< Muon > QMuonCollection_NUM;
-					for(Int_t j=0; j<(int)MuonCollection.size(); j++)
-					{
-						if( this->isMuon_DEN( MuonCollection[j] ) && fabs(MuonCollection[j].eta) < 2.4 )
-						{
-							QMuonCollection_DEN.push_back( MuonCollection[j] );
-
-							if( this->isMuon_NUM( MuonCollection[j] ) )
-								QMuonCollection_NUM.push_back( MuonCollection[j] );
-						}
 					}
 
 					MuPair SelectedPair_DEN;
@@ -389,13 +375,16 @@ protected:
 		return 0;
 	}
 
-	Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer*, analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
+	Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
 	{
 		Bool_t isPassEventSelection = kFALSE;
 
-		vector< Muon > QMuonCollection; 
-		if( this->isMuon_DEN( MuonCollection[j] ) )
-			QMuonCollection.push_back( MuonCollection[j] );
+		vector< Muon > QMuonCollection;
+		for(Int_t j=0; j<(int)MuonCollection.size(); j++)
+		{
+			if( this->isMuon_DEN( MuonCollection[j] ) )
+				QMuonCollection.push_back( MuonCollection[j] );
+		}
 
 		Int_t nQMuons = (Int_t)QMuonCollection.size();
 		if( nQMuons >= 2 ) // -- at least 2 muons passing ID -- //
@@ -429,7 +418,7 @@ protected:
 					Bool_t Flag_PtRatio = kFALSE;
 					if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-					if( Flag_Mass > 50 && 
+					if( Flag_Mass && 
 						Flag_TrigMatched && 
 						Flag_Acc &&
 						Flag_3DAngle &&
@@ -454,13 +443,16 @@ protected:
 		return isPassEventSelection;
 	}
 
-	Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer*, analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
+	Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
 	{
 		Bool_t isPassEventSelection = kFALSE;
 
 		vector< Muon > QMuonCollection; 
-		if( this->isMuon_NUM( MuonCollection[j] ) )
-			QMuonCollection.push_back( MuonCollection[j] );
+		for(Int_t j=0; j<(int)MuonCollection.size(); j++)
+		{
+			if( this->isMuon_NUM( MuonCollection[j] ) )
+				QMuonCollection.push_back( MuonCollection[j] );
+		}
 
 		Int_t nQMuons = (Int_t)QMuonCollection.size();
 		if( nQMuons >= 2 ) // -- at least 2 muons passing ID -- //
@@ -494,7 +486,7 @@ protected:
 					Bool_t Flag_PtRatio = kFALSE;
 					if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-					if( Flag_Mass > 50 && 
+					if( Flag_Mass && 
 						Flag_TrigMatched && 
 						Flag_Acc &&
 						Flag_3DAngle &&
@@ -517,294 +509,6 @@ protected:
 		} // -- end of if( nQMuons >= 2 ) -- //
 
 		return isPassEventSelection;
-	}
-
-	Bool_t DimuonSelection_Zprime( NtupleHandle *ntuple, DYAnalyzer *analyzer, 
-						vector<Muon>& QMuonCollection, vector<Muon>& SelectedMuonCollection )
-	{
-		Bool_t IsSelected = kFALSE;
-
-		// -- Check the existence of at least one muon matched with HLT-object among all muons -- //
-		Bool_t isExistHLTMatchedMuon = kFALSE;
-
-		Int_t nMuon = (Int_t)QMuonCollection.size();
-		for(Int_t i_mu=0; i_mu<nMuon; i_mu++)
-		{
-			Muon mu = QMuonCollection[i_mu];
-
-			if( this->TriggerMatching( analyzer->HLT, ntuple, mu) )
-			{
-				isExistHLTMatchedMuon = kTRUE;
-				break;
-			}
-		}
-
-		if( isExistHLTMatchedMuon == kTRUE )
-		{
-			Int_t nQMuons = (Int_t)QMuonCollection.size();
-			if( nQMuons == 2)
-			{
-				Muon recolep1 = QMuonCollection[0];
-				Muon recolep2 = QMuonCollection[1];
-
-				if( this->isGoodMuonPair(ntuple, recolep1, recolep2) )
-				{
-					IsSelected = kTRUE;
-					SelectedMuonCollection.push_back( recolep1 );
-					SelectedMuonCollection.push_back( recolep2 );
-				}
-			}
-			else if( nQMuons > 2 )
-			{
-				// Double_t M_BestPair = -1;
-				Double_t Pt_BestPair = -1;
-				Muon mu1_BestPair;
-				Muon mu2_BestPair;
-
-				for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-				{
-					Muon Mu = QMuonCollection[i_mu];
-
-					// -- at least 1 muon should be matched with HLT objects in best pair -- //
-					if( this->TriggerMatching( analyzer->HLT, ntuple, Mu) )
-					{
-						// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-						// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-						for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-						{
-							Muon Mu_jth = QMuonCollection[j_mu];
-
-							if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-							{
-								if( this->isGoodMuonPair(ntuple, Mu, Mu_jth) )
-								{
-									Double_t Pt_temp = (Mu.Momentum + Mu_jth.Momentum).Pt();
-
-									// -- find the pair with the highest dimuon pt -- //
-									if( Pt_BestPair < Pt_temp )
-									{
-										Pt_BestPair = Pt_temp;
-										mu1_BestPair = Mu;
-										mu2_BestPair = Mu_jth;
-									}
-								}
-							}
-						} // -- end of the loop for j_mu (finding for second muon)
-
-					} // -- end of trigger matching -- //
-
-				} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-				if( Pt_BestPair > 0 ) // -- If at least one pair pass above conditions -- //
-				{
-					IsSelected = kTRUE;
-					SelectedMuonCollection.push_back( mu1_BestPair );
-					SelectedMuonCollection.push_back( mu2_BestPair );
-				}
-
-			} // -- End of else if( nQMuons > 2 ) -- //
-
-		} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-		return IsSelected;
-	}
-
-	Bool_t DimuonSelection_Zprime_DEN( NtupleHandle *ntuple, DYAnalyzer *analyzer, 
-						vector<Muon>& QMuonCollection, vector<Muon>& SelectedMuonCollection )
-	{
-		Bool_t IsSelected = kFALSE;
-
-		// -- Check the existence of at least one muon matched with HLT-object among all muons -- //
-		Bool_t isExistHLTMatchedMuon = kFALSE;
-
-		Int_t nMuon = (Int_t)QMuonCollection.size();
-		for(Int_t i_mu=0; i_mu<nMuon; i_mu++)
-		{
-			Muon mu = QMuonCollection[i_mu];
-
-			if( this->TriggerMatching( analyzer->HLT, ntuple, mu) )
-			{
-				isExistHLTMatchedMuon = kTRUE;
-				break;
-			}
-		}
-
-		if( isExistHLTMatchedMuon == kTRUE )
-		{
-			Int_t nQMuons = (Int_t)QMuonCollection.size();
-			if( nQMuons == 2)
-			{
-				Muon recolep1 = QMuonCollection[0];
-				Muon recolep2 = QMuonCollection[1];
-
-				if( this->isGoodMuonPair_DEN(ntuple, recolep1, recolep2) )
-				{
-					IsSelected = kTRUE;
-					SelectedMuonCollection.push_back( recolep1 );
-					SelectedMuonCollection.push_back( recolep2 );
-				}
-			}
-			else if( nQMuons > 2 )
-			{
-				// Double_t M_BestPair = -1;
-				Double_t Pt_BestPair = -1;
-				Muon mu1_BestPair;
-				Muon mu2_BestPair;
-
-				for(Int_t i_mu=0; i_mu<nQMuons; i_mu++)
-				{
-					Muon Mu = QMuonCollection[i_mu];
-
-					// -- at least 1 muon should be matched with HLT objects in best pair -- //
-					if( this->TriggerMatching( analyzer->HLT, ntuple, Mu) )
-					{
-						// -- Mu in this loop: QMuon Matched with HLT object -- //
-
-						// -- Start another loop for finding second muon (for second muon, we don't need to check trigger matching) -- //
-						for(Int_t j_mu=0; j_mu<nQMuons; j_mu++)
-						{
-							Muon Mu_jth = QMuonCollection[j_mu];
-
-							if( j_mu != i_mu ) // -- do not calculate vertex variables(prob, chi2). with itself -- //
-							{
-								if( this->isGoodMuonPair_DEN(ntuple, Mu, Mu_jth) )
-								{
-									Double_t Pt_temp = (Mu.Momentum + Mu_jth.Momentum).Pt();
-
-									// -- find the pair with the highest dimuon pt -- //
-									if( Pt_BestPair < Pt_temp )
-									{
-										Pt_BestPair = Pt_temp;
-										mu1_BestPair = Mu;
-										mu2_BestPair = Mu_jth;
-									}
-								}
-							}
-						} // -- end of the loop for j_mu (finding for second muon)
-
-					} // -- end of trigger matching -- //
-
-				} // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
-
-				if( Pt_BestPair > 0 ) // -- If at least one pair pass above conditions -- //
-				{
-					IsSelected = kTRUE;
-					SelectedMuonCollection.push_back( mu1_BestPair );
-					SelectedMuonCollection.push_back( mu2_BestPair );
-				}
-
-			} // -- End of else if( nQMuons > 2 ) -- //
-
-		} // -- End of if( isExistHLTMatchedMuon == kTRUE ) -- //
-
-		return IsSelected;
-	}
-
-	Bool_t TriggerMatching( TString HLT, NtupleHandle *ntuple, Muon &mu )
-	{
-		if( HLT == "HLT_Mu50_v* || HLT_TkMu50_v*" )
-			return (mu.isTrigMatched_dR0p2(ntuple, "HLT_Mu50_v*") || mu.isTrigMatched_dR0p2(ntuple, "HLT_TkMu50_v*"));
-
-		else
-			return mu.isTrigMatched_dR0p2(ntuple, HLT);
-	}
-
-	Bool_t isGoodMuonPair( NtupleHandle *ntuple, Muon mu1, Muon mu2 )
-	{
-		Bool_t GoodPair = kFALSE;
-
-		// -- Check the Accpetance - Actually, acceptance cut is already checked in the muon selection... -- //
-		// Bool_t isPassAcc = kFALSE;
-		// isPassAcc = analyzer->isPassAccCondition_Muon(mu1, mu2);
-		Bool_t isPassAcc = kTRUE; // -- it is already checked in previous step -- //
-
-		Double_t reco_M = (mu1.Momentum + mu2.Momentum).M();
-
-		Double_t VtxProb = -999;
-		Double_t VtxNormChi2 = 999;
-		DimuonVertexProbNormChi2_TuneP(ntuple, mu1.TuneP_pT, mu2.TuneP_pT, &VtxProb, &VtxNormChi2);
-
-		TLorentzVector inner_v1 = mu1.Momentum_Inner;
-		TLorentzVector inner_v2 = mu2.Momentum_Inner;
-
-		// -- 3D open angle -- //
-		Double_t Angle = mu1.Momentum.Angle( mu2.Momentum.Vect() );
-
-		Bool_t isOS = kFALSE;
-		if( mu1.charge != mu2.charge ) isOS = kTRUE;
-
-		// -- pT ratio -- //
-		Bool_t Flag_PtRatio = kFALSE;
-		Double_t Pt_lead = 0;
-		Double_t Pt_sub = 0;
-		if( mu1.Pt > mu2.Pt )
-		{
-			Pt_lead = mu1.Pt;
-			Pt_sub = mu2.Pt;
-		}
-		else
-		{
-			Pt_lead = mu2.Pt;
-			Pt_sub = mu1.Pt;
-		}
-
-		if( Pt_lead / Pt_sub < 3 ) Flag_PtRatio = kTRUE;
-
-		// if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE )
-		if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE && Flag_PtRatio == kTRUE)
-			GoodPair = kTRUE;
-
-		return GoodPair;
-	}
-
-	Bool_t isGoodMuonPair_DEN( NtupleHandle *ntuple, Muon mu1, Muon mu2 )
-	{
-		Bool_t GoodPair = kFALSE;
-
-		// -- Check the Accpetance - Actually, acceptance cut is already checked in the muon selection... -- //
-		// Bool_t isPassAcc = kFALSE;
-		// isPassAcc = analyzer->isPassAccCondition_Muon(mu1, mu2);
-		Bool_t isPassAcc = kTRUE; // -- it is already checked in previous step -- //
-
-		Double_t reco_M = (mu1.Momentum + mu2.Momentum).M();
-
-		Double_t VtxProb = -999;
-		Double_t VtxNormChi2 = 999;
-		DimuonVertexProbNormChi2_TuneP(ntuple, mu1.TuneP_pT, mu2.TuneP_pT, &VtxProb, &VtxNormChi2);
-
-		TLorentzVector inner_v1 = mu1.Momentum_Inner;
-		TLorentzVector inner_v2 = mu2.Momentum_Inner;
-
-		// -- 3D open angle -- //
-		Double_t Angle = mu1.Momentum.Angle( mu2.Momentum.Vect() );
-
-		Bool_t Flag_PtRatio = kFALSE;
-		Double_t Pt_lead = 0;
-		Double_t Pt_sub = 0;
-		if( mu1.Pt > mu2.Pt )
-		{
-			Pt_lead = mu1.Pt;
-			Pt_sub = mu2.Pt;
-		}
-		else
-		{
-			Pt_lead = mu2.Pt;
-			Pt_sub = mu1.Pt;
-		}
-
-		if( Pt_lead / Pt_sub < 3 ) Flag_PtRatio = kTRUE;
-
-		// Bool_t isOS = kFALSE;
-		// if( mu1.charge != mu2.charge ) isOS = kTRUE;
-
-		// if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 && isOS == kTRUE )
-		// if( reco_M > 50 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi()-0.02 )
-		// if( reco_M > 50 && isPassAcc == kTRUE && Angle < TMath::Pi()-0.02 )
-		if( reco_M > 50 && isPassAcc == kTRUE && Angle < TMath::Pi()-0.02 && Flag_PtRatio == kTRUE )
-			GoodPair = kTRUE;
-
-		return GoodPair;
 	}
 
 	void PrintRecoMuonInfo( Muon mu )
