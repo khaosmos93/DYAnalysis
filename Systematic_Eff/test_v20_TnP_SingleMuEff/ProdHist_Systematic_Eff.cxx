@@ -511,6 +511,15 @@ protected:
 		return isPassEventSelection;
 	}
 
+	Bool_t TriggerMatching( TString HLT, NtupleHandle *ntuple, Muon &mu )
+	{
+		if( HLT == "HLT_Mu50_v* || HLT_TkMu50_v*" )
+			return (mu.isTrigMatched_dR0p2(ntuple, "HLT_Mu50_v*") || mu.isTrigMatched_dR0p2(ntuple, "HLT_TkMu50_v*"));
+
+		else
+			return mu.isTrigMatched_dR0p2(ntuple, HLT);
+	}
+	
 	void PrintRecoMuonInfo( Muon mu )
 	{
 		printf("\t\t(pT = %.3lf, eta = %.3lf, phi = %.3lf, charge = %.d)\n", 
