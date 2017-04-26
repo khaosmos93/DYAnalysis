@@ -1069,6 +1069,176 @@ public:
 
 };
 
+class MuPair : public Object
+{
+public:
+	Muon First;
+	Muon Second;
+
+	Double_t M;
+	Double_t Rapidity;
+	Double_t VtxProb;
+	Double_t NormVtxChi2;
+	Double_t Angle3D;
+	Double_t Angle3D_Inner;
+
+	Bool_t isOS;
+
+	// -- default contructor -- //
+	MuPair() {};
+	MuPair( Muon mu1, Muon mu2 )
+	{
+		// -- first: leading muon, secound: sub-leading muon -- //
+		if( mu1.Pt > mu2.Pt )
+		{
+			First = mu1;
+			Second = mu2;
+		}
+		else
+		{
+			First = mu2;
+			Second = mu1;
+		}
+
+		this->Fill_DimuonVar();
+	}
+
+	void Fill_DimuonVar()
+	{
+		this->Momentum = First.Momentum + Second.Momentum;
+
+		this->M = this->Momentum.M();
+		this->Pt = this->Momentum.Pt();
+		this->Rapidity = this->Momentum.Rapidity();
+
+		this->Angle3D = First.Momentum.Angle( Second.Momentum.Vect() );
+		this->Angle3D_Inner = First.Momentum_Inner.Angle( Second.Momentum_Inner.Vect() );
+
+		// -- initialization -- //
+		this->VtxProb = -999; 
+		this->NormVtxChi2 = 999;
+
+		this->isOS = First.charge != Second.charge ? kTRUE : kFALSE;
+
+		// // -- actually, these values are almost meaningless ... -- //
+		// this->eta = this->Momentum.Eta();
+		// this->phi = this->Momentum.Phi();
+		// this->Et = this->Momentum.Et();
+	}
+
+	void Calc_CommonVertexVariable(NtupleHandle *ntuple)
+	{
+		vector<double> *PtCollection1 = ntuple->vtxTrkCkt1Pt;
+		vector<double> *PtCollection2 = ntuple->vtxTrkCkt2Pt;
+		vector<double> *VtxProbCollection = ntuple->vtxTrkProb;
+
+		Int_t NPt1 = (Int_t)PtCollection1->size();
+		Int_t NPt2 = (Int_t)PtCollection2->size();
+		Int_t NProb = (Int_t)VtxProbCollection->size();
+
+		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
+			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
+
+		// -- inner pT values are used -- //
+		Double_t Pt1 = this->First.Inner_pT;
+		Double_t Pt2 = this->Second.Inner_pT;
+		for(Int_t i=0; i<NProb; i++)
+		{
+			// cout << "\tPtCollection1->at("<< i << "): " << PtCollection1->at(i) << " PtCollection2->at("<< i << "): " << PtCollection2->at(i) << endl;
+			if( ( PtCollection1->at(i) == Pt1 && PtCollection2->at(i) == Pt2 )  || ( PtCollection1->at(i) == Pt2 && PtCollection2->at(i) == Pt1 ) )
+			{
+				this->VtxProb = VtxProbCollection->at(i);
+				this->NormVtxChi2 = ntuple->vtxTrkChi2->at(i) / ntuple->vtxTrkNdof->at(i);
+				break;
+			}
+		}
+	}
+
+	void Calc_CommonVertexVariable_TuneP( NtupleHandle *ntuple )
+	{
+		vector<double> *PtCollection1 = ntuple->vtxTrk1Pt_TuneP;
+		vector<double> *PtCollection2 = ntuple->vtxTrk2Pt_TuneP;
+		vector<double> *VtxProbCollection = ntuple->vtxTrkProb_TuneP;
+
+		Int_t NPt1 = (Int_t)PtCollection1->size();
+		Int_t NPt2 = (Int_t)PtCollection2->size();
+		Int_t NProb = (Int_t)VtxProbCollection->size();
+
+		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
+			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
+
+		// cout << "Pt1: " << Pt1 << " Pt2: " << Pt2 << endl;
+		Double_t Pt1 = this->First.TuneP_pT;
+		Double_t Pt2 = this->Second.TuneP_pT;
+
+		for(Int_t i=0; i<NProb; i++)
+		{
+			// cout << "\tPtCollection1->at("<< i << "): " << PtCollection1->at(i) << " PtCollection2->at("<< i << "): " << PtCollection2->at(i) << endl;
+			if( ( PtCollection1->at(i) == Pt1 && PtCollection2->at(i) == Pt2 )  || ( PtCollection1->at(i) == Pt2 && PtCollection2->at(i) == Pt1 ) )
+			{
+				this->VtxProb = VtxProbCollection->at(i);
+				this->NormVtxChi2 = ntuple->vtxTrkChi2_TuneP->at(i) / ntuple->vtxTrkNdof_TuneP->at(i);
+				break;
+			}
+		}
+
+		return;
+	}
+
+	Bool_t isGoodMuPair( NtupleHandle *ntuple, TString HLT, 
+						   Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
+	{
+		Bool_t GoodPair = kFALSE;
+
+		// -- Check the existence of at least one muon matched with HLT-object -- //
+		Bool_t isHLTMatched = kFALSE;
+		Bool_t isMatched_First = this->First.isTrigMatched(ntuple, HLT);
+		Bool_t isMatched_Second = this->Second.isTrigMatched(ntuple, HLT);
+		if( isMatched_First || isMatched_Second )
+			isHLTMatched = kTRUE;
+
+		// -- acceptance -- //
+		Bool_t isPassAcc = this->isWithinAcc( LeadPtCut, SubPtCut, LeadEtaCut, SubEtaCut );
+
+		// -- common vertex -- //
+		this->Calc_CommonVertexVariable( ntuple );
+
+		if( isPassAcc == kTRUE && // -- acceptance -- //
+			this->M > 15 && // -- minimum mass -- //
+			this->NormVtxChi2 < 20 &&  // -- vertex chi2 < 20 -- //
+			this->Angle3D_Inner < TMath::Pi()-0.005 &&  // -- 3D open angle -- //
+			this->isOS == kTRUE // -- opposite sign -- //
+			) 
+			GoodPair = kTRUE;
+
+		return GoodPair;
+	}
+
+	Bool_t isWithinAcc( Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
+	{
+		Bool_t Flag = kFALSE;
+
+		// -- first: leading, second: sub-leading -- //
+		if( this->First.Pt > LeadPtCut && fabs(this->First.eta) < LeadEtaCut && 
+			this->Second.Pt > SubPtCut && fabs(this->Second.eta) < SubEtaCut )
+				Flag = kTRUE;
+
+		return Flag;
+	}
+};
+
+Bool_t ComparePair_VtxChi2( MuPair pair1, MuPair pair2 )
+{
+	// -- the pair with "smallest" vertex chi2 will be the first element -- //
+	return pair1.NormVtxChi2 < pair2.NormVtxChi2; 
+}
+
+Bool_t ComparePair_DimuonPt( MuPair pair1, MuPair pair2 )
+{
+	// -- the pair with "largest" dimuon pT will be the first element -- //
+	return pair1.Pt > pair2.Pt; 
+}
+
 class Photon : public Object
 {
 public:
