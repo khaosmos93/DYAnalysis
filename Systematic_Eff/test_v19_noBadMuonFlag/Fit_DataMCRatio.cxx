@@ -6,13 +6,14 @@ Double_t CustomizedBkg(Double_t *x, Double_t* par)
 {
 	Double_t logx = TMath::Log(x[0]);
 	Double_t arg1 = par[1];
-	Double_t arg2 = par[2]*logx;
+	// Double_t arg2 = par[2]*logx;
 	// Double_t arg3 = par[3]*logx*logx;
 	// Double_t arg4 = par[4]*logx*logx*logx;
 
 	// return par[0]*TMath::Power(x[0], arg1 + arg2 + arg3 + arg4);
 	// return par[0]*TMath::Power(x[0], arg1 + arg2 + arg3);
-	return par[0]*TMath::Power(x[0], arg1 + arg2);
+	// return par[0]*TMath::Power(x[0], arg1 + arg2);
+	return par[0]*TMath::Power(x[0], arg1);
 }
 
 // Double_t FitFunc(Double_t* x, Double_t* par)
@@ -37,57 +38,69 @@ void Fit_DataMCRatio()
 	gStyle->SetOptFit(111);
 
 	TString InputName = "./ROOTFile_DataMC_Ratio.root";
+	vector< TString	> vec_BaseGraphName;
+	vec_BaseGraphName.push_back( "g_ratio" );
+	vec_BaseGraphName.push_back( "g_ratio_noFlag" );
+
 	vector< TString	> vec_Region;
 	vec_Region.push_back( "All" );
 	vec_Region.push_back( "BB" );
 	vec_Region.push_back( "BEEE" );
 
 	TFile *f_output = TFile::Open("ROOTFile_FitResults.root", "RECREATE");
-	for( const auto &Region : vec_Region )
+	for( const auto &BaseGraphName : vec_BaseGraphName )
 	{
-		TGraphAsymmErrors *g = Get_Graph( InputName, "g_ratio_"+Region );
-
-		////////////////////
-		// -- Fitting -- //
-		///////////////////
-		TF1 *func = new TF1("CustomizedBkg", CustomizedBkg, 60, 2500, 3);
-		func->SetParameter(0, 1); func->SetParName(0, "p0");
-		func->SetParameter(1, -0.001); func->SetParName(1, "p1");
-		func->SetParameter(2, 0.001); func->SetParName(2, "p2");
-		// func->SetParameter(3, -0.001); func->SetParName(3, "p3");
-
-		if( Region == "BB" )
+		for( const auto &Region : vec_Region )
 		{
-			func->SetParameter(0, 0.1);
-			func->SetParameter(1, -0.03);
-			func->FixParameter(2, 0);
+			TGraphAsymmErrors *g = Get_Graph( InputName, BaseGraphName + "_" + Region );
+
+			////////////////////
+			// -- Fitting -- //
+			///////////////////
+			TF1 *func = new TF1("CustomizedBkg", CustomizedBkg, 60, 2500, 2);
+			func->SetParameter(0, 1); func->SetParName(0, "p0");
+			func->SetParameter(1, -0.001); func->SetParName(1, "p1");
+			// func->SetParameter(2, 0.001); func->SetParName(2, "p2");
+			// func->SetParameter(3, -0.001); func->SetParName(3, "p3");
+
+			if( Region == "BB" )
+			{
+				func->SetParameter(0, 0.1);
+				func->SetParameter(1, -0.03);
+				// func->FixParameter(2, 0);
+			}
+			else
+			{
+				func->SetParameter(0, 1);
+				func->SetParameter(1, -0.005);
+				// func->SetParameter(2, -0.001);
+				// func->FixParameter(2, 0);
+			}
+
+			g->Fit( "CustomizedBkg", "R", "", 60, 2500);
+
+			TCanvas *c;
+			SetCanvas_Square( c, "c_Fit_"+BaseGraphName+"_"+Region );
+			c->cd();
+			g->Draw("APSAME");
+			g->GetYaxis()->SetRangeUser(0.9, 1.07);
+			// g->GetYaxis()->SetNdivisons(510);
+
+			SetGraphFormat_SinglePad( g, "m [GeV]", "data/MC" );
+			g->SetMarkerStyle(20);
+			g->SetMarkerSize(1.5);
+
+			TLatex latex;
+			Latex_Info( latex, "", Region );
+
+			c->SaveAs(".pdf");
+
+			f_output->cd();
+			c->Write();
+			g->Write(BaseGraphName+"_"+Region);
 		}
-		else
-		{
-			func->SetParameter(0, 1);
-			func->SetParameter(1, -0.005);
-			func->SetParameter(2, -0.001);
-			func->FixParameter(2, 0);
-		}
-
-		g->Fit( "CustomizedBkg", "R", "", 60, 2500);
-
-		TCanvas *c;
-		SetCanvas_Square( c, "c_Fit_"+Region );
-		c->cd();
-		g->Draw("APSAME");
-		g->GetYaxis()->SetRangeUser(0.9, 1.05);
-
-		SetGraphFormat_SinglePad( g, "m [GeV]", "data/MC" );
-		TLatex latex;
-		Latex_Info( latex, "", Region );
-
-		c->SaveAs(".pdf");
-
-		f_output->cd();
-		c->Write();
-		g->Write("g_ratio_"+Region);
 	}
+
 
 	f_output->Close();
 }

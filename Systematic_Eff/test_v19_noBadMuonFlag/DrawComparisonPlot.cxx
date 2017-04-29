@@ -24,6 +24,14 @@ void DrawComparisonPlot()
 		TGraphAsymmErrors* g_Data_noFlag = Get_Graph( FileName_WithoutFlag, GraphName_Data );
 
 		DrawCanvas( g_MC, g_Data, g_Data_noFlag, Region, f_output );
+
+		// -- for saving data/MC without flags -- //
+		TGraphAsymmErrors* g_MC_noFlag = Get_Graph( FileName_WithoutFlag, GraphName_MC );
+		GraphInfo *Graph_data_noFlag = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+		Graph_data_noFlag->Set_Graph( g_Data_noFlag );
+		Graph_data_noFlag->Calc_RatioGraph_Denominator( g_MC_noFlag );
+		f_output->cd();
+		Graph_data_noFlag->g_ratio->Write("g_ratio_noFlag_"+Region);
 	}
 
 	f_output->Close();
@@ -72,6 +80,9 @@ void DrawCanvas( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymm
 	Latex_Preliminary( latex, 35.9, 13 );
 	Latex_Info( latex, "", Region );
 
+	f_output->cd();
+	Graph_data->g_ratio->Write("g_ratio_"+Region);
+
 	c->cd();
 	BottomPad->cd();
 
@@ -85,9 +96,6 @@ void DrawCanvas( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymm
 	DrawLine( f_line );
 
 	c->SaveAs(".pdf");
-
-	f_output->cd();
-	Graph_data->g_ratio->Write("g_ratio_"+Region);
 }
 
 void Latex_Info( TLatex &latex, TString Type, TString region )
