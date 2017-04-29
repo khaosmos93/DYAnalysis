@@ -291,7 +291,7 @@ public:
 								Hist_DEN_RunGtoH->Fill( mu1, mu2, TotWeight );
 						}
 
-						if( !Flag_noBadMuons ) // -- if this event is rejected by the filter, even though it passes DEN selection -- //
+						if( !Flag_noBadMuons && SelectedPair_DEN.M > 800 && SelectedPair_DEN.M < 1000 ) // -- if this event is rejected by the filter, even though it passes DEN selection -- //
 							EventInfo_DEN.push_back( TString::Format("%d:%d:%d", ntuple->runNum, ntuple->lumiBlock, ntuple->evtNum ) );
 
 					}
@@ -313,7 +313,7 @@ public:
 								Hist_NUM_RunGtoH->Fill( mu1, mu2, TotWeight );
 						}
 
-						if( !Flag_noBadMuons ) // -- if this event is rejected by the filter, even though it passes NUM selection -- //
+						if( !Flag_noBadMuons && SelectedPair_NUM.M > 800 && SelectedPair_NUM.M < 1000  ) // -- if this event is rejected by the filter, even though it passes NUM selection -- //
 							EventInfo_NUM.push_back( TString::Format("%d:%d:%d", ntuple->runNum, ntuple->lumiBlock, ntuple->evtNum ) );
 					}
 
