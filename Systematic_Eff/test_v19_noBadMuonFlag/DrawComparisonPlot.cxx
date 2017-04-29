@@ -2,6 +2,7 @@
 
 void Latex_Info( TLatex &latex, TString Type, TString region );
 void DrawCanvas( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymmErrors* g_Data_noFlag, TString Region, TFile *f_output );
+void DrawCanvas_noFlag( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymmErrors* g_Data_noFlag, TString Region);
 void DrawComparisonPlot()
 {
 	vector< TString	> vec_Region;
@@ -32,6 +33,8 @@ void DrawComparisonPlot()
 		Graph_data_noFlag->Calc_RatioGraph_Denominator( g_MC_noFlag );
 		f_output->cd();
 		Graph_data_noFlag->g_ratio->Write("g_ratio_noFlag_"+Region);
+
+		DrawCanvas_noFlag( g_MC_noFlag, g_Data, g_Data_noFlag, Region );
 	}
 
 	f_output->Close();
@@ -87,10 +90,68 @@ void DrawCanvas( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymm
 	BottomPad->cd();
 
 	Graph_data->g_ratio->Draw("APSAME");
-	SetGraphFormat_BottomPad( Graph_data->g_ratio, "m [GeV]", "Data/MC", 0.6, 1.1 );
+	SetGraphFormat_BottomPad( Graph_data->g_ratio, "m [GeV]", "Data/MC", 0.9, 1.07 );
 	Graph_data->g_ratio->GetYaxis()->SetNdivisions(505);
 
 	Graph_data->g_ratio->SetMarkerSize(1.5);
+
+	TF1 *f_line;
+	DrawLine( f_line );
+
+	c->SaveAs(".pdf");
+}
+
+void DrawCanvas_noFlag( TGraphAsymmErrors* g_MC, TGraphAsymmErrors* g_Data, TGraphAsymmErrors* g_Data_noFlag, TString Region)
+{
+	GraphInfo *Graph_MC = new GraphInfo( kRed, "MC (DY)" );
+	Graph_MC->Set_Graph( g_MC );
+
+	GraphInfo *Graph_data = new GraphInfo( kBlue, " Data (Bkg.Sub., noBadMuon flag)" );
+	Graph_data->Set_Graph( g_Data );
+
+	GraphInfo *Graph_data_noFlag = new GraphInfo( kBlack, "Data (Bkg.Sub.)" );
+	Graph_data_noFlag->Set_Graph( g_Data_noFlag );
+	Graph_data_noFlag->Calc_RatioGraph_Denominator( Graph_MC->g );
+
+	TCanvas *c; TPad *TopPad; TPad *BottomPad;
+	TString CanvasName = TString::Format("c_Eff_noFlag_%s", Region.Data());
+	SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad );
+
+	c->cd();
+	TopPad->cd();
+
+	Graph_MC->DrawGraph( "APSAME" );
+	Graph_data->DrawGraph( "PSAME" );
+	Graph_data_noFlag->DrawGraph( "PSAME" );
+
+	SetGraphFormat_TopPad( Graph_MC->g, "Efficiency" );
+	Graph_MC->g->GetYaxis()->SetRangeUser( 0.5, 1.05 );
+
+	Graph_MC->g->SetMarkerSize(1.5);
+	Graph_data->g->SetMarkerSize(1.5);
+	Graph_data_noFlag->g->SetMarkerSize(1.5);
+
+	TLegend *legend;
+	SetLegend( legend, 0.15, 0.30, 0.60, 0.50);
+
+	legend->AddEntry( Graph_MC->g, Graph_MC->LegendName );
+	legend->AddEntry( Graph_data->g, Graph_data->LegendName );
+	legend->AddEntry( Graph_data_noFlag->g, Graph_data_noFlag->LegendName );
+
+	legend->Draw();
+
+	TLatex latex;
+	Latex_Preliminary( latex, 35.9, 13 );
+	Latex_Info( latex, "", Region );
+
+	c->cd();
+	BottomPad->cd();
+
+	Graph_data_noFlag->g_ratio->Draw("APSAME");
+	SetGraphFormat_BottomPad( Graph_data_noFlag->g_ratio, "m [GeV]", "Data/MC", 0.9, 1.07 );
+	Graph_data_noFlag->g_ratio->GetYaxis()->SetNdivisions(505);
+
+	Graph_data_noFlag->g_ratio->SetMarkerSize(1.5);
 
 	TF1 *f_line;
 	DrawLine( f_line );
