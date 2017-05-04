@@ -69,7 +69,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
-		if( Tag[i_tup] == "DYLL_M10to50" || Tag[i_tup] == "DYLL_M50to100" ) continue;
+		if( Tag[i_tup] == "DYMuMu_M10to50" || Tag[i_tup] == "DYMuMu_M50to100" ) continue;
 
 		TChain *chain = new TChain("recoTree/DYTree");
 		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
