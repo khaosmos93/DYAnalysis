@@ -18,6 +18,7 @@
 #include <TGraphAsymmErrors.h>
 
 #include <vector>
+using namespace std;
 
 #define nWeight 111
 
@@ -74,17 +75,13 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 		TChain *chain = new TChain("recoTree/DYTree");
 		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
-		
+
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_GenLepton();
 
-		cout << "Turn on branches: GenLepton" << endl;
-
-		std::vector<double> *PDFWeights;
+		std::vector<double> *PDFWeights; PDFWeights = 0; // -- if it is not initialized, then seg. fault will occur! -- //
 		chain->SetBranchStatus("PDFWeights", 1);
 		chain->SetBranchAddress("PDFWeights", &PDFWeights);
-
-		cout << "Set branch address for PDF weights branch" << endl;
 
 		Double_t SumWeights = 0;
 		Double_t SumWeights_Separated = 0;
@@ -103,17 +100,6 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			ntuple->GetEvent(i);
 
-			cout << i << "th event" << endl;
-
-			// Int_t _nWeight = PDFWeights->size();
-			// for(Int_t i_weight=0; i_weight<_nWeight; i_weight++)
-			// 	cout << i_weight << "th weight: " << PDFWeights->at(i_weight) << endl;
-
-			Int_t _nWeight = PDFWeights.size();
-			cout << "_nWeight: " << _nWeight << endl;
-			for(Int_t i_weight=0; i_weight<_nWeight; i_weight++)
-				cout << i_weight << "th weight: " << PDFWeights.at(i_weight) << endl;
-
 			//Bring weights for NLO MC events
 			Double_t GenWeight = 0;
 			ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
@@ -127,8 +113,6 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			if( GenFlag == kTRUE )
 			{
-				cout << "\tPass GenFlag" << endl;
-
 				SumWeights_Separated += GenWeight;
 
 				// -- Collect gen-level information -- //
@@ -154,27 +138,23 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 				// -- Acceptance Calculation -- //
 				if( Flag_PassAcc == kTRUE )
 				{
-					cout << "\tPass acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					h_mass_AccPass->Fill( gen_M, TotWeight );
 
-					// for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
-					// {
-					// 	h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
-					// 	h_mass_AccPass_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
-					// }
+					for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
+					{
+						h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+						h_mass_AccPass_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+					}
 				}
 				else
 				{
-					cout << "\tFail acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
-					// for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
-					// 	h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+					for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
+						h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
 				} 	
 
 			} // -- End of if( GenFlag == kTRUE )
-
-			cout << endl;
 
 		} // -- End of event iteration
 
