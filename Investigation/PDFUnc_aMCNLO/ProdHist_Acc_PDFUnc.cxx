@@ -99,6 +99,8 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			ntuple->GetEvent(i);
 
+			cout < i << "th event" << endl;
+
 			//Bring weights for NLO MC events
 			Double_t GenWeight = 0;
 			ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
@@ -112,6 +114,8 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			if( GenFlag == kTRUE )
 			{
+				cout << "\tPass GenFlag" << endl;
+
 				SumWeights_Separated += GenWeight;
 
 				// -- Collect gen-level information -- //
@@ -137,6 +141,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 				// -- Acceptance Calculation -- //
 				if( Flag_PassAcc == kTRUE )
 				{
+					cout << "\tPass acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					h_mass_AccPass->Fill( gen_M, TotWeight );
 
@@ -148,12 +153,15 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 				}
 				else
 				{
+					cout << "\tFail acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					for(Int_t i=0; i<nWeight; i++)
 						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
 				} 	
 
 			} // -- End of if( GenFlag == kTRUE )
+
+			cout << endl;
 
 		} // -- End of event iteration
 
