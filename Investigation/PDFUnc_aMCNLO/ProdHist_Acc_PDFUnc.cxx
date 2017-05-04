@@ -99,7 +99,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			ntuple->GetEvent(i);
 
-			cout < i << "th event" << endl;
+			cout << i << "th event" << endl;
 
 			//Bring weights for NLO MC events
 			Double_t GenWeight = 0;
