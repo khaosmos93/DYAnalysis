@@ -80,9 +80,9 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 		cout << "Turn on branches: GenLepton" << endl;
 
-		std::vector<double> *PDFWeights;
+		std::vector<double> PDFWeights;
 		chain->SetBranchStatus("PDFWeights", 1);
-		chain->SetBranchAddress("PDFWeights", PDFWeights);
+		chain->SetBranchAddress("PDFWeights", &PDFWeights);
 
 		cout << "Set branch address for PDF weights branch" << endl;
 
@@ -105,9 +105,13 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 			cout << i << "th event" << endl;
 
-			Int_t _nWeight = PDFWeights->size();
+			// Int_t _nWeight = PDFWeights->size();
+			// for(Int_t i_weight=0; i_weight<_nWeight; i_weight++)
+			// 	cout << i_weight << "th weight: " << PDFWeights->at(i_weight) << endl;
+
+			Int_t _nWeight = PDFWeights.size();
 			for(Int_t i_weight=0; i_weight<_nWeight; i_weight++)
-				cout << i_weight << "th weight: " << PDFWeights->at(i_weight) << endl;
+				cout << i_weight << "th weight: " << PDFWeights.at(i_weight) << endl;
 
 			//Bring weights for NLO MC events
 			Double_t GenWeight = 0;
@@ -153,18 +157,18 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					h_mass_AccPass->Fill( gen_M, TotWeight );
 
-					for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
-					{
-						h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
-						h_mass_AccPass_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
-					}
+					// for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
+					// {
+					// 	h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+					// 	h_mass_AccPass_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+					// }
 				}
 				else
 				{
 					cout << "\tFail acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
-					for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
-						h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
+					// for(Int_t i_weight=0; i_weight<nWeight; i_weight++)
+					// 	h_mass_AccTotal_Weighted[i_weight]->Fill( gen_M, TotWeight*PDFWeights->at(i_weight) );
 				} 	
 
 			} // -- End of if( GenFlag == kTRUE )
