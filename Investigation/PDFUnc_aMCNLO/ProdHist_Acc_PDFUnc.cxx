@@ -78,9 +78,13 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_GenLepton();
 
-		std::vector<Double_t> *PDFWeights;
+		cout << "Turn on branches: GenLepton" << endl;
+
+		std::vector<double> *PDFWeights;
 		chain->SetBranchStatus("PDFWeights", 1);
 		chain->SetBranchAddress("PDFWeights", &PDFWeights);
+
+		cout << "Set branch address for PDF weights branch" << endl;
 
 		Double_t SumWeights = 0;
 		Double_t SumWeights_Separated = 0;
