@@ -110,6 +110,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 			// 	cout << i_weight << "th weight: " << PDFWeights->at(i_weight) << endl;
 
 			Int_t _nWeight = PDFWeights.size();
+			cout << "_nWeight: " << _nWeight << endl;
 			for(Int_t i_weight=0; i_weight<_nWeight; i_weight++)
 				cout << i_weight << "th weight: " << PDFWeights.at(i_weight) << endl;
 
