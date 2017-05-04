@@ -920,7 +920,7 @@ public:
 
 	TLatex latex;
 	TString LatexType;
-	Double_t Lumi;
+	Double_t lumi;
 	Double_t E_CM;
 
 	DrawCanvas_TwoHistRatio()
@@ -944,7 +944,7 @@ public:
 		this->legend_yMin = 0;
 		this->legend_yMax = 0;
 
-		this->Lumi = 0;
+		this->lumi = 0;
 		this->E_CM = 0;
 	}
 
@@ -1006,11 +1006,11 @@ public:
 		this->legend_yMax = _yMax;
 	}
 
-	void SetLatex(TString _LatexType, Double_t _Lumi = 0, Double_t _E_CM = 0)
+	void SetLatex(TString _LatexType, Double_t _lumi = 0, Double_t _E_CM = 0)
 	{
 		// -- LatexType: Simulation, Preliminary, NoDataInfo -- //
 		this->LatexType = _LatexType;
-		this->Lumi = _Lumi;
+		this->lumi = _lumi;
 		this->E_CM = _E_CM;
 	}
 
@@ -1057,7 +1057,7 @@ public:
 		if( this->LatexType == "Simulation" )
 			Latex_Simulation( this->latex );
 		else if( this->LatexType == "Preliminary" )
-			Latex_Preliminary( this->latex, this->Lumi, this->E_CM );
+			Latex_Preliminary( this->latex, this->lumi, this->E_CM );
 		else if( this->LatexType == "NoDataInfo" )
 			Latex_Preliminary_NoDataInfo( this->latex );
 
