@@ -99,6 +99,8 @@ public:
 		h_data_HLTv4p3->Write();
 		h_yield_HLTv4p2->Write();
 		h_yield_HLTv4p3->Write();
+
+		cout << "[Input1 is finished]" << endl;
 	}
 
 	// -- background histograms -- //
@@ -178,6 +180,7 @@ public:
 		h_QCD->SetName("h_QCD");
 		h_QCD->Write();
 
+		cout << "[Input2 is finished]" << endl;
 	}
 
 	TH1D* MakeMassHistogram( TString HLTType, TString Type )
@@ -735,6 +738,8 @@ public:
 		g_EffSF_HLTv4p2->Write();
 		g_EffSF_HLTv4p3->Write();
 		h_DiffXsec_Data->Write();
+
+		cout << "[Input6 is finished]" << endl;
 	}
 
 	void FindSelectedMuonInMuonCollection( vector< Muon > MuonCollection, vector< Muon > SelectedMuonCollection, Int_t &i_muon1, Int_t &i_muon2 )
