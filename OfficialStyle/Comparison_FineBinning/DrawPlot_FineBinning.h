@@ -1,5 +1,5 @@
-#include "DYAnalysis_76X/Include/DYAnalyzer.h"
-#include "DYAnalysis_76X/Include/PlotTools.h"
+#include <Include/DYAnalyzer.h>
+#include <Include/PlotTools.h>
 
 class DrawingTool
 {
