@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#define nWeight 111;
+#define nWeight 111
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
