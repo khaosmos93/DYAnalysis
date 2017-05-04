@@ -15,6 +15,7 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TEfficiency.h>
+#include <TGraphAsymmErrors.h>
 
 #include <vector>
 
@@ -99,6 +100,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 			ntuple->GetEvent(i);
 
 			//Bring weights for NLO MC events
+			Double_t GenWeight = 0;
 			ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
 
 			SumWeights += GenWeight;
@@ -140,8 +142,8 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 					for(Int_t i=0; i<nWeight; i++)
 					{
-						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights[i] );
-						h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights[i] );
+						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*(PDFWeights[i]) );
+						h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*(PDFWeights[i]) );
 					}
 				}
 				else
