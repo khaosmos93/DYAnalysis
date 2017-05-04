@@ -21,16 +21,16 @@
 
 #include <vector>
 
-#include <DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/RoccoR.cc>
-#include <DYAnalysis_76X/CommonCodes/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
-#include <Unfolding/src/RooUnfoldResponse.h>
-#include <Unfolding/src/RooUnfoldBayes.h>
-#include <Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfoldResponse.h>
+#include <src/RooUnfoldBayes.h>
+#include <src/RooUnfoldInvert.h>
 
-#include <DYAnalysis_76X/CommonCodes/MyCanvas.C>
-#include <DYAnalysis_76X/CommonCodes/DYAnalyzer.h>
-#include <DYAnalysis_76X/CommonCodes/DiffXsecTools.h>
+#include <Include/MyCanvas.C>
+#include <Include/DYAnalyzer.h>
+#include <Include/DiffXsecTools.h>
 
 class CovInputTool
 {
@@ -45,9 +45,9 @@ public:
 	vector< Double_t > Xsec; 
 	vector< Double_t > nEvents;
 
-	CovInputTool(TString version)
+	CovInputTool()
 	{
-		FileLocation = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/" + version;
+		FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -239,7 +239,8 @@ public:
 		TStopwatch totaltime;
 		totaltime.Start();
 
-		TString BaseLocation = "/data1/kplee/DYntuple";
+		// TString BaseLocation = "/data1/kplee/DYntuple";
+		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 
 		TFile *f = TFile::Open("./ROOTFile_Input_CovarianceMatrix.root", "RECREATE");
 
@@ -299,6 +300,7 @@ public:
 			ntuple->TurnOnBranches_GenLepton();
 			ntuple->TurnOnBranches_GenOthers();
 			ntuple->TurnOnBranches_Muon();
+			ntuple->TurnOnBranches_HLT();
 
 			rochcor2015 *rmcor = new rochcor2015();
 
