@@ -80,9 +80,9 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 		cout << "Turn on branches: GenLepton" << endl;
 
-		// std::vector<double> *PDFWeights;
-		// chain->SetBranchStatus("PDFWeights", 1);
-		// chain->SetBranchAddress("PDFWeights", &PDFWeights);
+		std::vector<double> *PDFWeights;
+		chain->SetBranchStatus("PDFWeights", 1);
+		chain->SetBranchAddress("PDFWeights", PDFWeights);
 
 		cout << "Set branch address for PDF weights branch" << endl;
 
@@ -149,18 +149,18 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					h_mass_AccPass->Fill( gen_M, TotWeight );
 
-					// for(Int_t i=0; i<nWeight; i++)
-					// {
-					// 	h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
-					// 	h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
-					// }
+					for(Int_t i=0; i<nWeight; i++)
+					{
+						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
+						h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
+					}
 				}
 				else
 				{
 					cout << "\tFail acceptance" << endl;
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
-					// for(Int_t i=0; i<nWeight; i++)
-					// 	h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
+					for(Int_t i=0; i<nWeight; i++)
+						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
 				} 	
 
 			} // -- End of if( GenFlag == kTRUE )
