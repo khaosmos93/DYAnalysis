@@ -104,7 +104,6 @@ public:
 	// -- background histograms -- //
 	void Input2()
 	{
-		cout << "1" << endl;
 		///////////////////////////////////
 		// -- data-driven backgrounds -- //
 		///////////////////////////////////
@@ -128,8 +127,6 @@ public:
 			printf("Histogram for Data-driven background is not loaded properly! ... please check");
 		}
 
-		cout << "2" << endl;
-
 		////////////////////////////////
 		// -- MC-based backgrounds -- //
 		////////////////////////////////
@@ -143,11 +140,8 @@ public:
 			printf("Histogram for MC-based background is not loaded properly! ... please check");
 		}
 
-		cout << "3" << endl;
-
 		this->SetErrors_MCBasedBkg( h_ZZ_HLTv4p2, h_ZZ_HLTv4p3, h_WZ_HLTv4p2, h_WZ_HLTv4p3 );
 
-		cout << "4" << endl;
 		////////////////
 		// -- Save -- //
 		////////////////
@@ -184,8 +178,6 @@ public:
 		h_QCD->SetName("h_QCD");
 		h_QCD->Write();
 
-		cout << "5" << endl;
-
 	}
 
 	TH1D* MakeMassHistogram( TString HLTType, TString Type )
@@ -211,8 +203,8 @@ public:
 	{
 		TFile *f_BkgSys = TFile::Open( FileLocation + "/ROOTFile_SysUnc_BkgEst.root" );
 		f_BkgSys->cd();
-		TH1D* h_SysUnc_ZZ = (TH1D*)f_BkgSys->Get("h_SysUnc_ZZ")->Clone();
-		TH1D* h_SysUnc_WZ = (TH1D*)f_BkgSys->Get("h_SysUnc_WZ")->Clone();
+		TH1D* h_SysUnc_ZZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_ZZ")->Clone();
+		TH1D* h_SysUnc_WZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_WZ")->Clone();
 
 		for(Int_t i=0; i<nMassBin; i++)
 		{
