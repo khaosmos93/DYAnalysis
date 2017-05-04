@@ -80,7 +80,7 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 		cout << "Turn on branches: GenLepton" << endl;
 
-		std::vector<double> PDFWeights;
+		std::vector<double> *PDFWeights;
 		chain->SetBranchStatus("PDFWeights", 1);
 		chain->SetBranchAddress("PDFWeights", &PDFWeights);
 
