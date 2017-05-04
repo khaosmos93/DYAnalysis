@@ -142,15 +142,15 @@ void ProdHist_Acc_PDFUnc(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO" )
 
 					for(Int_t i=0; i<nWeight; i++)
 					{
-						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*(PDFWeights[i]) );
-						h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*(PDFWeights[i]) );
+						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
+						h_mass_AccPass_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
 					}
 				}
 				else
 				{
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 					for(Int_t i=0; i<nWeight; i++)
-						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights[i] );
+						h_mass_AccTotal_Weighted[i]->Fill( gen_M, TotWeight*PDFWeights->at(i) );
 				} 	
 
 			} // -- End of if( GenFlag == kTRUE )
