@@ -22,7 +22,8 @@ TString HistName_RelUnc_Syst_Acc = "h_RelUnc_Syst_Acc";
 
 void MakeInputFile_Cov()
 {
-	TString BasePath = "/cms/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval";
+	// TString BasePath = "/cms/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval";
+	TString BasePath = gSystem->Getenv("KP_ROOTFILE_PATH");
 	TH1D* h_DiffXSec = Get_Hist( BasePath+"/ROOTFile_DiffXSec_FullUnc.root", "h_DiffXsec_FSRCorr", HistName_DiffXSec );
 	TH1D* h_RelStatUnc = Get_Hist( BasePath+"/ROOTFile_DiffXSec_FullUnc.root", "h_RelStatUnc_Percent", HistName_StatUnc );
 	h_RelStatUnc->SetYTitle("");
