@@ -61,7 +61,7 @@ void Calc_SumWeights()
 
 	vector< TString > vec_NtupleDir; vector< TString > vec_Tag;
 
-	vec_NtupleDir.push_back("DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns"); vec_Tag.push_back("DYMuMu_M10to50");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns"); vec_Tag.push_back("DYMuMu_M10to50");
 
 	const Int_t nNtuple = vec_NtupleDir.size();
 	for(Int_t i_ntuple = 0; i_ntuple<nNtuple; i_ntuple++)
