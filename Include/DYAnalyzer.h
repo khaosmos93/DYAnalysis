@@ -682,7 +682,7 @@ void DYAnalyzer::SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TS
 	else if( Type == "aMCNLO_AdditionalSF_PDFUnc" )
 	{
 		// -- Signal binned samples -- //
-		ntupleDirectory->push_back( "76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns" ); Tag->push_back( "DYMuMu_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7506956.0 ); //nEvents: sum of weights within 10<M<50
+		ntupleDirectory->push_back( "76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns" ); Tag->push_back( "DYMuMu_M10to50" ); Xsec->push_back( 18610.0/3.0 ); nEvents->push_back( 7486166.0 ); //nEvents: sum of weights within 10<M<50
 		ntupleDirectory->push_back( "76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M50toInf_25ns" ); Tag->push_back( "DYMuMu_M50to100" ); Xsec->push_back( 5869.58346/3.0 ); nEvents->push_back( 6061181.0 ); //nEvents: sum of DYMuMu weights
 		ntupleDirectory->push_back( "76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M100to200_25ns" ); Tag->push_back( "DYMuMu_M100to200" ); Xsec->push_back( 226/3.0 ); nEvents->push_back( 227522.0 ); //nEvents: sum of weights within 10<M<50
 		ntupleDirectory->push_back( "76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M200to400_25ns" ); Tag->push_back( "DYMuMu_M200to400" ); Xsec->push_back( 7.67/3.0 ); nEvents->push_back( 170955.0 ); //nEvents: sum of DYMuMu weights 
