@@ -47,11 +47,11 @@ void ProdHist_MassWithinAcc( TString Sample = "aMCNLO", TString HLTname = "IsoMu
 
 	if( Sample == "aMCNLO" )
 	{
-		analyzer->SetupMCsamples_v20160131_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
+		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
 	}
 	if( Sample == "Powheg" )
 	{
-		analyzer->SetupMCsamples_v20160131_MiniAODv2("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents);
+		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents);
 	}
 
 	TFile *f = new TFile("ROOTFile_Histograms_Mass_WithinAcc_" + Sample + ".root", "RECREATE");
