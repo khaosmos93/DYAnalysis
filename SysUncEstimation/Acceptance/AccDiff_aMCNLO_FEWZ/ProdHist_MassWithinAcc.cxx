@@ -47,7 +47,7 @@ void ProdHist_MassWithinAcc( TString Sample = "aMCNLO", TString HLTname = "IsoMu
 
 	if( Sample == "aMCNLO" )
 	{
-		analyzer->SetupMCsamples_v20160131_MiniAODv2("aMCNLO_additionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
+		analyzer->SetupMCsamples_v20160131_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
 	}
 	if( Sample == "Powheg" )
 	{
