@@ -1,12 +1,12 @@
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
+#include <Include/MyCanvas.C>
+#include <Include/PlotTools.h>
 
+void MakeHistogram_XSec(TH1D *h, Double_t *value, Double_t *error);
 void Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc);
-void MakeHistogram(TH1D *h, Double_t *value, Double_t *error);
-void RelSysUncHistogram_Percent(TH1D *h, TH1D *h_RelError);
 void Calc_RelSysUnc_Alpha( TH1D* h_xSec_alpha_0118, TH1D* h_xSec_alpha_0117, TH1D* h_xSec_alpha_0119, TH1D* h_RelSysUnc );
-void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile *f_output);
-void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D *h_tot );
-void SysUnc_Acc(TString version)
+void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D* h3, TH1D *h_tot, TFile *f_output);
+void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D* h3, TH1D *h_tot );
+void SysUnc_Acc()
 {
 	const Int_t nMassBin = 43;
 	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
@@ -14,85 +14,14 @@ void SysUnc_Acc(TString version)
 										 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
 										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
 										 830, 1000, 1500, 3000};
-	Double_t Acc_NLO[nMassBin+2];
-	Double_t error_high_NLO[nMassBin+2];
-	Double_t error_low_NLO[nMassBin+2];
-	Double_t error_NLO[nMassBin+2];
-
-	Double_t Acc_NNLO[nMassBin+2];
-	Double_t error_high_NNLO[nMassBin+2];
-	Double_t error_low_NNLO[nMassBin+2];
-	Double_t error_NNLO[nMassBin+2];
-
-	FILE *fl;
-	Double_t LowerEdge;
-	Double_t UpperEdge;
-	Double_t Acc_NLO_temp;
-	Double_t error_high_NLO_temp;
-	Double_t error_low_NLO_temp;
-	Double_t Acc_NNLO_temp;
-	Double_t error_high_NNLO_temp;
-	Double_t error_low_NNLO_temp;
 
 
-	if ((fl = fopen("AccErrors.txt", "r")) != NULL)
-	{
-		Int_t i=0;
-
-		while(fscanf(fl, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", &LowerEdge, &UpperEdge, &Acc_NLO_temp, &error_high_NLO_temp, &error_low_NLO_temp, &Acc_NNLO_temp, &error_high_NNLO_temp, &error_low_NNLO_temp) != EOF )
-		{
-			Acc_NLO[i] = Acc_NLO_temp;
-			error_high_NLO[i] = error_high_NLO_temp;
-			error_low_NLO[i] = error_low_NLO_temp;
-
-			if( error_high_NLO_temp > error_low_NLO_temp ) 
-				error_NLO[i] = error_high_NLO_temp;
-			else 
-				error_NLO[i] = error_low_NLO_temp;
-			
-			Acc_NNLO[i] = Acc_NNLO_temp;
-			error_high_NNLO[i] = error_high_NNLO_temp;
-			error_low_NNLO[i] = error_low_NNLO_temp;
-
-			if( error_high_NNLO_temp > error_low_NNLO_temp )
-				error_NNLO[i] = error_high_NNLO_temp;
-			else
-				error_NNLO[i] = error_low_NNLO_temp;
-
-			printf("%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", LowerEdge, UpperEdge, Acc_NLO[i], error_high_NLO[i], error_low_NLO[i], Acc_NNLO[i], error_high_NNLO[i], error_low_NNLO[i]);
-			i++;
-
-			if( i == 45 )
-				break;
-		}
-	}
-	fclose(fl);
-
-	TH1D *h_Acc_NLO = new TH1D("h_Acc_NLO", "", nMassBin, MassBinEdges);
-	MakeHistogram( h_Acc_NLO, Acc_NLO, error_NLO);
-
-	TH1D* h_RelSysUnc_NLO_Percent = (TH1D*)h_Acc_NLO->Clone();
-	h_RelSysUnc_NLO_Percent->SetName("h_RelSysUnc_NLO_Percent");
-	RelSysUncHistogram_Percent( h_Acc_NLO, h_RelSysUnc_NLO_Percent );
-
-	TH1D *h_Acc_NNLO = new TH1D("h_Acc_NNLO", "", nMassBin, MassBinEdges);
-	MakeHistogram( h_Acc_NNLO, Acc_NNLO, error_NNLO);
-
-	TH1D* h_RelSysUnc_NNLO_Percent = (TH1D*)h_Acc_NNLO->Clone();
-	h_RelSysUnc_NNLO_Percent->SetName("h_RelSysUnc_NNLO_Percent");
-	RelSysUncHistogram_Percent( h_Acc_NNLO, h_RelSysUnc_NNLO_Percent);
-
-	MyCanvas *myc = new MyCanvas("c_Compare_SysUnc_NLO_vs_NNLO", "Dimuon Mass [GeV]", "Relative Uncertainty (%)");
-	myc->SetLogx(1);
-	myc->CanvasWithHistogramsRatioPlot( (TH1D*)h_RelSysUnc_NNLO_Percent->Clone(), (TH1D*)h_RelSysUnc_NLO_Percent->Clone(), "NNLO", "NLO", "NNLO/NLO" );
-	myc->PrintCanvas();
-
-	MyCanvas *myc2 = new MyCanvas("c_Compare_SysUnc_NLO_vs_NNLO_Zpeak", "Dimuon Mass [GeV]", "Relative Uncertainty (%)");
-	myc2->SetXRange(60, 120);
-	myc2->CanvasWithHistogramsRatioPlot( (TH1D*)h_RelSysUnc_NNLO_Percent->Clone(), (TH1D*)h_RelSysUnc_NLO_Percent->Clone(), "NNLO", "NLO", "NNLO/NLO" );
-	myc2->PrintCanvas();
-
-	TH1D* h_RelSysUnc_PDF_Percent = (TH1D*)h_RelSysUnc_NNLO_Percent->Clone("h_RelSysUnc_PDF_Percent");
+	////////////////////////////////
+	// -- Uncertainty from PDF -- //
+	////////////////////////////////
+	TString FileName_PDF = "ROOTFile_AccWithUnc_FEWZ_PDF4LHC15.root";
+	TH1D* h_RelSysUnc_PDF_Percent = Get_Hist( FileName_PDF, "h_RelSysUnc_NNLO_Percent", "h_RelSysUnc_PDF_Percent" );
+	// TH1D* h_RelSysUnc_PDF_Percent = (TH1D*)h_RelSysUnc_NNLO_Percent->Clone("h_RelSysUnc_PDF_Percent");
 
 	///////////////////////////////////////////////////////////////
 	// -- Uncertainty from variation of the coupling constant -- //
@@ -104,6 +33,9 @@ void SysUnc_Acc(TString version)
 	Double_t xSec_0119[nMassBin+2];
 	Double_t error_0119[nMassBin+2];
 
+	FILE *fl;
+	Double_t LowerEdge;
+	Double_t UpperEdge;
 	Double_t xSec_0118_temp;
 	Double_t error_0118_temp;
 	Double_t xSec_0117_temp;
@@ -136,13 +68,13 @@ void SysUnc_Acc(TString version)
 	fclose(fl);
 
 	TH1D* h_xSec_alpha_0118 = new TH1D("h_xSec_alpha_0118", "", nMassBin, MassBinEdges);
-	MakeHistogram( h_xSec_alpha_0118, xSec_0118, error_0118 );
+	MakeHistogram_XSec( h_xSec_alpha_0118, xSec_0118, error_0118 );
 
 	TH1D* h_xSec_alpha_0117 = new TH1D("h_xSec_alpha_0117", "", nMassBin, MassBinEdges);
-	MakeHistogram( h_xSec_alpha_0117, xSec_0117, error_0117 );
+	MakeHistogram_XSec( h_xSec_alpha_0117, xSec_0117, error_0117 );
 
 	TH1D* h_xSec_alpha_0119 = new TH1D("h_xSec_alpha_0119", "", nMassBin, MassBinEdges);
-	MakeHistogram( h_xSec_alpha_0119, xSec_0119, error_0119 );
+	MakeHistogram_XSec( h_xSec_alpha_0119, xSec_0119, error_0119 );
 
 	MyCanvas *myc3 = new MyCanvas("c_NLOXsec_VariationOfAlpha", "Dimuon mass [GeV]", "#sigma [pb] (NLO)");
 	myc3->SetLogx(1);
@@ -154,33 +86,32 @@ void SysUnc_Acc(TString version)
 	TH1D *h_RelSysUnc_Alpha_Percent = (TH1D*)h_xSec_alpha_0118->Clone();
 	Calc_RelSysUnc_Alpha( h_xSec_alpha_0118, h_xSec_alpha_0117, h_xSec_alpha_0119, h_RelSysUnc_Alpha_Percent );
 
+	TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+	TString FileName_AccDiff = AnalyzerPath+"/SysUncEstimation/Acceptance/AccDiff_aMCNLO_FEWZ/ROOTFile_SysUnc_DiffWithFEWZ.root";
+	TH1D* h_RelSysUnc_AccDiff_Percent = Get_Hist(FileName_AccDiff, "h_RelUnc", "h_RelSysUnc_AccDiff_Percent");
+	h_RelSysUnc_AccDiff_Percent->Scale( 100 );
+
 	// -- save -- //
 	TFile *f_output = new TFile("ROOTFile_SysUnc_Acceptance.root", "RECREATE");
 	f_output->cd();
 	
-	h_Acc_NLO->Write();
-	h_RelSysUnc_NLO_Percent->SetName("h_RelSysUnc_PDF_NLO_Percent");
-	h_RelSysUnc_NLO_Percent->Write();
-
-	h_Acc_NNLO->Write();
 	h_RelSysUnc_PDF_Percent->Write();
-
-	myc->c->Write();
-	myc2->c->Write();
 
 	h_xSec_alpha_0118->Write();
 	h_xSec_alpha_0117->Write();
 	h_xSec_alpha_0119->Write();
 	myc3->c->Write();
 	h_RelSysUnc_Alpha_Percent->Write();
+	h_RelSysUnc_AccDiff_Percent->Write();
 
 	TH1D* h_RelSysUnc_Tot_Percent = (TH1D*)h_RelSysUnc_PDF_Percent->Clone("h_RelSysUnc_Tot_Percent");
-	TotRelSysUnc(h_RelSysUnc_PDF_Percent, h_RelSysUnc_Alpha_Percent, h_RelSysUnc_Tot_Percent);
+	TotRelSysUnc(h_RelSysUnc_PDF_Percent, h_RelSysUnc_Alpha_Percent, h_RelSysUnc_AccDiff_Percent, h_RelSysUnc_Tot_Percent);
 
-	DrawCanvas_SysUnc(h_RelSysUnc_PDF_Percent, h_RelSysUnc_Alpha_Percent, h_RelSysUnc_Tot_Percent, f_output);
+	DrawCanvas_SysUnc(h_RelSysUnc_PDF_Percent, h_RelSysUnc_Alpha_Percent, h_RelSysUnc_AccDiff_Percent, h_RelSysUnc_Tot_Percent, f_output);
 	h_RelSysUnc_Tot_Percent->Write();
 
-	TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
+	// TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
+	TString FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root"); f_input->cd();
 	TH1D *h_MC_postFSR = (TH1D*)f_input->Get("h_DYMC_Gen_postFSR")->Clone();
 
@@ -189,6 +120,9 @@ void SysUnc_Acc(TString version)
 
 	cout << "\n======[from alpha uncertainty]=======" << endl;
 	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Alpha_Percent);
+
+	cout << "\n======[from diff. with NNLO uncertainty]=======" << endl;
+	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_AccDiff_Percent);
 
 	cout << "\n======[total uncertainty]=======" << endl;
 	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Tot_Percent);
@@ -233,7 +167,7 @@ void Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc)
 
 }
 
-void MakeHistogram(TH1D *h, Double_t *value, Double_t *error)
+void MakeHistogram_XSec(TH1D *h, Double_t *value, Double_t *error)
 {
 	Int_t nBin = h->GetNbinsX(); // -- nbin = 43 -- //
 	for(Int_t i=0; i<nBin-2; i++)
@@ -243,35 +177,19 @@ void MakeHistogram(TH1D *h, Double_t *value, Double_t *error)
 		h->SetBinError( i_bin, error[i] );
 	}
 
-	Double_t value_Bin42 = ( value[41] + value[42] ) / 2.0;
-	Double_t error_Bin42 = ( error[41] + error[42] ) / 2.0;
+	// -- [1000, 1200], [1200, 1500] -> [1000, 1500] -- //
+	Double_t value_Bin42 = value[41] + value[42];
+	Double_t error_Bin42 = sqrt( error[41]*error[41] + error[42]*error[42] );
 
 	h->SetBinContent( 42, value_Bin42 );
 	h->SetBinError( 42, error_Bin42 );
 
-	Double_t value_Bin43 = ( value[43] + value[44] ) / 2.0;
-	Double_t error_Bin43 = ( error[43] + error[44] ) / 2.0;
+	// -- [1500, 2000], [2000, 3000] -> [1500, 3000] -- //
+	Double_t value_Bin43 = value[43] + value[44];
+	Double_t error_Bin43 = sqrt( error[43]*error[43] + error[44]*error[44] );
 
 	h->SetBinContent( 43, value_Bin43 );
 	h->SetBinError( 43, error_Bin43 );
-}
-
-void RelSysUncHistogram_Percent(TH1D *h, TH1D *h_RelError)
-{
-	Int_t nBin = h->GetNbinsX();
-	for(Int_t i=0; i<nBin; i++)
-	{
-		Int_t i_bin = i+1;
-		Double_t value = h->GetBinContent(i_bin);
-		Double_t AbsError = h->GetBinError(i_bin);
-
-		Double_t RelError = AbsError / value;
-
-		h_RelError->SetBinContent(i_bin, RelError);
-		h_RelError->SetBinError( i_bin, 0);
-	}
-
-	h_RelError->Scale( 100 ); // -- move to % -- //
 }
 
 void Calc_RelSysUnc_Alpha( TH1D* h_xSec_alpha_0118, TH1D* h_xSec_alpha_0117, TH1D* h_xSec_alpha_0119, TH1D* h_RelSysUnc )
@@ -299,7 +217,7 @@ void Calc_RelSysUnc_Alpha( TH1D* h_xSec_alpha_0118, TH1D* h_xSec_alpha_0117, TH1
 	h_RelSysUnc->Scale( 100 ); // -- convert to % -- //
 }
 
-void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile* f_output)
+void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D* h3, TH1D *h_tot, TFile* f_output)
 {
 	TCanvas *c_RelUnc = new TCanvas("c_RelSysUnc_Acc", "", 800, 800);
 	c_RelUnc->cd();
@@ -313,6 +231,7 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile* f_output)
 
 	h1->Draw("HISTLP");
 	h2->Draw("HISTLPSAME");
+	h3->Draw("HISTLPSAME");
 	h_tot->Draw("HISTLPSAME");
 
 	h1->SetStats(kFALSE);
@@ -321,7 +240,7 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile* f_output)
 	h1->GetXaxis()->SetNoExponent();
 	h1->GetXaxis()->SetMoreLogLabels();
 	h1->GetYaxis()->SetTitleOffset(1.2);
-	h1->GetYaxis()->SetRangeUser(0, 6);
+	h1->GetYaxis()->SetRangeUser(0, 12);
 
 	h1->SetXTitle( "Dimuon Mass [GeV]");
 	h1->SetYTitle( "Relative Uncertainty (%)");
@@ -337,17 +256,24 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile* f_output)
 	h2->SetLineColor(kGreen+1);
 	h2->SetFillColorAlpha( kWhite, 0);
 
+	h3->SetStats(kFALSE);
+	h3->SetMarkerStyle(20);
+	h3->SetMarkerColor(kBlack);
+	h3->SetLineColor(kBlack);
+	h3->SetFillColorAlpha( kWhite, 0);
+
 	h_tot->SetStats(kFALSE);
 	h_tot->SetMarkerStyle(20);
 	h_tot->SetMarkerColor(kRed);
 	h_tot->SetLineColor(kRed);
 	h_tot->SetFillColorAlpha( kWhite, 0);
 
-	TLegend *legend = new TLegend(0.55, 0.75, 0.95, 0.95);
+	TLegend *legend = new TLegend(0.50, 0.70, 0.95, 0.95);
 	legend->SetFillStyle(0);
 	legend->SetBorderSize(0);
 	legend->AddEntry( h1, "Syst. from PDF");
-	legend->AddEntry( h2, "Syst. from Variation of #alpha");
+	legend->AddEntry( h2, "Syst. from variation of #alpha");
+	legend->AddEntry( h3, "Syst. from diff. with NNLO (FEWZ)");
 	legend->AddEntry( h_tot, "Total Syst. from Acceptance" );
 	legend->Draw();
 
@@ -357,7 +283,7 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D *h_tot, TFile* f_output)
 	c_RelUnc->Write();
 }
 
-void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D *h_tot )
+void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D* h3, TH1D *h_tot )
 {
 	Int_t nBin = h1->GetNbinsX();
 	for(Int_t i=0; i<nBin; i++)
@@ -366,9 +292,11 @@ void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D *h_tot )
 
 		Double_t unc1 = h1->GetBinContent(i_bin);
 		Double_t unc2 = h2->GetBinContent(i_bin);
+		Double_t unc3 = h3->GetBinContent(i_bin);
 
-		Double_t totunc = sqrt( unc1 * unc1 + unc2 * unc2 );
+		Double_t totunc = sqrt( unc1 * unc1 + unc2 * unc2 + unc3 * unc3);
 
 		h_tot->SetBinContent(i_bin, totunc);
+		h_tot->SetBinError(i_bin, 0);
 	}
 }
