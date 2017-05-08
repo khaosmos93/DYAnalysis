@@ -241,7 +241,7 @@ public:
 		h_ratio->GetYaxis()->SetRangeUser( 0.31, 1.69 );
 		h_ratio->GetYaxis()->SetNdivisions( 503 );
 
-		g_ratio->SetFillColorAlpha( kBlue, 1 );
+		g_ratio->SetFillColorAlpha( kBlue, 0.4 );
 		g_ratio->SetLineColorAlpha( kBlue, 0 );
 		g_ratio->SetMarkerColorAlpha( kBlue, 0 );
 		g_ratio->SetFillStyle( 1001 );

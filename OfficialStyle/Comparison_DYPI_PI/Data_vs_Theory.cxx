@@ -43,6 +43,7 @@ void Data_vs_Theory()
 	h_ratio_noPI->SetMarkerSize(0);
 	h_ratio_noPI->SetLineColor(kRed);
 	h_ratio_noPI->SetLineStyle( 2 );
+	h_ratio_noPI->SetLineWidth( 3 );
 	h_ratio_noPI->SetFillColorAlpha(kWhite, 0);
 	
 	TH1D* h_ratio_withPI = (TH1D*)h_DYPI->Clone();
@@ -50,7 +51,7 @@ void Data_vs_Theory()
 	AssignErrors( h_ratio_withPI, h_RelTheoUnc ); // -- uncertainty: only theoretical uncertianty -- //
 	h_ratio_withPI->SetMarkerColorAlpha(kWhite, 0);
 	h_ratio_withPI->SetLineColorAlpha(kWhite, 0);
-	h_ratio_withPI->SetFillColorAlpha( kOrange, 0.4 );
+	h_ratio_withPI->SetFillColorAlpha( kBlue, 0.3 );
 
 	TCanvas *c;
 	SetCanvas_Square( c, "c_ratio_theoryData", 1, 0 );
