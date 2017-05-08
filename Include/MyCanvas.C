@@ -299,8 +299,8 @@ public:
 		if( isLogX == kTRUE ) gPad->SetLogx();
 		if( isLogY == kTRUE ) gPad->SetLogy();
 
-		gPad->SetGridx(0);
-		gPad->SetGridy(0);
+		// gPad->SetGridx(0);
+		// gPad->SetGridy(0);
 
 		// -- ensure additional space at the bottom side for ratio plot -- //
 		TopPad->SetBottomMargin(0.32);
