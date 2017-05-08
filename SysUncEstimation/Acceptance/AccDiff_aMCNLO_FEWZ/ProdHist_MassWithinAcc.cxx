@@ -125,7 +125,7 @@ void ProdHist_MassWithinAcc( TString Sample = "aMCNLO", TString HLTname = "IsoMu
 			Double_t TotWeight = norm * GenWeight;
 
 			Bool_t GenFlag = kFALSE;
-			GenFlag = analyzer->SeparateDYLLSample(Tag[i_tup], ntuple);
+			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
 			if( GenFlag == kTRUE )
 			{
