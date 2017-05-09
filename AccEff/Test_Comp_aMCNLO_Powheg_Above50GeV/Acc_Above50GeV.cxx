@@ -154,9 +154,6 @@ void Acc_Above50GeV(TString Sample = "Powheg" )
 
 		} //End of event iteration
 
-		f->cd();
-		h_mass->Write();
-
 		cout << "Total Sum of Weight: " << SumWeights << endl;
 		cout << "\tSum of Weights of Separated Events: " << SumWeights_Separated << endl;
 
