@@ -19,11 +19,11 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTname = "IsoMu20_OR_IsoTkMu20" )
@@ -70,7 +70,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	TH1D *h_mass_EffPass_Corr_HLTv4p2 = new TH1D("h_mass_EffPass_Corr_HLTv4p2", "", nMassBin, MassBinEdges);
 	TH1D *h_mass_EffPass_Corr_HLTv4p3 = new TH1D("h_mass_EffPass_Corr_HLTv4p3", "", nMassBin, MassBinEdges);
 
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
@@ -98,6 +98,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
 		NtupleHandle *ntuple = new NtupleHandle( chain );
+		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_GenLepton();
 
