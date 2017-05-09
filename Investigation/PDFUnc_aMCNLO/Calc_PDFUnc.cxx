@@ -1,8 +1,20 @@
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooDataHist.h"
+#include "RooGaussian.h"
+#include "TCanvas.h"
+#include "RooPlot.h"
+#include "TTree.h"
+#include "TH1D.h"
+#include "TRandom.h"
+
+using namespace RooFit;
+
 #include <Include/PlotTools.h>
 #define nWeight 111
 
 void CrossCheck_WithRef( TGraphAsymmErrors* g_Acc );
-void makeTTree(TGraphAsymmErrors *g_Acc, TGraphAsymmErrors* g_Acc_Weighted[nWeight], Int_t i_point);
+TTree* makeTTree(TGraphAsymmErrors *g_Acc, TGraphAsymmErrors* g_Acc_Weighted[nWeight], Int_t i_point);
 
 void Calc_PDFUnc()
 {
@@ -80,7 +92,7 @@ void Calc_PDFUnc()
 	h_mean->Write();
 }
 
-void makeTTree(TGraphAsymmErrors *g_Acc, TGraphAsymmErrors* g_Acc_Weighted[nWeight], Int_t i_point)
+TTree* makeTTree(TGraphAsymmErrors *g_Acc, TGraphAsymmErrors* g_Acc_Weighted[nWeight], Int_t i_point)
 {
 	TTree* tree = new TTree("tree","tree");
 
@@ -130,15 +142,19 @@ void CrossCheck_WithRef( TGraphAsymmErrors* g_Acc )
 	SetGraphFormat_TopPad( Graph_CV->g, "Acceptance" );
 
 	TLegend *legend;
-	SetLegend( legend );
-	Graph_CV->AddToEntry( legend );
-	Graph_Ref->AddToEntry( legend );
+	SetLegend( legend, 0.55, 0.32, 0.95, 0.40 );
+	Graph_CV->AddToLegend( legend );
+	Graph_Ref->AddToLegend( legend );
+	legend->Draw();
+
+	TLatex latex;
+	Latex_Simulation( latex );
 
 	c->cd();
 	BottomPad->cd();
 
-	Graph_CV->DrawGraph("APSAME");
-	SetGraphFormat_BottomPad( Graph_CV->g_ratio, "m [GeV]", "CV/Ref" );
+	Graph_CV->DrawRatio("APSAME");
+	SetGraphFormat_BottomPad( Graph_CV->g_ratio, "m [GeV]", "CV/Ref", 0.99, 1.01 );
 
 	TF1 *f_line;
 	DrawLine( f_line );
@@ -147,7 +163,7 @@ void CrossCheck_WithRef( TGraphAsymmErrors* g_Acc )
 
 	cout << "Check the detail numbers in ratio: is it really 1 or not?" << endl;
 	Bool_t isFound = kFALSE;
-	for(Int_t i=0; Graph_CV->g_ratio->GetN(); i++)
+	for(Int_t i=0; i<Graph_CV->g_ratio->GetN(); i++)
 	{
 		Double_t x, y;
 		Graph_CV->g_ratio->GetPoint( i, x, y );
