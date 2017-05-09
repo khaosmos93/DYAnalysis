@@ -83,7 +83,7 @@ void SysUnc_Acc()
 	myc3->CanvasWithThreeHistogramsRatioPlot( (TH1D*)h_xSec_alpha_0117->Clone(), (TH1D*)h_xSec_alpha_0119->Clone(), (TH1D*)h_xSec_alpha_0118->Clone(), "#alpha = 0.117", "#alpha = 0.119", "#alpha = 0.118 (C.V.)", "Ratio to 0.118");
 	myc3->PrintCanvas();
 
-	TH1D *h_RelSysUnc_Alpha_Percent = (TH1D*)h_xSec_alpha_0118->Clone();
+	TH1D *h_RelSysUnc_Alpha_Percent = (TH1D*)h_xSec_alpha_0118->Clone("h_RelSysUnc_Alpha_Percent");
 	Calc_RelSysUnc_Alpha( h_xSec_alpha_0118, h_xSec_alpha_0117, h_xSec_alpha_0119, h_RelSysUnc_Alpha_Percent );
 
 	TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
