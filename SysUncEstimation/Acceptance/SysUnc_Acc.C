@@ -268,7 +268,7 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D* h3, TH1D *h_tot, TFile* f_outpu
 	h_tot->SetLineColor(kRed);
 	h_tot->SetFillColorAlpha( kWhite, 0);
 
-	TLegend *legend = new TLegend(0.50, 0.70, 0.95, 0.95);
+	TLegend *legend = new TLegend(0.35, 0.60, 0.95, 0.95);
 	legend->SetFillStyle(0);
 	legend->SetBorderSize(0);
 	legend->AddEntry( h1, "Syst. from PDF");
