@@ -15,6 +15,7 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TEfficiency.h>
+#include <TGraphAsymmErrors.h>
 
 #include <vector>
 
@@ -51,8 +52,8 @@ void Acc(TString Sample = "aMCNLO" )
 
 	for(Int_t i=0; i<nPtCut; i++)
 	{
-		h_mass_AccTotal[i] = new TH1D( TString::Format("h_mass_AccTotal_%d_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
-		h_mass_AccPass[i] = new TH1D( TString::Format("h_mass_AccPass_%d_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
+		h_mass_AccTotal[i] = new TH1D( TString::Format("h_mass_AccTotal_%.0lf_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
+		h_mass_AccPass[i] = new TH1D( TString::Format("h_mass_AccPass_%.0lf_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
 	}
 
 	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
@@ -174,10 +175,10 @@ void Acc(TString Sample = "aMCNLO" )
 		h_mass_AccPass[i_pt]->Write();
 
 		TEfficiency *Acc_Mass = new TEfficiency(*h_mass_AccPass[i_pt], *h_mass_AccTotal[i_pt]);
-		Acc_Mass->SetName( TString::Format("TEff_Acc_Mass_%d_10", Arr_PtCut[i_pt]) );
+		Acc_Mass->SetName( TString::Format("TEff_Acc_Mass_%.0lf_10", Arr_PtCut[i_pt]) );
 		Acc_Mass->Write();
 
-		TGraphAsymmErrors* g_Acc = (TGraphAsymmErrors*)Acc_Mass->CreateGraph()->Clone( TString::Format("g_Acc_%d_10", Arr_PtCut[i_pt]) );
+		TGraphAsymmErrors* g_Acc = (TGraphAsymmErrors*)Acc_Mass->CreateGraph()->Clone( TString::Format("g_Acc_%.0lf_10", Arr_PtCut[i_pt]) );
 		g_Acc->Write();
 	}
 
@@ -223,12 +224,12 @@ Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut )
 	if( genlep1.Pt > genlep2.Pt )
 	{
 		LeadPt = genlep1.Pt;
-		SubPt = genlep2.pt;
+		SubPt = genlep2.Pt;
 	}
 	else
 	{
 		LeadPt = genlep2.Pt;
-		SubPt = genlep1.pt;
+		SubPt = genlep1.Pt;
 	}
 
 	if( LeadPt > PtCut && SubPt > 10 && fabs(genlep1.eta) < 2.4 && fabs(genlep2.eta) < 2.4 )
