@@ -31,6 +31,7 @@
 #include <Include/MyCanvas.C>
 #include <Include/DYAnalyzer.h>
 #include <Include/DiffXsecTools.h>
+#include <Include/PlotTools.h>
 
 class CovInputTool
 {
@@ -209,7 +210,7 @@ public:
 		TH1D* h_SysUnc_ZZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_ZZ")->Clone();
 		TH1D* h_SysUnc_WZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_WZ")->Clone();
 
-		TSring FileName_Data = FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root";
+		TString FileName_Data = FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root";
 		TH1D* h_unfolded = Get_Hist( FileName_Data, "h_yield_Unfolded");
 		Double_t ratio_HLTv4p2 = Lumi_HLTv4p2 / Lumi;
 		Double_t ratio_HLTv4p3 = 1 - (Lumi_HLTv4p2 / Lumi);
