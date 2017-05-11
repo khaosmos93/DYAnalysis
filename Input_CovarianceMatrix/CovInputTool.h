@@ -209,27 +209,40 @@ public:
 		TH1D* h_SysUnc_ZZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_ZZ")->Clone();
 		TH1D* h_SysUnc_WZ = (TH1D*)f_BkgSys->Get("h_RelUnc_Tot_WZ")->Clone();
 
+		TSring FileName_Data = FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root";
+		TH1D* h_unfolded = Get_Hist( FileName_Data, "h_yield_Unfolded");
+		Double_t ratio_HLTv4p2 = Lumi_HLTv4p2 / Lumi;
+		Double_t ratio_HLTv4p3 = 1 - (Lumi_HLTv4p2 / Lumi);
+
 		for(Int_t i=0; i<nMassBin; i++)
 		{
 			Int_t i_bin = i+1;
 
-			Double_t RelError_ZZ = h_SysUnc_ZZ->GetBinContent(i_bin);
-			Double_t RelError_WZ = h_SysUnc_WZ->GetBinContent(i_bin);
+			Double_t RelError_ZZ = h_SysUnc_ZZ->GetBinContent(i_bin) / 100;
+			Double_t RelError_WZ = h_SysUnc_WZ->GetBinContent(i_bin) / 100;
+			Double_t nUnfolded = h_unfolded->GetBinContent(i_bin);
+
 			// printf("[Relative Errors: (WZ, ZZ) = (%lf, %lf)]\n", RelError_ZZ, RelError_WZ);
 
-			Double_t nEvent_ZZ_HLTv4p2 = h_ZZ_HLTv4p2->GetBinContent(i_bin);
-			Double_t nEvent_ZZ_HLTv4p3 = h_ZZ_HLTv4p3->GetBinContent(i_bin);
+			// Double_t nEvent_ZZ_HLTv4p2 = h_ZZ_HLTv4p2->GetBinContent(i_bin);
+			// Double_t nEvent_ZZ_HLTv4p3 = h_ZZ_HLTv4p3->GetBinContent(i_bin);
 
-			Double_t nEvent_WZ_HLTv4p2 = h_WZ_HLTv4p2->GetBinContent(i_bin);
-			Double_t nEvent_WZ_HLTv4p3 = h_WZ_HLTv4p3->GetBinContent(i_bin);
+			// Double_t nEvent_WZ_HLTv4p2 = h_WZ_HLTv4p2->GetBinContent(i_bin);
+			// Double_t nEvent_WZ_HLTv4p3 = h_WZ_HLTv4p3->GetBinContent(i_bin);
 
 			// printf("[nEvents: (ZZ_HLTv4p2, ZZ_HLTv4p3, WZ_HLTv4p2, WZ_HLTv4p3) = (%.3lf, %.3lf, %.3lf, %.3lf)]\n", nEvent_ZZ_HLTv4p2, nEvent_ZZ_HLTv4p3, nEvent_WZ_HLTv4p2, nEvent_WZ_HLTv4p3);
 
-			h_ZZ_HLTv4p2->SetBinError( i_bin, nEvent_ZZ_HLTv4p2*RelError_ZZ );
-			h_ZZ_HLTv4p3->SetBinError( i_bin, nEvent_ZZ_HLTv4p3*RelError_ZZ );
+			// h_ZZ_HLTv4p2->SetBinError( i_bin, nEvent_ZZ_HLTv4p2*RelError_ZZ );
+			// h_ZZ_HLTv4p3->SetBinError( i_bin, nEvent_ZZ_HLTv4p3*RelError_ZZ );
 
-			h_WZ_HLTv4p2->SetBinError( i_bin, nEvent_WZ_HLTv4p2*RelError_WZ );
-			h_WZ_HLTv4p3->SetBinError( i_bin, nEvent_WZ_HLTv4p3*RelError_WZ );
+			// h_WZ_HLTv4p2->SetBinError( i_bin, nEvent_WZ_HLTv4p2*RelError_WZ );
+			// h_WZ_HLTv4p3->SetBinError( i_bin, nEvent_WZ_HLTv4p3*RelError_WZ );
+
+			h_ZZ_HLTv4p2->SetBinError( i_bin, nUnfolded*RelError_ZZ*ratio_HLTv4p2 );
+			h_ZZ_HLTv4p3->SetBinError( i_bin, nUnfolded*RelError_ZZ*ratio_HLTv4p3 );
+
+			h_WZ_HLTv4p2->SetBinError( i_bin, nUnfolded*RelError_WZ*ratio_HLTv4p2 );
+			h_WZ_HLTv4p3->SetBinError( i_bin, nUnfolded*RelError_WZ*ratio_HLTv4p3 );
 		}
 	}
 
