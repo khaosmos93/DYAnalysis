@@ -213,8 +213,8 @@ public:
 		{
 			Int_t i_bin = i+1;
 
-			Double_t RelError_ZZ = h_SysUnc_ZZ->GetBinContent(i_bin) / 100.0;
-			Double_t RelError_WZ = h_SysUnc_WZ->GetBinContent(i_bin) / 100.0;
+			Double_t RelError_ZZ = h_SysUnc_ZZ->GetBinContent(i_bin);
+			Double_t RelError_WZ = h_SysUnc_WZ->GetBinContent(i_bin);
 			// printf("[Relative Errors: (WZ, ZZ) = (%lf, %lf)]\n", RelError_ZZ, RelError_WZ);
 
 			Double_t nEvent_ZZ_HLTv4p2 = h_ZZ_HLTv4p2->GetBinContent(i_bin);
