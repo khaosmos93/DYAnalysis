@@ -7,9 +7,9 @@
 
 void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D *h_tot );
 
-void CombineSysUnc_EffSF(TString version)
+void CombineSysUnc_EffSF()
 {
-	TString FileLocation = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/" + version;
+	TString FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 	TFile *f_tp = new TFile(FileLocation + "/ROOTFile_SysUnc_EffSF_TagProbe_UnbinnedFit.root"); f_tp->cd();
 	TH1D *h_tp = (TH1D*)f_tp->Get("h_RMS")->Clone();
