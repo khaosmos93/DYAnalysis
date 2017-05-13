@@ -103,7 +103,7 @@ protected:
 		this->Hist_RelSystUnc_Bkg->Set_FileName_ObjectName( FileName, "h_RelSysUnc_Bkg.Est._Percent");
 		this->Hist_RelSystUnc_Bkg->Set();
 		this->Hist_RelSystUnc_Bkg->h->SetMarkerStyle(27);
-		Hist_RelSystUnc_Bkg->h->SetMinimum(0.001);
+		this->Hist_RelSystUnc_Bkg->h->SetMinimum(0.001);
 
 		// -- uncertainty from FSR correction -- //
 		this->Hist_RelSystUnc_FSR = new HistInfo( TColor::GetColor("#9999ff"), "FSR");
@@ -142,7 +142,7 @@ protected:
 
 	TLegend* Get_Legend1()
 	{
-		TLegend *legtot = new TLegend(0.20,0.70,0.45,0.85,NULL,"brNDC");
+		TLegend *legtot = new TLegend(0.20,0.77,0.45,0.85,NULL,"brNDC");
 		legtot->SetBorderSize(0);
 		legtot->SetLineColor(1);
 		legtot->SetLineStyle(1);
@@ -157,7 +157,7 @@ protected:
 
 	TLegend* Get_Legend2()
 	{
-		TLegend *leg = new TLegend(0.45,0.65,0.75,0.85,NULL,"brNDC");
+		TLegend *leg = new TLegend(0.37,0.61,0.67,0.85,NULL,"brNDC");
 		leg->SetBorderSize(0);
 		leg->SetLineColor(1);
 		leg->SetLineStyle(1);
