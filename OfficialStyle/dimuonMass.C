@@ -42,7 +42,7 @@ void dimuonMass()
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
-   TString BasePath = gSystem->Getenv("KP_ROOTFile_PATH");
+   TString BasePath = gSystem->Getenv("KP_ROOTFILE_PATH");
    TFile* f1 = new TFile(BasePath+"/ROOTFile_Histograms_DimuonMassSpectrum_All.root");
    // -- get histograms -- //
    TH1D* h_data = (TH1D*)f1->Get("h_data")->Clone();
