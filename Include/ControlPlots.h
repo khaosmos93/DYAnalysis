@@ -11,7 +11,7 @@
 
 #include <vector>
 
-#include <DYAnalysis_76X/CommonCodes/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 
 class ControlPlots
 {
