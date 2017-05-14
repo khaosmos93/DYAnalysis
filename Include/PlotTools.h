@@ -1,3 +1,5 @@
+#pragma once
+
 #include <TH1D.h>
 #include <TColor.h>
 #include <TLegend.h>
