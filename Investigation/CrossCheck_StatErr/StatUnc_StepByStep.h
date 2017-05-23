@@ -1151,7 +1151,7 @@ public:
 		Double_t Sigma_Init = 0.01;
 		this->Set_FitInitValues( BinCenter, RangeMax, Sigma_Init );
 
-		RooRealVar RelDiff("RelDiff","(N_{Smeared} - N_{CV}) / N_{CV}", (-1)*RangeMax, RangeMax);
+		RooRealVar RelDiff("RelDiff","(#sigma_{Smeared} - #sigma_{CV}) / #sigma_{CV}", (-1)*RangeMax, RangeMax);
 		RooDataSet data("data","data", tree, RelDiff) ; // -- Name of the variable should be same with the branch name in the tree -- //
 
 		// --- Make plot of binned dataset showing Poisson error bars (RooFit default)
