@@ -1,3 +1,4 @@
+#include <Include/PlotTools.h>
 #include <Include/DYAnalyzer.h>
 #include <Include/MyCanvas.C>
 #include <TLatex.h>
@@ -319,14 +320,23 @@ public:
 		else
 		{
 			// -- FEWZ -- //
-			TFile *f_theory = TFile::Open(FileLocation + "/ROOTFile_xSec_Theory.root"); 
-			f_theory->cd();
-			this->h_FEWZ = (TH1D*)f_theory->Get("h_DiffXsec_FEWZ_NNPDF_NNLO")->Clone();
+			// -- no PI -- //
+			// TFile *f_theory = TFile::Open(FileLocation + "/ROOTFile_xSec_Theory.root"); 
+			// f_theory->cd();
+			// this->h_FEWZ = (TH1D*)f_theory->Get("h_DiffXsec_FEWZ_NNPDF_NNLO")->Clone();
+
+			// -- with PI -- //
+			TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+			TString FileName_Data = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
+			this->h_FEWZ = Get_Hist( FileName_Data, "h_DYDiffXSecNNLO_WithPI" );
 
 			// -- aMC@NLO -- //
 			f_data->cd();
 			this->h_aMCNLO = (TH1D*)f_data->Get("h_DiffXsec_aMCNLO")->Clone();
 		}
+
+		this->AssignScaleUnc_3Percent( this->h_aMCNLO );
+		this->Add_PIContribution( this->h_aMCNLO );		
 	}
 
 	void DrawCanvas_DiffXsec_All( TString Type )
@@ -1660,6 +1670,46 @@ public:
 		}
 
 		return h2;
+	}
 
+	void AssignScaleUnc_3Percent( TH1D* h )
+	{
+		Int_t nBin = h->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+			Double_t DiffXSec = h->GetBinContent(i_bin);
+			Double_t Err_before = h->GetBinError(i_bin);
+			Double_t Err_ScaleVar = DiffXSec * 0.03; // -- 3% for all mass bins -- //
+
+			Double_t Err_after = sqrt(Err_before*Err_before + Err_ScaleVar*Err_ScaleVar);
+			h->SetBinError(i_bin, Err_after);
+		}
+	}
+
+	void Add_PIContribution( TH1D* h_DXSec )
+	{
+		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+		TString FileName_Ratio = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYPI_DY_FEWZ.root";
+		TH1D* h_ratio = Get_Hist(FileName_Ratio, "h_ratio");
+
+		Int_t nBin = h_DXSec->GetNbinsX();
+		for(Int_t i=0; i<nBin; i++)
+		{
+			Int_t i_bin = i+1;
+
+			Double_t DXSec = h_DXSec->GetBinContent(i_bin);
+			Double_t RelErr_DXSec = h_DXSec->GetBinError(i_bin) / DXSec;
+
+			Double_t Ratio = h_ratio->GetBinContent(i_bin);
+			Double_t RelErr_ratio = h_ratio->GetBinError(i_bin) / Ratio;
+
+			Double_t DXSec_DYPI = DXSec * Ratio;
+			// -- error propagation -- //
+			Double_t RelErr_total = sqrt(RelErr_DXSec*RelErr_DXSec + RelErr_ratio*RelErr_ratio);
+
+			h_DXSec->SetBinContent(i_bin, DXSec_DYPI);
+			h_DXSec->SetBinError(i_bin, RelErr_total * DXSec_DYPI); // -- absolute error -- //
+		}
 	}
 };
