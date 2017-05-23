@@ -211,6 +211,8 @@ DiffXsecTools::DiffXsecTools()
 	g_EffCorr_HLTv4p2 = NULL;
 	g_EffCorr_HLTv4p3 = NULL;
 	h_RelUnc_Stat = NULL;
+	h_RelUnc_Stat_7TeVMethod = NULL;
+	h_FpoF_RelUnc_Stat = NULL;
 
 	// -- Setup input files -- //
 	TString Path_CommonCodes = gSystem->Getenv("KP_INCLUDE_PATH");
@@ -1229,7 +1231,7 @@ void DiffXsecTools::CalcHistogram_RelStatUnc_7TeVMethod()
 	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
 	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
 
-	this->h_RelUnc_Stat_7TeVMethod = new TH1D("this->h_RelUnc_Stat_7TeVMethod", "", nMassBin, MassBinEdges);
+	this->h_RelUnc_Stat_7TeVMethod = new TH1D("h_RelUnc_Stat_7TeVMethod", "", nMassBin, MassBinEdges);
 
 	for(Int_t i=0; i<nMassBin; i++)
 	{
@@ -1428,9 +1430,6 @@ void DiffXsecTools::SaveHistograms()
 
 	h_RelUnc_Stat_7TeVMethod->SetName("h_RelUnc_Stat_7TeVMethod");
 	h_RelUnc_Stat_7TeVMethod->Write();
-
-	h_FpoF_RelUnc_Stat->SetName("h_FpoF_RelUnc_Stat");
-	h_FpoF_RelUnc_Stat->Write();
 }
 
 // void DiffXsecTools::EstimationUncertainty()
@@ -1627,6 +1626,9 @@ void DiffXsecTools::FpoF_SaveResults()
 
 	h_FpoF_DiffXsec_Data->Write();
 	h_FpoF_DiffXsec_aMCNLO->Write();
+
+	h_FpoF_RelUnc_Stat->SetName("h_FpoF_RelUnc_Stat");
+	h_FpoF_RelUnc_Stat->Write();
 }
 
 void DiffXsecTools::FpoF_AllAnalysisProcedure()
