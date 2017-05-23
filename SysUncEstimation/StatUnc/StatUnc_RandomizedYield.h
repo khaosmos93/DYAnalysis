@@ -44,6 +44,13 @@ public:
 
 	TH1D* h_DiffXSec;
 
+	// -- fiducial, post-FSR results -- //
+	TH1D* h_FpoF_EffCorr_4p2;
+	TH1D* h_FpoF_EffCorr_4p3;
+	TH1D* h_FpoF_EffSFCorr_4p2;
+	TH1D* h_FpoF_EffSFCorr_4p3;
+	TH1D* h_FpoF_DiffXSec;
+
 	HistogramContainer()
 	{
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
@@ -110,6 +117,10 @@ public:
 		{
 			h_return = (TH1D*)h_DiffXSec->Clone();
 		}
+		else if( Type == "FpoF_DiffXSec" )
+		{
+			h_return = (TH1D*)h_FpoF_DiffXSec->Clone();
+		}
 		return h_return;
 	}
 
@@ -121,6 +132,10 @@ public:
 		this->Make_Histogram_EffSFCorr();
 		this->Make_Histogram_FSRCorr();
 		this->Make_Histogram_DiffXSec();
+
+		this->Make_Histogram_FpoF_EffCorr();
+		this->Make_Histogram_FpoF_EffSFCorr();
+		this->Make_Histogram_FpoF_DiffXSec();
 	}
 
 	void Save_Histogram( TFile *f_output )
@@ -189,7 +204,6 @@ public:
 		this->h_DiffXSec = (TH1D*)f_input->Get(HistName)->Clone();
 	}
 
-protected:
 	void Set_HistogramName()
 	{
 		TString HistName = "";
@@ -229,7 +243,25 @@ protected:
 
 		HistName = "h_DiffXSec_"+this->Type;
 		this->h_DiffXSec->SetName(HistName);
+
+		// -- fiducial, post-FSR -- //
+		HistName = "h_FpoF_EffCorr_4p2_"+this->Type;
+		this->h_FpoF_EffCorr_4p2->SetName( HistName );
+
+		HistName = "h_FpoF_EffCorr_4p3_"+this->Type;
+		this->h_FpoF_EffCorr_4p3->SetName( HistName );
+
+		HistName = "h_FpoF_EffSFCorr_4p2_"+this->Type;
+		this->h_FpoF_EffSFCorr_4p2->SetName( HistName );
+
+		HistName = "h_FpoF_EffSFCorr_4p3_"+this->Type;
+		this->h_FpoF_EffSFCorr_4p3->SetName( HistName );
+
+		HistName = "h_FpoF_DiffXSec_"+this->Type;
+		this->h_FpoF_DiffXSec->SetName( HistName );
 	}
+
+protected:
 	void Make_Histogram_BkgSub()
 	{
 		// -- MC bkg. after applying efficiency SF -- //
@@ -336,33 +368,32 @@ protected:
 
 	void Make_Histogram_EffSFCorr()
 	{
-		///////////////////////////////////////////////////////
-		// -- Calculation of efficiency correction factor -- //
-		///////////////////////////////////////////////////////
-		TFile *f_AccEff = TFile::Open(this->FileLocation + "/ROOTFile_AccEff.root"); f_AccEff->cd();
-
-		TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff")->Clone();
-		TGraphAsymmErrors *g_Eff_Corr_HLTv4p2 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_HLTv4p2")->Clone();
-		TGraphAsymmErrors *g_Eff_Corr_HLTv4p3 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_HLTv4p3")->Clone();
-		
-		f_AccEff->Close();
-
-		// -- Calculate efficiency scale factor for each mass bin: SF = Corrected Eff / Un-corrected Eff -- //
-		GraphInfo *Graph_CorrEff_4p2 = new GraphInfo( kBlack, "temp" );
-		Graph_CorrEff_4p2->Set_Graph( g_Eff_Corr_HLTv4p2 );
-		Graph_CorrEff_4p2->Calc_RatioGraph_Denominator( g_Eff );
-		TGraphAsymmErrors* g_EffCorr_4p2 = (TGraphAsymmErrors*)Graph_CorrEff_4p2->g_ratio->Clone();
-
-		GraphInfo *Graph_CorrEff_4p3 = new GraphInfo( kBlack, "temp" );
-		Graph_CorrEff_4p3->Set_Graph( g_Eff_Corr_HLTv4p3 );
-		Graph_CorrEff_4p3->Calc_RatioGraph_Denominator( g_Eff );
-		TGraphAsymmErrors* g_EffCorr_4p3 = (TGraphAsymmErrors*)Graph_CorrEff_4p3->g_ratio->Clone();
+		TGraphAsymmErrors* g_EffCorr_4p2 = this->CalcEffSF_Mass( "HLTv4p2" );
+		TGraphAsymmErrors* g_EffCorr_4p3 = this->CalcEffSF_Mass( "HLTv4p3" );
 
 		this->h_EffSFCorr_4p2 = (TH1D*)this->h_AccEffCorr_4p2->Clone();
 		this->ApplyEffCorr_Yield( this->h_EffSFCorr_4p2, this->h_AccEffCorr_4p2, g_EffCorr_4p2 );
 
 		this->h_EffSFCorr_4p3 = (TH1D*)this->h_AccEffCorr_4p3->Clone();
 		this->ApplyEffCorr_Yield( this->h_EffSFCorr_4p3, this->h_AccEffCorr_4p3, g_EffCorr_4p3 );
+	}
+
+	///////////////////////////////////////////////////////
+	// -- Calculation of efficiency correction factor -- //
+	///////////////////////////////////////////////////////
+	// -- Type: HLTv4p2, HLTv4p3 -- //
+	TGraphAsymmErrors* CalcEffSF_Mass( TString Type )
+	{
+		TString FileName = this->FileLocation + "/ROOTFile_AccEff.root";
+
+		TGraphAsymmErrors *g_Eff = Get_Graph( FileName, "g_Eff" );
+		TGraphAsymmErrors *g_Eff_Corrected = Get_Graph( FileName, "g_Eff_Corr_"+Type );
+
+		GraphInfo *Graph_CorrEff = new GraphInfo( kBlack, "temp" );
+		Graph_CorrEff->Set_Graph( g_Eff_Corrected );
+		Graph_CorrEff->CalcRatio_DEN( g_Eff );
+
+		return (TGraphAsymmErrors*)Graph_CorrEff->g_ratio->Clone();
 	}
 
 	void Make_Histogram_FSRCorr()
@@ -385,7 +416,6 @@ protected:
 	{
 		TH1D* h_XSec = (TH1D*)this->h_FSRCorr->Clone();
 		h_XSec->Scale( 1.0 / Lumi );
-		// this->h_DiffXSec = this->Convert_XSecToDiffXSec( h_XSec );
 		this->h_DiffXSec = DivideEachBin_ByBinWidth( h_XSec );
 	}
 
@@ -456,6 +486,42 @@ protected:
 
 		return h_mass;
 	}
+
+	void Make_Histogram_FpoF_EffCorr()
+	{
+		TString FileName = this->FileLocation + "/ROOTFile_AccEff.root";
+		TGraphAsymmErrors *g_Eff = Get_Graph( FileName, "g_Eff" );
+
+		// -- HLTv4p2 -- //
+		this->h_FpoF_EffCorr_4p2 = (TH1D*)this->h_Unfolded_4p2->Clone();
+		this->Correction_AccEff( this->h_FpoF_EffCorr_4p2, this->h_Unfolded_4p2, g_Eff );
+
+		// -- HLTv4p3 -- //
+		this->h_FpoF_EffCorr_4p3 = (TH1D*)this->h_Unfolded_4p3->Clone();
+		this->Correction_AccEff( this->h_FpoF_EffCorr_4p3, this->h_Unfolded_4p3, g_Eff );
+	}
+
+	void Make_Histogram_FpoF_EffSFCorr()
+	{
+		TGraphAsymmErrors* g_EffCorr_4p2 = this->CalcEffSF_Mass( "HLTv4p2" );
+		TGraphAsymmErrors* g_EffCorr_4p3 = this->CalcEffSF_Mass( "HLTv4p3" );
+
+		this->h_FpoF_EffSFCorr_4p2 = (TH1D*)this->h_FpoF_EffCorr_4p2->Clone();
+		this->ApplyEffCorr_Yield( this->h_FpoF_EffSFCorr_4p2, this->h_FpoF_EffCorr_4p2, g_EffCorr_4p2 );
+
+		this->h_FpoF_EffSFCorr_4p3 = (TH1D*)this->h_FpoF_EffCorr_4p3->Clone();
+		this->ApplyEffCorr_Yield( this->h_FpoF_EffSFCorr_4p3, this->h_FpoF_EffCorr_4p3, g_EffCorr_4p3 );
+	}
+
+	void Make_Histogram_FpoF_DiffXSec()
+	{
+		TH1D* h_FpoF_EffSFCorr = (TH1D*)this->h_FpoF_EffSFCorr_4p2->Clone("h_FpoF_EffSFCorr");
+		h_FpoF_EffSFCorr->Add( this->h_FpoF_EffSFCorr_4p3 );
+
+		TH1D* h_XSec = (TH1D*)h_FpoF_EffSFCorr->Clone();
+		h_XSec->Scale( 1.0 / Lumi );
+		this->h_FpoF_DiffXSec = DivideEachBin_ByBinWidth( h_XSec );
+	}
 };
 
 
@@ -466,6 +532,7 @@ public:
 	HistogramContainer *Hists_Smeared[nMap];
 
 	TH1D* h_RelStatUnc;
+	TH1D* h_FpoF_RelStatUnc;
 
 	StatUncTool()
 	{
@@ -486,6 +553,9 @@ public:
 
 		this->h_RelStatUnc = new TH1D("h_RelStatUnc", "", 3000, 0, 3000);
 		this->h_RelStatUnc = this->Rebin_DYBin( this->h_RelStatUnc );
+
+		this->h_FpoF_RelStatUnc = new TH1D("h_FpoF_RelStatUnc", "", 3000, 0, 3000);
+		this->h_FpoF_RelStatUnc = this->Rebin_DYBin( this->h_FpoF_RelStatUnc );
 	}
 
 	void Estimate()
@@ -494,26 +564,39 @@ public:
 		for(Int_t i_map=0; i_map<nMap; i_map++)
 			this->Hists_Smeared[i_map]->Make_Histogram_All();
 
-		this->FitGaussian_GetSigma();
+		this->FitGaussian_GetSigma("All", this->h_RelStatUnc);
+		this->FitGaussian_GetSigma("FpoF", this->h_FpoF_RelStatUnc);
 	}
 
 	void SetStatUnc_ByHand()
 	{
 		this->h_RelStatUnc->SetBinContent(43, 1); // -- 100% by hand: fit failed because of small statistics -- //
+		this->h_FpoF_RelStatUnc->SetBinContent(43, 1);
 	}
 
 	void Save_Results( TFile *f_output )
 	{
 		f_output->cd();
 		this->h_RelStatUnc->Write();
+		this->h_FpoF_RelStatUnc->Write();
 
 		TH1D* h_RelStatUnc_Percent = (TH1D*)h_RelStatUnc->Clone("h_RelStatUnc_Percent");
 		h_RelStatUnc_Percent->Scale( 100 );
 		h_RelStatUnc_Percent->Write();
 
+		TH1D* h_FpoF_RelStatUnc_Percent = (TH1D*)h_FpoF_RelStatUnc->Clone("h_FpoF_RelStatUnc_Percent");
+		h_FpoF_RelStatUnc_Percent->Scale( 100 );
+		h_FpoF_RelStatUnc_Percent->Write();
+
+		this->Hists_CV->Set_HistogramName();
 		this->Hists_CV->h_DiffXSec->Write();
+		this->Hists_CV->h_FpoF_DiffXSec->Write();
 		for(Int_t i_map=0; i_map<nMap; i_map++)
+		{
+			this->Hists_Smeared[i_map]->Set_HistogramName();
 			this->Hists_Smeared[i_map]->h_DiffXSec->Write();
+			this->Hists_Smeared[i_map]->h_FpoF_DiffXSec->Write();
+		}
 	}
 
 	void Make_XCheckPlot_DiffXSec()
@@ -523,6 +606,10 @@ public:
 
 		TString CanvasName = "c_this_vs_ref_DiffXSec";
 		this->Comparison_this_vs_ref( CanvasName, this->Hists_CV->h_DiffXSec, h_Ref);
+
+		CanvasName = "c_this_vs_ref_FpoF_DiffXSec";
+		TH1D* h_Ref_FpoF = Get_Hist(ROOTFilePath+"/ROOTFile_Results_DYAnalysis_76X.root", "h_FpoF_DiffXsec_Data" );
+		this->Comparison_this_vs_ref( CanvasName, this->Hists_CV->h_FpoF_DiffXSec, h_Ref_FpoF);
 	}
 
 
@@ -556,7 +643,7 @@ protected:
 		}
 	}
 
-	void FitGaussian_GetSigma()
+	void FitGaussian_GetSigma(TString Type, TH1D* h_RelStatUnc_this )
 	{
 		Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -568,7 +655,7 @@ protected:
 		{
 			Int_t i_bin = i+1;
 
-			TTree *tree = this->makeTTree(i_bin);
+			TTree *tree = this->makeTTree(i_bin, Type);
 
 			Double_t BinCenter = ( MassBinEdges[i] + MassBinEdges[i+1] ) / 2.0;
 			Double_t RangeMax = 0.1;
@@ -593,6 +680,8 @@ protected:
 			frame->getAttText()->SetTextSize(0.02);
 
 			TString CanvasName = TString::Format("c_RelDiff_Bin%02d", i_bin);
+			if( Type == "FpoF" )
+				CanvasName.ReplaceAll("c_", "c_FpoF_");
 
 			TCanvas *c = new TCanvas(CanvasName, "", 700, 700); c->cd();
 			frame->Draw();
@@ -600,17 +689,10 @@ protected:
 			c->SaveAs(CanvasName+".pdf");
 			
 			Double_t RMS = sigma.getVal();
-			Double_t RMSErr = sigma.getError();
+			// Double_t RMSErr = sigma.getError();
 
-			this->h_RelStatUnc->SetBinContent(i_bin, RMS);
-			// this->h_RelStatUnc->SetBinError(i_bin, RMSErr);
-			this->h_RelStatUnc->SetBinError(i_bin, 0);
-
-			// Double_t Mean = mean.getVal();
-			// h_mean->SetBinContent(i_bin, Mean);
-			// h_mean->SetBinError(i_bin, 0);
-			
-			// this->Print_FitCanvas( CanvasName, h_RelDiff );
+			h_RelStatUnc_this->SetBinContent(i_bin, RMS);
+			h_RelStatUnc_this->SetBinError(i_bin, 0);
 		}
 	}
 
@@ -643,7 +725,7 @@ protected:
 		}
 	}
 
-	TTree* makeTTree(Int_t i_bin) 
+	TTree* makeTTree(Int_t i_bin, TString Type) 
 	{
 		TTree* tree = new TTree("tree","tree");
 
@@ -651,12 +733,21 @@ protected:
 
 		tree->Branch("RelDiff", RelDiff, "RelDiff/D");
 
-		TH1D *h_CV = this->Hists_CV->Get_Histogram( "DiffXSec" );
+		TH1D *h_CV;
+		if( Type == "All" )
+			h_CV = this->Hists_CV->Get_Histogram( "DiffXSec" );
+		else if( Type == "FpoF" )
+			h_CV = this->Hists_CV->Get_Histogram( "FpoF_DiffXSec" );
+
 		Double_t value_CV = h_CV->GetBinContent(i_bin);
 
 		for(Int_t i_map=0; i_map<nMap; i_map++)
 		{
-			TH1D *h_Smeared = this->Hists_Smeared[i_map]->Get_Histogram( "DiffXSec" );
+			TH1D *h_Smeared;
+			if( Type == "All" )
+				h_Smeared = this->Hists_Smeared[i_map]->Get_Histogram( "DiffXSec" );
+			else if( Type == "FpoF" )
+				h_Smeared = this->Hists_Smeared[i_map]->Get_Histogram( "FpoF_DiffXSec" );
 
 			Double_t value_Smeared = h_Smeared->GetBinContent(i_bin);
 
@@ -711,8 +802,6 @@ protected:
 
 		c->SaveAs(".pdf");
 	}
-
-
 
 	TH1D* Rebin_DYBin( TH1D* h_before )
 	{
