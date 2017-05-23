@@ -7,6 +7,7 @@
 #include <src/RooUnfoldResponse.cxx>
 #include <src/RooUnfoldBayes.cxx>
 #include <src/RooUnfoldInvert.cxx>
+#include <Include/PlotTools.h>
 
 class DiffXsecTools
 {
@@ -87,6 +88,7 @@ public:
 	TH1D *h_DiffXsec_FEWZ_NNLO;
 
 	TH1D *h_RelUnc_Stat;
+	TH1D* h_RelUnc_Stat_7TeVMethod;
 
 	// -- fiducial, post-FSR results -- //
 	TH1D *h_FpoF_yield_aMCNLO;
@@ -101,6 +103,7 @@ public:
 	TH1D *h_FpoF_yield_HLTv4p3_EffCorr;
 
 	TH1D *h_FpoF_DiffXsec_Data;
+	TH1D* h_FpoF_RelUnc_Stat;
 
 	DiffXsecTools();
 	// ~DiffXsecTools();
@@ -166,8 +169,8 @@ protected:
 	void SaveCanvas_afterFSRCorr_vs_genMC_preFSR( TH1D* h_FSRCorrected, TH1D* h_Truth_preFSR );
 	
 	void Obtain_dSigma_dM(TH1D *h);
-	void CalcHistogram_RelStatUnc();
-	void SetStatUnc_DiffXsec(TH1D* h_DiffXsec);
+	void CalcHistogram_RelStatUnc_7TeVMethod();
+	void SetStatUnc_DiffXsec(TString Type, TH1D* h_DiffXsec);
 	void SaveCanvas_xSec_Data_vs_aMCNLO();
 	void SaveCanvas_DiffXsec_Data_AllCorrStep();
 	virtual void SaveCanvas_DiffXsec_Data_vs_FEWZ(TString Type, TH1D *h_DiffXsec_FEWZ);
@@ -997,7 +1000,7 @@ void DiffXsecTools::CalcXsec()
 	h_DiffXsec_FSRCorr = (TH1D*)h_xSec_FSRCorr->Clone();
 	h_DiffXsec_FSRCorr->Sumw2();
 	Obtain_dSigma_dM(h_DiffXsec_FSRCorr);
-	SetStatUnc_DiffXsec( h_DiffXsec_FSRCorr );
+	SetStatUnc_DiffXsec( "All", h_DiffXsec_FSRCorr );
 
 	h_DiffXsec_aMCNLO = (TH1D*)h_xSec_aMCNLO->Clone();
 	h_DiffXsec_aMCNLO->Sumw2();
@@ -1220,13 +1223,13 @@ void DiffXsecTools::SaveCanvas_DiffXsec_Data_AllCorrStep()
 	c->SaveAs("c_DiffXsec_Data_AllCorrStep.pdf");
 }
 
-void DiffXsecTools::CalcHistogram_RelStatUnc()
+void DiffXsecTools::CalcHistogram_RelStatUnc_7TeVMethod()
 {
 	f_data = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
 	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
 	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
 
-	h_RelUnc_Stat = new TH1D("h_RelUnc_Stat", "", nMassBin, MassBinEdges);
+	this->h_RelUnc_Stat_7TeVMethod = new TH1D("this->h_RelUnc_Stat_7TeVMethod", "", nMassBin, MassBinEdges);
 
 	for(Int_t i=0; i<nMassBin; i++)
 	{
@@ -1236,8 +1239,8 @@ void DiffXsecTools::CalcHistogram_RelStatUnc()
 
 		Double_t RelUnc = sqrt(nEvent_Data) / nEvent_Unfold;
 
-		h_RelUnc_Stat->SetBinContent(i_bin, RelUnc);
-		h_RelUnc_Stat->SetBinError(i_bin, 0);
+		this->h_RelUnc_Stat_7TeVMethod->SetBinContent(i_bin, RelUnc);
+		this->h_RelUnc_Stat_7TeVMethod->SetBinError(i_bin, 0);
 
 		printf( "[%.2d bin: (%.4lf, %.4lf)] ( nEvent_Unfolded, nEvent_Data, sqrt(nEvent_Data), StatUnc(%%) ) = (%12.1lf, %12.d, %12.1lf, %12.3lf)\n", 
 			i_bin, MassBinEdges[i], MassBinEdges[i+1], nEvent_Unfold, nEvent_Data, sqrt(nEvent_Data), RelUnc*100 );
@@ -1246,20 +1249,31 @@ void DiffXsecTools::CalcHistogram_RelStatUnc()
 	delete f_data;
 }
 
-void DiffXsecTools::SetStatUnc_DiffXsec(TH1D* h_DiffXsec)
+void DiffXsecTools::SetStatUnc_DiffXsec(TString Type, TH1D* h_DiffXsec)
 {
-	if( h_RelUnc_Stat == NULL )
-		this->CalcHistogram_RelStatUnc();
+	if( this->h_RelUnc_Stat_7TeVMethod == NULL )
+		this->CalcHistogram_RelStatUnc_7TeVMethod();
+
+	TString FileName_RelStatUnc = this->FileLocation + "/ROOTFile_RelStatUnc.root";
+	TString HistName = "h_RelStatUnc";
+	if( Type == "FpoF" ) HistName = "h_FpoF_RelStatUnc";
+
+	TH1D* h_RelStatUnc = Get_Hist( FileName_RelStatUnc, HistName );
 
 	for(Int_t i=0; i<nMassBin; i++)
 	{
 		Int_t i_bin = i+1;
 
 		Double_t DiffXsec = h_DiffXsec->GetBinContent(i_bin);
-		Double_t RelUnc = h_RelUnc_Stat->GetBinContent(i_bin);
+		Double_t RelUnc = h_RelStatUnc->GetBinContent(i_bin);
 
 		h_DiffXsec->SetBinError(i_bin, RelUnc*DiffXsec);
 	}
+
+	if( Type == "All" )
+		this->h_RelUnc_Stat = (TH1D*)h_RelStatUnc->Clone();
+	else if( Type == "FpoF" )
+		this->h_FpoF_RelUnc_Stat = (TH1D*)h_RelStatUnc->Clone();
 }
 
 void DiffXsecTools::SaveCanvas_DiffXsec_Data_vs_FEWZ(TString Type, TH1D *h_DiffXsec_FEWZ)
@@ -1409,7 +1423,14 @@ void DiffXsecTools::SaveHistograms()
 	h_DiffXsec_FEWZ_NNLO->SetName("h_DiffXsec_FEWZ_NNLO");
 	h_DiffXsec_FEWZ_NNLO->Write();
 
+	h_RelUnc_Stat->SetName("h_RelUnc_Stat");
 	h_RelUnc_Stat->Write();
+
+	h_RelUnc_Stat_7TeVMethod->SetName("h_RelUnc_Stat_7TeVMethod");
+	h_RelUnc_Stat_7TeVMethod->Write();
+
+	h_FpoF_RelUnc_Stat->SetName("h_FpoF_RelUnc_Stat");
+	h_FpoF_RelUnc_Stat->Write();
 }
 
 // void DiffXsecTools::EstimationUncertainty()
@@ -1568,7 +1589,7 @@ void DiffXsecTools::FpoF_CalcXsec()
 	this->h_FpoF_DiffXsec_Data->Sumw2();
 	this->h_FpoF_DiffXsec_Data->Scale( 1 / Lumi );
 	this->Obtain_dSigma_dM(this->h_FpoF_DiffXsec_Data);
-	this->SetStatUnc_DiffXsec( this->h_FpoF_DiffXsec_Data );
+	this->SetStatUnc_DiffXsec( "FpoF", this->h_FpoF_DiffXsec_Data );
 
 	this->h_FpoF_DiffXsec_aMCNLO = (TH1D*)this->h_FpoF_yield_aMCNLO->Clone("h_FpoF_DiffXsec_aMCNLO");
 	this->h_FpoF_DiffXsec_aMCNLO->Sumw2();
