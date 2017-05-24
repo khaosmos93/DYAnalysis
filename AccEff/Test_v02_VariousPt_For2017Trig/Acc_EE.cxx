@@ -25,7 +25,7 @@
 static inline void loadBar(int x, int n, int r, int w);
 
 Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut, Double_t SubPtCut );
-void Acc(TString Sample = "aMCNLO" )
+void Acc_EE(TString Sample = "aMCNLO" )
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -36,7 +36,7 @@ void Acc(TString Sample = "aMCNLO" )
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "IsoMu20_OR_IsoTkMu20" );
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_VariousPtCut_" + Sample + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_VariousPtCut_" + Sample + "_EE.root", "RECREATE");
 
 	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -147,7 +147,7 @@ void Acc(TString Sample = "aMCNLO" )
 				// -- fill histograms -- //
 				for(Int_t i_pt=0; i_pt<nPtCut; i_pt++)
 				{
-					Bool_t Flag_PassAcc = PassAcc( genlep1, genlep2, Arr_PtCut[i_pt]);
+					Bool_t Flag_PassAcc = PassAcc( genlep1, genlep2, Arr_PtCut[i_pt], Arr_SubPtCut[i_pt]);
 					if( Flag_PassAcc )
 					{
 						h_mass_AccTotal[i_pt]->Fill( gen_M, TotWeight );
