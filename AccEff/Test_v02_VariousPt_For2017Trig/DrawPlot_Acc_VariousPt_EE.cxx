@@ -1,19 +1,20 @@
 #include <Include/PlotTools.h>
 
-void DrawPlot_Acc_VariousPt()
+void DrawPlot_Acc_VariousPt_EE()
 {
 	const Int_t nPtCut = 3;
-	Double_t Arr_PtCut[nPtCut] = {22, 29, 20};
+	Double_t Arr_PtCut[nPtCut] = {30, 38+5, 23+5 };
+	Double_t Arr_SubPtCut[nPtCut] = {10, 10, 12+5 };
 	Int_t Arr_Color[nPtCut] = { kRed, kBlue, kGreen+1 };
-	TString Arr_Legend[nPtCut] = {"(P_{T}^{lead}, P_{T}^{sub})=(22, 10) (2015)", "(P_{T}^{lead}, P_{T}^{sub})=(29, 10) (2017, single #mu trigger)", "(P_{T}^{lead}, P_{T}^{sub})=(20, 10) (2017, double #mu trigger)"};
+	TString Arr_Legend[nPtCut] = {"(P_{T}^{lead}, P_{T}^{sub})=(30, 10) (2015)", "(P_{T}^{lead}, P_{T}^{sub})=(43, 10) (2017, single e trigger)", "(P_{T}^{lead}, P_{T}^{sub})=(28, 17) (2017, double e trigger)"};
 
-	TString FileName = "ROOTFile_Histogram_Acc_VariousPtCut_aMCNLO_MM.root";
+	TString FileName = "ROOTFile_Histogram_Acc_VariousPtCut_aMCNLO_EE.root";
 
 	TGraphAsymmErrors* g_Acc[nPtCut];
 	GraphInfo *Graph_Acc[nPtCut];
 	for(Int_t i=0; i<nPtCut; i++)
 	{
-		TString GraphName = TString::Format("g_Acc_%.0lf_10", Arr_PtCut[i]);
+		TString GraphName = TString::Format("g_Acc_%.0lf_%.0lf", Arr_PtCut[i], Arr_SubPtCut[i]);
 		g_Acc[i] = Get_Graph( FileName, GraphName );
 
 		Graph_Acc[i] = new GraphInfo( Arr_Color[i], Arr_Legend[i] );
@@ -23,7 +24,7 @@ void DrawPlot_Acc_VariousPt()
 	}
 
 	TCanvas *c; TPad *TopPad; TPad *BottomPad;
-	SetCanvas_Ratio( c, "c_Acc_VariousPt", TopPad, BottomPad, 1, 1 );
+	SetCanvas_Ratio( c, "c_Acc_VariousPt_EE", TopPad, BottomPad, 1, 1 );
 	c->cd();
 	TopPad->cd();
 
@@ -58,7 +59,7 @@ void DrawPlot_Acc_VariousPt()
 			Graph_Acc[i]->DrawRatio("PSAME");
 	}
 
-	SetGraphFormat_BottomPad( Graph_Acc[1]->g_ratio, "m [GeV]", "Ratio to 2015", 0.3, 1.7 );
+	SetGraphFormat_BottomPad( Graph_Acc[1]->g_ratio, "m [GeV]", "Ratio to 2015", 0.2, 1.05 );
 
 	TF1 *f_line;
 	DrawLine( f_line );
