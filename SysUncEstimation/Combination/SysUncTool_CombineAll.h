@@ -123,10 +123,14 @@ public:
 		h_RelLumiUnc->Scale( 100 ); // -- convert to % -- //
 	}
 
-	void GetHistograms()
+	void GetHistograms( TString Type = "All" )
 	{
 		TFile *f_StatUnc = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root" );
-		h_RelStatUnc = (TH1D*)f_StatUnc->Get( "h_RelUnc_Stat" )->Clone();
+		TString HistName = "h_RelUnc_Stat";
+		if( Type == "FpoF") 
+			HistName = "h_FpoF_RelUnc_Stat";
+		
+		h_RelStatUnc = (TH1D*)f_StatUnc->Get( HistName )->Clone();
 		h_RelStatUnc->Scale( 100 ); // -- convert to % -- // 
 
 		delete f_StatUnc;
@@ -321,14 +325,14 @@ public:
 		{
 			// -- FEWZ -- //
 			// -- no PI -- //
-			// TFile *f_theory = TFile::Open(FileLocation + "/ROOTFile_xSec_Theory.root"); 
-			// f_theory->cd();
-			// this->h_FEWZ = (TH1D*)f_theory->Get("h_DiffXsec_FEWZ_NNPDF_NNLO")->Clone();
+			TFile *f_theory = TFile::Open(FileLocation + "/ROOTFile_xSec_Theory.root"); 
+			f_theory->cd();
+			this->h_FEWZ = (TH1D*)f_theory->Get("h_DiffXsec_FEWZ_NNPDF_NNLO")->Clone();
 
 			// -- with PI -- //
-			TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
-			TString FileName_Data = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
-			this->h_FEWZ = Get_Hist( FileName_Data, "h_DYDiffXSecNNLO_WithPI" );
+			// TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+			// TString FileName_Data = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
+			// this->h_FEWZ = Get_Hist( FileName_Data, "h_DYDiffXSecNNLO_WithPI" );
 
 			// -- aMC@NLO -- //
 			f_data->cd();
@@ -336,7 +340,7 @@ public:
 		}
 
 		this->AssignScaleUnc_3Percent( this->h_aMCNLO );
-		this->Add_PIContribution( this->h_aMCNLO );		
+		// this->Add_PIContribution( this->h_aMCNLO );		
 	}
 
 	void DrawCanvas_DiffXsec_All( TString Type )

@@ -35,7 +35,7 @@ void FpoF_SysUnc_Combination()
 
 	tool->MakeHistogram_LumiUnc();
 	tool->SetupSources();
-	tool->GetHistograms();
+	tool->GetHistograms( "FpoF" );
 	tool->ApplySmooth();
 	tool->MakeHistogram_TotalUnc();
 	tool->MakeCanvas( FpoF );
