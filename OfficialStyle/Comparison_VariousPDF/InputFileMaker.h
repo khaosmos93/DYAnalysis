@@ -92,13 +92,13 @@ protected:
 	void FillROOTFile_NNPDF( TFile *f_output )
 	{
 		// -- without PI -- //
-		// TString FileName_MM = this->ROOTFilePath+"/ROOTFile_DiffXSec_FullUnc.root";
-		// TH1D* h_DXSec = Get_Hist(FileName_MM, "h_DiffXsec_FEWZ_NNPDF_NNLO", HistName_NNPDF);
+		TString FileName_MM = this->ROOTFilePath+"/ROOTFile_DiffXSec_FullUnc.root";
+		TH1D* h_DXSec = Get_Hist(FileName_MM, "h_DiffXsec_FEWZ_NNPDF_NNLO", HistName_NNPDF);
 
-		// -- with PI -- //
-		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
-		TString FileName_Data = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
-		TH1D* h_DXSec = Get_Hist( FileName_Data, "h_DYDiffXSecNNLO_WithPI", HistName_NNPDF );
+		// // -- with PI -- //
+		// TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+		// TString FileName_Data = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
+		// TH1D* h_DXSec = Get_Hist( FileName_Data, "h_DYDiffXSecNNLO_WithPI", HistName_NNPDF );
 
 		TH1D* h_RelTotUnc = Extract_RelUnc( h_DXSec );
 		h_RelTotUnc->SetName( HistName_NNPDF_RelUnc );
@@ -118,28 +118,28 @@ protected:
 		TH1D* h_DXSec_CT = Get_Hist(BasePath+"/CT14/ROOTFile_DY_FEWZ_NNLO_CT14nnlo.root", "h_DiffXsec", HistName_CT);
 		h_DXSec_CT = this->MergeLastTwoBins( h_DXSec_CT );
 		this->AssignScaleUnc_3Percent( h_DXSec_CT );
-		this->Add_PIContribution_Above200( h_DXSec_CT );
+		// this->Add_PIContribution_Above200( h_DXSec_CT );
 		TH1D* h_RelTotUnc_CT = Extract_RelUnc( h_DXSec_CT );
 		h_RelTotUnc_CT->SetName( HistName_CT_RelUnc );
 
 		TH1D* h_DXSec_MMHT = Get_Hist(BasePath+"/MMHT2014/ROOTFile_DY_FEWZ_NNLO_MMHT2014nnlo68cl.root", "h_DiffXsec", HistName_MMHT);
 		h_DXSec_MMHT = this->MergeLastTwoBins( h_DXSec_MMHT );
 		this->AssignScaleUnc_3Percent( h_DXSec_MMHT );
-		this->Add_PIContribution_Above200( h_DXSec_MMHT );
+		// this->Add_PIContribution_Above200( h_DXSec_MMHT );
 		TH1D* h_RelTotUnc_MMHT = Extract_RelUnc( h_DXSec_MMHT );
 		h_RelTotUnc_MMHT->SetName( HistName_MMHT_RelUnc );
 
 		TH1D* h_DXSec_HERAPDF = Get_Hist(BasePath+"/HERAPDF/ROOTFile_DY_FEWZ_NNLO_HERAPDF15NNLO_EIG.root", "h_DiffXsec", HistName_HERAPDF);
 		h_DXSec_HERAPDF = this->MergeLastTwoBins( h_DXSec_HERAPDF );
 		this->AssignScaleUnc_3Percent( h_DXSec_HERAPDF );
-		this->Add_PIContribution_Above200( h_DXSec_HERAPDF );
+		// this->Add_PIContribution_Above200( h_DXSec_HERAPDF );
 		TH1D* h_RelTotUnc_HERAPDF = Extract_RelUnc( h_DXSec_HERAPDF );
 		h_RelTotUnc_HERAPDF->SetName( HistName_HERAPDF_RelUnc );
 
 		TH1D* h_DXSec_ABM = Get_Hist(BasePath+"/ABM12LHC/ROOTFile_DY_FEWZ_NNLO_abm12lhc_5_nnlo.root", "h_DiffXsec", HistName_ABM);
 		h_DXSec_ABM = this->MergeLastTwoBins( h_DXSec_ABM );
 		this->AssignScaleUnc_3Percent( h_DXSec_ABM );
-		this->Add_PIContribution_Above200( h_DXSec_ABM );
+		// this->Add_PIContribution_Above200( h_DXSec_ABM );
 		TH1D* h_RelTotUnc_ABM = Extract_RelUnc( h_DXSec_ABM );
 		h_RelTotUnc_ABM->SetName( HistName_ABM_RelUnc );
 
