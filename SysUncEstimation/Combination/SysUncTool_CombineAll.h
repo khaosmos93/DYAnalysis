@@ -123,10 +123,14 @@ public:
 		h_RelLumiUnc->Scale( 100 ); // -- convert to % -- //
 	}
 
-	void GetHistograms()
+	void GetHistograms( TString Type = "All" )
 	{
 		TFile *f_StatUnc = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root" );
-		h_RelStatUnc = (TH1D*)f_StatUnc->Get( "h_RelUnc_Stat" )->Clone();
+		TString HistName = "h_RelUnc_Stat";
+		if( Type == "FpoF") 
+			HistName = "h_FpoF_RelUnc_Stat";
+		
+		h_RelStatUnc = (TH1D*)f_StatUnc->Get( HistName )->Clone();
 		h_RelStatUnc->Scale( 100 ); // -- convert to % -- // 
 
 		delete f_StatUnc;
