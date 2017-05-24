@@ -24,7 +24,7 @@
 
 static inline void loadBar(int x, int n, int r, int w);
 
-Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut );
+Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut, Double_t SubPtCut );
 void Acc(TString Sample = "aMCNLO" )
 {
 	TTimeStamp ts_start;
@@ -36,7 +36,7 @@ void Acc(TString Sample = "aMCNLO" )
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "IsoMu20_OR_IsoTkMu20" );
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_VariousPtCut_" + Sample + "_MM.root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_VariousPtCut_" + Sample + ".root", "RECREATE");
 
 	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -45,15 +45,16 @@ void Acc(TString Sample = "aMCNLO" )
 										 830, 1000, 1500, 3000};
 
 
-	const Int_t nPtCut = 4;
-	Double_t Arr_PtCut[nPtCut] = {20, 22, 26, 29};
+	const Int_t nPtCut = 3;
+	Double_t Arr_PtCut[nPtCut] = {30, 38+5, 23+5 };
+	Double_t Arr_SubPtCut[nPtCut] = {10, 10, 12+5 };
 	TH1D* h_mass_AccTotal[nPtCut];
 	TH1D* h_mass_AccPass[nPtCut];
 
 	for(Int_t i=0; i<nPtCut; i++)
 	{
-		h_mass_AccTotal[i] = new TH1D( TString::Format("h_mass_AccTotal_%.0lf_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
-		h_mass_AccPass[i] = new TH1D( TString::Format("h_mass_AccPass_%.0lf_10", Arr_PtCut[i]), "", nMassBin, MassBinEdges);
+		h_mass_AccTotal[i] = new TH1D( TString::Format("h_mass_AccTotal_%.0lf_%.0lf", Arr_PtCut[i], Arr_SubPtCut[i]), "", nMassBin, MassBinEdges);
+		h_mass_AccPass[i] = new TH1D( TString::Format("h_mass_AccPass_%.0lf_%.0lf", Arr_PtCut[i], Arr_SubPtCut[i]), "", nMassBin, MassBinEdges);
 	}
 
 	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
@@ -63,7 +64,7 @@ void Acc(TString Sample = "aMCNLO" )
 
 	if( Sample == "aMCNLO" )
 	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
+		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("aMCNLO_ee_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
 	}
 	if( Sample == "Powheg" )
 	{
@@ -136,7 +137,7 @@ void Acc(TString Sample = "aMCNLO" )
 				{
 					GenLepton genlep;
 					genlep.FillFromNtuple(ntuple, i_gen);
-					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+					if( genlep.isElectron() && genlep.fromHardProcessFinalState )
 						GenLeptonCollection.push_back( genlep );
 				}
 				GenLepton genlep1 = GenLeptonCollection[0];
@@ -175,10 +176,10 @@ void Acc(TString Sample = "aMCNLO" )
 		h_mass_AccPass[i_pt]->Write();
 
 		TEfficiency *Acc_Mass = new TEfficiency(*h_mass_AccPass[i_pt], *h_mass_AccTotal[i_pt]);
-		Acc_Mass->SetName( TString::Format("TEff_Acc_Mass_%.0lf_10", Arr_PtCut[i_pt]) );
+		Acc_Mass->SetName( TString::Format("TEff_Acc_Mass_%.0lf_%.0lf", Arr_PtCut[i_pt], Arr_SubPtCut[i_pt]) );
 		Acc_Mass->Write();
 
-		TGraphAsymmErrors* g_Acc = (TGraphAsymmErrors*)Acc_Mass->CreateGraph()->Clone( TString::Format("g_Acc_%.0lf_10", Arr_PtCut[i_pt]) );
+		TGraphAsymmErrors* g_Acc = (TGraphAsymmErrors*)Acc_Mass->CreateGraph()->Clone( TString::Format("g_Acc_%.0lf_%.0lf", Arr_PtCut[i_pt], Arr_SubPtCut[i_pt]) );
 		g_Acc->Write();
 	}
 
@@ -215,7 +216,7 @@ static inline void loadBar(int x, int n, int r, int w)
 	cout << "]\r" << flush;
 }
 
-Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut )
+Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut, Double_t SubPtCut )
 {
 	Bool_t Flag = kFALSE;
 
@@ -232,8 +233,12 @@ Bool_t PassAcc( GenLepton genlep1, GenLepton genlep2, Double_t PtCut )
 		SubPt = genlep1.Pt;
 	}
 
-	if( LeadPt > PtCut && SubPt > 10 && fabs(genlep1.eta) < 2.4 && fabs(genlep2.eta) < 2.4 )
-		Flag = kTRUE;
+	if( LeadPt > PtCut && SubPt > SubPtCut && fabs(genlep1.eta) < 2.5 && fabs(genlep2.eta) < 2.5 )
+	{
+		if( !( fabs(genlep1.eta) > 1.4442 && fabs(genlep1.eta) < 1.566 )
+		&& !( fabs(genlep2.eta) > 1.4442 && fabs(genlep2.eta) < 1.566 ) )
+			Flag = kTRUE;
+	}
 
 	return Flag;
 }
