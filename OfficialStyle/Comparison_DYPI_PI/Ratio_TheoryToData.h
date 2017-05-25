@@ -62,7 +62,7 @@ public:
 		h_TotUnc_temp->GetYaxis()->SetRangeUser(0.7, 1.3);
 
 		TLegend *legend;
-		SetLegend( legend, 0.15, 0.15, 0.60, 0.30 );
+		SetLegend( legend, 0.15, 0.15, 0.55, 0.27 );
 		legend->SetNColumns( 2 );
 		legend->AddEntry( h_StatUnc_temp, "Stat. Unc.");
 		legend->AddEntry( h_TotUnc_temp, "Tot. Unc.");
@@ -97,7 +97,7 @@ public:
 		h_TotUnc_temp->GetYaxis()->SetRangeUser(0.0, 3.0);
 
 		TLegend *legend;
-		SetLegend( legend, 0.15, 0.15, 0.70, 0.30 );
+		SetLegend( legend, 0.15, 0.15, 0.55, 0.27 );
 		legend->SetNColumns( 2 );
 		legend->AddEntry( h_StatUnc_temp, "Stat. Unc.");
 		legend->AddEntry( h_TotUnc_temp, "Tot. Unc.");
@@ -135,9 +135,11 @@ protected:
 	void Set_Histograms_Electron()
 	{
 		this->Set_Histograms_Theory();
-		// -- fill -- //
 
-		////////////////
+		TString FileName_Data = ROOTFilePath + "/DiffXsec_Electron.root";
+		this->h_data = Get_Hist(FileName_Data, "h_DiffXSec");
+		this->h_RelTotUnc = Get_Hist( FileName_Data, "h_RelUnc_Total" ); this->h_RelTotUnc->Scale( 1.0 / 100 );
+		this->h_RelStatUnc = Get_Hist( FileName_Data, "h_RelUnc_Stat" ); this->h_RelStatUnc->Scale( 1.0 / 100 );
 		this->Set_Histograms_Ratio();
 	}
 
@@ -157,6 +159,7 @@ protected:
 		AssignErrors( this->h_Ratio_StatUnc, this->h_RelStatUnc );
 		this->h_Ratio_StatUnc->SetMarkerStyle(20);
 		this->h_Ratio_StatUnc->SetMarkerColor(kBlack);
+		this->h_Ratio_StatUnc->SetLineColor(kBlack);
 
 		this->h_Ratio_TotUnc = (TH1D*)this->h_Ratio_StatUnc->Clone();
 		AssignErrors( this->h_Ratio_TotUnc, h_RelTotUnc );

@@ -12,7 +12,9 @@ void Ratio_TheoryToData()
 	Drawer *drawer_mu = new Drawer( "Muon" );
 	drawer_mu->Draw();
 
-	// Drawer *drawer_elec = new Drawer( "Electron" );
+	Drawer *drawer_elec = new Drawer( "Electron" );
+	drawer_elec->Draw();
+	
 	// Drawer *drawer_comb = new Drawer( "Combined" );
 
 
