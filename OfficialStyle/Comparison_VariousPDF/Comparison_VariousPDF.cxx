@@ -258,8 +258,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	BigPad->cd();
 	TLatex latex;
 	Double_t lumi = 2.8;
+	if( TStr_Channel == "EE" ) lumi = 2.3;
 	Int_t E_CM = 13;
-	if( TStr_Channel == "MM" )
+	if( TStr_Channel == "MM" || TStr_Channel == "EE" )
 	{
 		latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
 		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");

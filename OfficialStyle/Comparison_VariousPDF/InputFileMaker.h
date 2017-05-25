@@ -13,10 +13,11 @@ public:
 		this->AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
 	}
 
-	// -- can be written later -- //
 	void MakeInputFile_EE( TFile *f_output )
 	{
-
+		this->FillROOTFile_Data_EE( f_output );
+		this->FillROOTFile_NNPDF( f_output );
+		this->FillROOTFile_OtherPDFs( f_output );
 	}
 
 	void MakeInputFile_MM( TFile *f_output )
@@ -77,6 +78,24 @@ protected:
 
 		TH1D* h_RelTotUnc = QuadSum_NoError( h_RelSystUnc, h_RelStatUnc );
 		h_RelTotUnc->SetName( HistName_RelTotUnc );
+
+		h_DXSec = this->Rebin_MassBinEdges_Above200( h_DXSec );
+		h_RelStatUnc = this->Rebin_MassBinEdges_Above200( h_RelStatUnc );
+		h_RelTotUnc = this->Rebin_MassBinEdges_Above200( h_RelTotUnc );
+
+		f_output->cd();
+
+		h_DXSec->Write();
+		h_RelStatUnc->Write();
+		h_RelTotUnc->Write();
+	}
+
+	void FillROOTFile_Data_EE( TFile *f_output )
+	{
+		TString FileName = this->ROOTFilePath + "/DiffXsec_Electron.root";
+		TH1D* h_DXSec = Get_Hist( FileName, "h_DiffXSec", HistName_Data );
+		TH1D* h_RelStatUnc = Get_Hist( FileName, "h_RelUnc_Stat", HistName_RelStatUnc ); h_RelStatUnc->Scale( 0.01 );
+		TH1D* h_RelTotUnc = Get_Hist( FileName, "h_RelUnc_Total", HistName_RelTotUnc ); h_RelTotUnc->Scale( 0.01 );
 
 		h_DXSec = this->Rebin_MassBinEdges_Above200( h_DXSec );
 		h_RelStatUnc = this->Rebin_MassBinEdges_Above200( h_RelStatUnc );
