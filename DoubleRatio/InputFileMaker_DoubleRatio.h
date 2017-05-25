@@ -143,8 +143,8 @@ protected:
 		// -- 13 TeV, dimuon -- //
 		// -- Z-peak -- //
 		this->h_ZpeakXSec_13 = new TH1D("h_ZpeakXSec_13", "", 1, 0, 1 );
-		h_ZpeakXSec_13->SetBinContent( 1, 1857 );
-		h_ZpeakXSec_13->SetBinError( 1, sqrt(14*14 + 25*25) );
+		h_ZpeakXSec_13->SetBinContent( 1, 1907 );
+		h_ZpeakXSec_13->SetBinError( 1, sqrt(14*14 + 29*29) );
 
 		// -- differential cross section -- //
 		// TString Path_13 = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/v20170106_1st_UpdateSyst_fromApproval";

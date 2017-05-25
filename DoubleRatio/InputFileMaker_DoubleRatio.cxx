@@ -3,12 +3,12 @@
 void InputFileMaker_DoubleRatio()
 {
 	InputMaker *maker = new InputMaker();
-	// -- muon channel -- //
-	maker->Get_Histograms_MM();
-	maker->MakePlots_CrossCheck();
+	// // -- muon channel -- //
+	// maker->Get_Histograms_MM();
+	// maker->MakePlots_CrossCheck();
 
-	TFile *f_ouptut_MM = TFile::Open("ROOTFile_Input_DoubleRatio_MM.root", "RECREATE");
-	maker->Save( f_ouptut_MM );
+	// TFile *f_ouptut_MM = TFile::Open("ROOTFile_Input_DoubleRatio_MM.root", "RECREATE");
+	// maker->Save( f_ouptut_MM );
 
 	// -- combination -- //
 	maker->Get_Histograms_LL();
