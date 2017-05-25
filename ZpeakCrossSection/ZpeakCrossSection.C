@@ -18,7 +18,7 @@ void ZpeakCrossSection(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	// tool->Calc_SysUnc_BkgEst();
 
 	
-	// -- insert acceptance & efficiency -- // 
+	// -- insert acceptance & efficinecy -- // 
 	Double_t Acc = 0.453734;
 	Double_t Eff = 0.914200;
 	Double_t EffSF_HLTv4p2 = 0.958053;
