@@ -1,4 +1,4 @@
-#include </Users/KyeongPil_Lee/Physics/Include/PlotTools.h>
+#include <Include/PlotTools.h>
 
 void SetError_DoubleR( TFile *f_input, TH1D* h_DoubleR )
 {
@@ -28,9 +28,9 @@ void SetError_DoubleR( TFile *f_input, TH1D* h_DoubleR )
 	Print_Histogram( h_DoubleR );
 }
 
-void Calc_DoubleRatio()
+void Calc_DoubleRatio(TString TStr_Channel = "LL")
 {
-	TFile *f_input = TFile::Open("ROOTFile_Input_DoubleRatio.root");
+	TFile *f_input = TFile::Open("ROOTFile_Input_DoubleRatio_"+TStr_Channel+".root");
 	f_input->cd();
 
 	TH1D* h_NormXSec_8 = (TH1D*)f_input->Get("h_NormXSec_8")->Clone();	
@@ -59,12 +59,12 @@ void Calc_DoubleRatio()
 	///////////////////////////
 	// -- comparison plot -- //
 	///////////////////////////
-
 	HistInfo *HistInfo_data = new HistInfo( kBlack, "Data" );
 	HistInfo_data->Set_Histogram( h_DoubleR );
 	HistInfo_data->Set();
 
-	HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO: CT10 (8TeV), NNPDF 3.0 (13TeV)" );
+	// HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO: CT10 (8TeV), NNPDF 3.0 (13TeV)" );
+	HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO NNPDF 3.0" );
 	HistInfo_theory->Set_Histogram( h_DoubleR_NNLO );
 	HistInfo_theory->Set();
 	HistInfo_theory->h->SetFillColorAlpha( kBlue, 0.5 );
@@ -72,34 +72,45 @@ void Calc_DoubleRatio()
 	HistInfo_theory->h->SetMarkerSize(0);
 	HistInfo_theory->h->SetLineColorAlpha( kBlue, 0);
 
-	HistInfo_data->Calc_RatioHist_Denominator( HistInfo_theory->h );
+	HistInfo_data->CalcRatio_DEN( HistInfo_theory->h );
 
 	TCanvas *c; TPad *TopPad; TPad *BottomPad;
-	SetCanvas_Ratio( c, "c_DoubleR_Data_vs_Theory", TopPad, BottomPad, 1, 0 );
+	SetCanvas_Ratio( c, "c_DoubleR_Data_vs_Theory_"+TStr_Channel, TopPad, BottomPad, 1, 0 );
 	c->cd();
 	TopPad->cd();
 
-	HistInfo_theory->h->Draw("E2SAME");
+	HistInfo_theory->Draw("E2SAME");
+	HistInfo_data->Draw("EPSAME");
+
 	SetHistFormat_TopPad( HistInfo_theory->h, "R" );
 	HistInfo_theory->h->GetYaxis()->SetRangeUser( 0.3, 2.2 );
-	HistInfo_data->h->Draw("EPSAME");
+	
 
 	TLegend *legend;
 	SetLegend( legend, 0.17, 0.3, 0.70, 0.45 );
-	legend->AddEntry( HistInfo_data->h, HistInfo_data->LegendName );
-	legend->AddEntry( HistInfo_theory->h, HistInfo_theory->LegendName );
+	HistInfo_data->AddToLegend( legend );
+	HistInfo_theory->AddToLegend( legend );
 	legend->Draw();
 
 	TLatex latex;
 	Latex_Preliminary_NoDataInfo( latex );
-	latex.DrawLatexNDC( 0.17, 0.90, "#font[42]{#scale[0.8]{19.7 fb^{-1} #mu#mu (8 TeV)}}");
-	latex.DrawLatexNDC( 0.17, 0.86, "#font[42]{#scale[0.8]{2.8 fb^{-1} #mu#mu (13 TeV)}}");
+	if( TStr_Channel == "MM" )
+	{
+		latex.DrawLatexNDC( 0.17, 0.90, "#font[42]{#scale[0.7]{19.7 fb^{-1} #mu#mu (8 TeV)}}");
+		latex.DrawLatexNDC( 0.17, 0.84, "#font[42]{#scale[0.7]{2.8 fb^{-1} #mu#mu (13 TeV)}}");
+	}
+	else if( TStr_Channel == "LL" )
+	{
+		latex.DrawLatexNDC( 0.17, 0.90, "#font[42]{#scale[0.7]{19.7 fb^{-1} ee and #mu#mu (8 TeV)}}");
+		latex.DrawLatexNDC( 0.17, 0.84, "#font[42]{#scale[0.7]{2.3 fb^{-1} ee, 2.8 fb^{-1} #mu#mu (13 TeV)}}");
+	}
+
 
 	c->cd();
 	BottomPad->cd();
 
 	HistInfo_data->h_ratio->Draw("EPSAME");
-	SetHistFormat_BottomPad( HistInfo_data->h_ratio, "m (#mu#mu) [GeV]", "Data/Theory", 0.7, 1.3);
+	SetHistFormat_BottomPad( HistInfo_data->h_ratio, "m [GeV]", "Data/Theory", 0.7, 1.3);
 
 	TF1 *f_line;
 	DrawLine( f_line );
