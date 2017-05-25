@@ -1,4 +1,4 @@
-Version = "20170524"
+Version = "20170525"
 
 from ROOT import TFile, TH1D
 from array import array
