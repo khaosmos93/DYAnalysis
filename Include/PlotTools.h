@@ -693,6 +693,7 @@ TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
 		h_temp->SetName( HistName_New );
 
 	f_input->Close();
+	// delete f_input;
 
 	return h_temp;
 }

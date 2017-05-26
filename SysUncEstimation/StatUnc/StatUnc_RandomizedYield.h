@@ -261,7 +261,6 @@ public:
 		this->h_FpoF_DiffXSec->SetName( HistName );
 	}
 
-protected:
 	void Make_Histogram_BkgSub()
 	{
 		// -- MC bkg. after applying efficiency SF -- //
@@ -330,6 +329,8 @@ protected:
 			}
 		}
 	}
+
+protected:
 
 	void Make_Histogram_Unfolded()
 	{
