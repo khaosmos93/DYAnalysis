@@ -401,7 +401,7 @@ public:
 		///////////////////////
 		// -- Draw Canvas -- //
 		///////////////////////
-		TCanvas *c = new TCanvas(this->CanvasName, "", 0, 0, 1000, 800);
+		TCanvas *c = new TCanvas(this->CanvasName, "", 0, 0, 800, 700);
 		// c->SetTopMargin(0.08);
 		// c->SetBottomMargin(0.14);
 		this->SetBasicOptions_Canvas( c );
@@ -667,7 +667,7 @@ public:
 		///////////////////////
 		// -- Draw Canvas -- //
 		///////////////////////
-		TCanvas *c = new TCanvas("c_DiffXsec_Data_vs_Theory", "", 0, 0, 1000, 800);
+		TCanvas *c = new TCanvas("c_DiffXsec_Data_vs_Theory", "", 0, 0, 800, 700);
 		// c->SetTopMargin(0.08);
 		// c->SetBottomMargin(0.14);
 		this->SetBasicOptions_Canvas( c );
