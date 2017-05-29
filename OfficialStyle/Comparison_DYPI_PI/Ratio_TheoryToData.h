@@ -147,6 +147,20 @@ protected:
 	{
 		this->Set_Histograms_Theory();
 		// -- fill -- //
+
+		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_v2mdfEEAcc.root";
+		// -- convert TH1F to TH1D -- //
+		TFile *f_input = TFile::Open( FileName_CenV );
+		f_input->cd();
+		TH1F* h_temp = (TH1F*)f_input->Get( "h1Combi" )->Clone();
+		this->h_data = new TH1D();
+		h_temp->Copy( *this->h_data );
+		this->h_data->SetTitle("");
+		///////////////////////////////////////////
+
+		TH1D* h_AbsStatUnc = Get_Hist( FileName_CenV, "h1_dCS_from_statYield" );
+		this->h_RelStatUnc = ConvertHist_AbsToRel( this->h_data, h_AbsStatUnc );
+		this->h_RelTotUnc = Extract_RelUnc( this->h_data );
 		
 		////////////////
 		this->Set_Histograms_Ratio();

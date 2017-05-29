@@ -15,7 +15,8 @@ void Ratio_TheoryToData()
 	Drawer *drawer_elec = new Drawer( "Electron" );
 	drawer_elec->Draw();
 	
-	// Drawer *drawer_comb = new Drawer( "Combined" );
+	Drawer *drawer_comb = new Drawer( "Combined" );
+	drawer_comb->Draw();
 
 
 
