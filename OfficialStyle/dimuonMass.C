@@ -1,6 +1,6 @@
 void dimuonMass()
 {
-   TCanvas *c1 = new TCanvas("dimuonMass", "",0,0, 800, 800);
+   TCanvas *c1 = new TCanvas("dimuonMass", "",0,0, 800, 700);
    gStyle->SetOptFit(1);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -278,6 +278,6 @@ void dimuonMass()
    c1->cd();
    c1->SetSelected(c1);
 
-   // c1->SaveAs(".pdf"); // -- if it is printed using this method, canvas size becomes different! (why?)
+   c1->SaveAs(".pdf"); // -- if it is printed using this method, canvas size becomes different! (why?)
 }
 

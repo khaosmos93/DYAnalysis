@@ -5,7 +5,8 @@ Int_t Calc_Exponent( Double_t x );
 
 void Printout_Table_Combined()
 {
-	TFile *f_input = TFile::Open("foutCanvas_DYCSCombi_corr_plotChCov.root");
+	TString ROOTFilePath = gSystem->Getenv("KP_ROOTFILE_PATH");
+	TFile *f_input = TFile::Open(ROOTFilePath+"/dyll-combi-_corr_v2mdfEEAcc.root");
 	TH1D* h_comb = (TH1D*)f_input->Get("h1Combi")->Clone();
 
 	PrintFinalResults( h_comb );

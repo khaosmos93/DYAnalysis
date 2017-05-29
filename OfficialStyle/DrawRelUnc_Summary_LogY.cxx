@@ -26,7 +26,7 @@ public:
 	{
 		this->Get_Histograms();
 
-		this->c = new TCanvas("Myc_RelUnc_Summary", "",0,0,1100,1000);
+		this->c = new TCanvas("Muon_SysUnc_All", "",0,0,800,700);
 		this->Setup_Canvas();
 		this->c->cd();
 
@@ -67,7 +67,7 @@ public:
 
 		// Hist_RelStatUnc->h->GetYaxis()->SetRangeUser(4e-2, 250);
 
-		// c->SaveAs(".pdf");
+		c->SaveAs(".pdf");
 	}
 protected:
 	void Get_Histograms()
@@ -142,7 +142,7 @@ protected:
 
 	TLegend* Get_Legend1()
 	{
-		TLegend *legtot = new TLegend(0.20,0.77,0.45,0.85,NULL,"brNDC");
+		TLegend *legtot = new TLegend(0.18,0.77,0.43,0.85,NULL,"brNDC");
 		legtot->SetBorderSize(0);
 		legtot->SetLineColor(1);
 		legtot->SetLineStyle(1);
@@ -199,10 +199,10 @@ protected:
 	void DrawLatex( TLatex &latex )
 	{
 		latex.SetTextSize(0.04);
-		latex.DrawLatexNDC( 0.77, 0.93, "2.8 fb^{#font[122]{\55}1} (13 TeV)");
+		latex.DrawLatexNDC( 0.725, 0.93, "2.8 fb^{#font[122]{\55}1} (13 TeV)");
 
 		latex.SetTextSize(0.045);
-		latex.DrawLatexNDC( 0.15, 0.87, "CMS Preliminary" );
+		latex.DrawLatexNDC( 0.14, 0.87, "CMS Preliminary" );
 	}
 
 	void RemoveNegativeBin( TH1D* h)
