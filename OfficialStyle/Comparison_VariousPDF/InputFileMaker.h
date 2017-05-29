@@ -36,7 +36,7 @@ public:
 protected:
 	void FillROOTFile_Data_LL( TFile *f_output )
 	{
-		TString FileName_CenV = this->ROOTFilePath + "/foutCanvas_DYCSCombi_corr_plotChCov.root";
+		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_v2mdfEEAcc.root";
 		// -- differential cross section: convert TH1F to TH1D -- //
 		TFile *f_input = TFile::Open( FileName_CenV );
 		f_input->cd();
@@ -47,8 +47,7 @@ protected:
 		h_DXSec->SetName(HistName_Data);
 		///////////////////////////////////////////
 
-		TString FileName_Stat = this->ROOTFilePath + "/dyll-combi-_corr_plotChCov-withYieldUnc.root";
-		TH1D* h_AbsStatUnc = Get_Hist( FileName_Stat, "h1_dCS_fromYield" );
+		TH1D* h_AbsStatUnc = Get_Hist( FileName_CenV, "h1_dCS_from_statYield" );
 		TH1D* h_RelStatUnc = ConvertHist_AbsToRel( h_DXSec, h_AbsStatUnc );
 		h_RelStatUnc->SetName( HistName_RelStatUnc );
 		TH1D* h_RelTotUnc = Extract_RelUnc( h_DXSec, HistName_RelTotUnc );
