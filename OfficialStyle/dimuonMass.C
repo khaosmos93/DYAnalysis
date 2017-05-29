@@ -278,6 +278,6 @@ void dimuonMass()
    c1->cd();
    c1->SetSelected(c1);
 
-   c1->SaveAs(".pdf"); // -- if it is printed using this method, canvas size becomes different! (why?)
+   c1->SaveAs("Muon_Mass_DYBin.pdf"); // -- if it is printed using this method, canvas size becomes different! (why?)
 }
 
