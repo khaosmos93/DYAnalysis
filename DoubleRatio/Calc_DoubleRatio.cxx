@@ -63,8 +63,8 @@ void Calc_DoubleRatio(TString TStr_Channel = "LL")
 	HistInfo_data->Set_Histogram( h_DoubleR );
 	HistInfo_data->Set();
 
-	// HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO: CT10 (8TeV), NNPDF 3.0 (13TeV)" );
-	HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO NNPDF 3.0" );
+	HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO: CT10 (8TeV), NNPDF 3.0 (13TeV)" );
+	// HistInfo *HistInfo_theory = new HistInfo( kBlue, "FEWZ, NNLO NNPDF 3.0" );
 	HistInfo_theory->Set_Histogram( h_DoubleR_NNLO );
 	HistInfo_theory->Set();
 	HistInfo_theory->h->SetFillColorAlpha( kBlue, 0.5 );
@@ -74,8 +74,12 @@ void Calc_DoubleRatio(TString TStr_Channel = "LL")
 
 	HistInfo_data->CalcRatio_DEN( HistInfo_theory->h );
 
+	TString CanvasName = "_DoubleR";
+	if( TStr_Channel == "MM" ) CanvasName = "Muon" + CanvasName;
+	else if( TStr_Channel == "EE" ) CanvasName = "Electron" + CanvasName;
+	else if( TStr_Channel == "LL" ) CanvasName = "Combined" + CanvasName;
 	TCanvas *c; TPad *TopPad; TPad *BottomPad;
-	SetCanvas_Ratio( c, "c_DoubleR_Data_vs_Theory_"+TStr_Channel, TopPad, BottomPad, 1, 0 );
+	SetCanvas_Ratio( c, CanvasName, TopPad, BottomPad, 1, 0 );
 	c->cd();
 	TopPad->cd();
 
