@@ -63,7 +63,7 @@ public:
 	{
 		this->Load_TheoryHistograms();
 
-		TString FileName_CenV = GetBasePath() + "Include/Results_ROOTFiles_76X/foutCanvas_DYCSCombi_corr_plotChCov.root";
+		TString FileName_CenV = GetBasePath() + "Include/Results_ROOTFiles_76X/dyll-combi-_corr_v2mdfEEAcc.root";
 		// -- convert TH1F to TH1D -- //
 		TFile *f_input = TFile::Open( FileName_CenV );
 		f_input->cd();
@@ -77,8 +77,7 @@ public:
 		this->g_CenV_Shifted = Get_Graph( "ROOTFile_Histograms_XDataPoint.root", "g_DiffXSec_xShifted", this->GraphName_CenV_Shifted );
 		this->ChangeValues_ShiftedGraph( this->g_CenV_Shifted, this->h_CenV );
 
-		TString FileName_Stat = GetBasePath() + "Include/Results_ROOTFiles_76X/dyll-combi-_corr_plotChCov-withYieldUnc.root";
-		TH1D* h_AbsStatUnc = Get_Hist( FileName_Stat, "h1_dCS_fromYield" );
+		TH1D* h_AbsStatUnc = Get_Hist( FileName_CenV, "h1_dCS_from_statYield" );
 		this->h_RelStatUnc = ConvertHist_AbsToRel( this->h_CenV, h_AbsStatUnc );
 		this->h_RelStatUnc->SetName( this->HistName_RelStatUnc );
 		this->h_RelTotUnc = Extract_RelUnc( this->h_CenV, this->HistName_RelTotUnc );
