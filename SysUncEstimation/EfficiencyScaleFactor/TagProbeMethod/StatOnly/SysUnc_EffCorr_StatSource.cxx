@@ -1,6 +1,6 @@
-#include "SysUncTool_EffCorr.h"
+#include "../SysUncTool_EffCorr.h"
 
-void SysUnc_EffCorr(TString version, TString Ver_CMSSW = "76X")
+void SysUnc_EffCorr()
 {
 	SysUncTool_EffCorr *SysTool = new SysUncTool_EffCorr();
 	SysTool->SetIsDataDriven( kTRUE );
@@ -8,13 +8,13 @@ void SysUnc_EffCorr(TString version, TString Ver_CMSSW = "76X")
 	SysTool->SetupCentralValueStatError("ROOTFile_TagProbeEfficiency_76X_v20160502.root");
 	SysTool->SetUpSysUnc("ROOTFile_SysUnc_TagProbeMethod_76X_v20160504.root");
 
-	SysTool->RemoveStatError();
+	SysTool->RemoveSystError(); // -- only stat. error should be used -- //
 
 	SysTool->CalcTotalUnc();
 	SysTool->MakeSmearedEffMap();
 
 	SysTool->CorrectedEff_AllMap();
-	SysTool->CalcXsec_AllMap(version, Ver_CMSSW);
+	SysTool->CalcXsec_AllMap();
 	SysTool->SaveResults();
 
 

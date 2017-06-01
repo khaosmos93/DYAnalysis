@@ -32,6 +32,8 @@
 #include <Include/DYAnalyzer.h>
 #include <Include/DiffXsecTools.h>
 
+#include <Include/PlotTools.h>
+
 #define nEtaBin 5
 #define nPtBin 4
 // #define nEffMap 10
@@ -186,7 +188,6 @@ public:
 	// -- Differential X-section: Calculated in "CalcXsec_AllMap" Method -- //
 	TH1D *h_DiffXsec_CV;
 	TH1D *h_DiffXsec_Smeared[nEffMap];
-	TH1D *h_RelDiff_massBin[45];
 
 
 	// -- fiducial, post-FSR cross section -- //
@@ -195,6 +196,8 @@ public:
 
 	MyCanvas *myc_ValidPlot;
 	MyCanvas *myc_FpoF_ValidPlot;
+
+	TH1D* h_2D_temp; // -- for saving pt and eta bin edges -- //
 
 
 	SysUncTool_EffCorr()
@@ -219,10 +222,6 @@ public:
 		h_DiffXsec_CV = new TH1D("h_DiffXsec_CV", "", nMassBin, MassBinEdges);
 		for(Int_t i=0; i<nEffMap; i++)
 			h_DiffXsec_Smeared[i] = new TH1D("h_DiffXsec_Smeared_"+TString::Format("%d", i), "", nMassBin, MassBinEdges);
-
-		// -- Setting the h_RelDiff_massBin -- //
-		for(Int_t i=0; i<nMassBin; i++)
-			h_RelDiff_massBin[i] = new TH1D("h_RelDiff_massBin_"+TString::Format("%d", i), "", 4000, -2, 2);
 
 		// -- Setting the fiducial, post-FSR differential x-section histograms -- //
 		h_FpoF_DiffXsec_CV = new TH1D("h_FpoF_DiffXsec_CV", "", nMassBin, MassBinEdges);
@@ -337,6 +336,9 @@ public:
 		cout << "[Setting for efficiency cetral value and statistical error is completed]" << endl;
 		cout << "========================================================================" << endl;
 		cout << endl;
+
+		this->h_2D_temp = (TH2D*)h_RecoID_Data->Clone("h_2D_temp");
+		this->h_2D_temp->Reset("ICES");
 	}
 
 	void SetUpSysUnc(TString ROOTFileName)
@@ -454,7 +456,48 @@ public:
 
 			}
 		}
+	}
 
+	void RemoveStatError()
+	{
+		for(Int_t i_ptbin=0; i_ptbin<nPtBin; i_ptbin++)
+		{
+			for(Int_t i_etabin=0; i_etabin<nEtaBin; i_etabin++)
+			{
+				EffErr_Stat_RecoID_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Stat_RecoID_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Stat_Iso_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Stat_Iso_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Stat_HLTv4p2_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Stat_HLTv4p2_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Stat_HLTv4p3_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Stat_HLTv4p3_MC[i_etabin][i_ptbin] = 0;
+			}
+		}
+	}
+
+	void RemoveSystError()
+	{
+		for(Int_t i_ptbin=0; i_ptbin<nPtBin; i_ptbin++)
+		{
+			for(Int_t i_etabin=0; i_etabin<nEtaBin; i_etabin++)
+			{
+				EffErr_Sys_RecoID_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Sys_RecoID_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Sys_Iso_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Sys_Iso_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Sys_HLTv4p2_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Sys_HLTv4p2_MC[i_etabin][i_ptbin] = 0;
+
+				EffErr_Sys_HLTv4p3_Data[i_etabin][i_ptbin] = 0;
+				EffErr_Sys_HLTv4p3_MC[i_etabin][i_ptbin] = 0;
+			}
+		}
 	}
 
 	void CalcTotalUnc()
@@ -1121,31 +1164,6 @@ public:
 		{
 			this->CalcDiffXsec_GivenEffSF( g_Eff_Uncorrected, g_Eff_HLTv4p2_Smeared[i_map], g_Eff_HLTv4p3_Smeared[i_map],
 										   h_DiffXsec_Smeared[i_map] );
-
-			// h_DiffXsec_Smeared[i_map]->SetName( "h_DiffXsec_Smeared_"+TString::Format("%d", i_map) );
-
-			// -- Calculate the difference with the central value -- //
-			TH1D *h_diff_CV_Smeared = (TH1D*)h_DiffXsec_Smeared[i_map]->Clone();
-			h_diff_CV_Smeared->Scale( -1 );
-			h_diff_CV_Smeared->Add( h_DiffXsec_CV, 1);
-
-			if( nMassBin != (Int_t)h_diff_CV_Smeared->GetNbinsX() )
-			{
-				printf( "nMassBin != (Int_t)h_diff_CV_Smeared->GetNbinsX() ... (%d, %d)\n", nMassBin, (Int_t)h_diff_CV_Smeared->GetNbinsX() );
-				return;
-			}
-			
-			// -- Insert the difference between central value and smeared value in the histogram -- //
-			for(Int_t i=0; i<nMassBin; i++)
-			{
-				Int_t i_bin = i+1;
-				Double_t diff = h_diff_CV_Smeared->GetBinContent(i_bin);
-				Double_t CentralValue = h_DiffXsec_CV->GetBinContent(i_bin);
-				h_RelDiff_massBin[i]->Fill( diff / CentralValue );
-
-				printf("\t[%d mass bin] RelDiff = %9.6e\n", i_bin, diff / CentralValue);
-			}
-
 		}
 
 		cout << "=========================================================" << endl;
@@ -1199,6 +1217,15 @@ public:
 	void SaveResults()
 	{
 		TFile *f_output = new TFile("ROOTFile_Outputs_SysUncTool_EffCorr.root", "RECREATE"); f_output->cd();
+
+		f_output->mkdir("EffMap_PtEtaBin");
+		f_output->cd("EffMap_PtEtaBin");
+		this->SaveEffMap_CV();
+		this->SaveEffMap_Smeared();
+
+		f_output->cd();
+		f_output->mkdir("Eff_MassBin");
+		f_output->cd("Eff_MassBin");
 		// -- Un-corrected efficiencies -- //
 		this->g_Eff_Uncorrected->SetName("g_Eff_Uncorrected");
 		this->g_Eff_Uncorrected->Write();
@@ -1209,8 +1236,6 @@ public:
 
 		this->g_Eff_HLTv4p3_CV->SetName("g_Eff_HLTv4p3_CV");
 		this->g_Eff_HLTv4p3_CV->Write();
-
-		myc_ValidPlot->c->Write();
 
 		for(Int_t i_map=0; i_map<nEffMap; i_map++)
 		{
@@ -1224,14 +1249,97 @@ public:
 			this->g_Eff_HLTv4p3_Smeared[i_map]->Write();
 		}
 
+		// -- Scale factors as a function of mass -- //
+		f_output->cd();
+		f_output->mkdir("SF_MassBin");
+		f_output->cd("SF_MassBin");
+		TGraphAsymmErrors* g_SF_HLTv4p2_CV = MakeGraph_Ratio( this->g_Eff_HLTv4p2_CV, this->g_Eff_Uncorrected, "g_SF_HLTv4p2_CV" );
+		TGraphAsymmErrors* g_SF_HLTv4p3_CV = MakeGraph_Ratio( this->g_Eff_HLTv4p3_CV, this->g_Eff_Uncorrected, "g_SF_HLTv4p3_CV" );
+		g_SF_HLTv4p2_CV->Write();
+		g_SF_HLTv4p3_CV->Write();
+
+		for(Int_t i_map=0; i_map<nEffMap; i_map++)
+		{
+			TString Numbering;
+			Numbering.Form("%d", i_map);
+
+			TGraphAsymmErrors* g_SF_HLTv4p2_Smeared = MakeGraph_Ratio( this->g_Eff_HLTv4p2_Smeared[i_map], this->g_Eff_Uncorrected, "g_SF_HLTv4p2_Smeared_"+Numbering );
+			TGraphAsymmErrors* g_SF_HLTv4p3_Smeared = MakeGraph_Ratio( this->g_Eff_HLTv4p3_Smeared[i_map], this->g_Eff_Uncorrected, "g_SF_HLTv4p3_Smeared_"+Numbering );
+			g_SF_HLTv4p2_Smeared->Write();
+			g_SF_HLTv4p3_Smeared->Write();
+		}
+
+		f_output->cd();
+
 		// -- Recalculated cross sections -- //
 		h_DiffXsec_CV->Write();
 		for(Int_t i_map=0; i_map<nEffMap; i_map++)
 			h_DiffXsec_Smeared[i_map]->Write();
+	}
 
-		// -- Setting the h_RelDiff_massBin -- //
-		for(Int_t i=0; i<nMassBin; i++)
-			h_RelDiff_massBin[i]->Write();
+	void SaveEffMap_CV( TString ROOTFileName = "ROOTFile_TagProbeEfficiency_76X_v20160502.root" )
+	{
+		TFile *f = new TFile(this->IncludePath + "/" + ROOTFileName);
+		TH2D *h_RecoID_Data = (TH2D*)f->Get("h_2D_Eff_RecoID_Data")->Clone("h_2D_Eff_RecoID_Data_CV");
+		TH2D *h_RecoID_MC = (TH2D*)f->Get("h_2D_Eff_RecoID_MC")->Clone("h_2D_Eff_RecoID_MC_CV");
+
+		TH2D *h_Iso_Data = (TH2D*)f->Get("h_2D_Eff_Iso_Data")->Clone("h_2D_Eff_Iso_Data_CV");
+		TH2D *h_Iso_MC = (TH2D*)f->Get("h_2D_Eff_Iso_MC")->Clone("h_2D_Eff_Iso_MC_CV");
+
+		TH2D *h_HLTv4p2_Data = (TH2D*)f->Get("h_2D_Eff_HLTv4p2_Data")->Clone("h_2D_Eff_HLTv4p2_Data_CV");
+		TH2D *h_HLTv4p2_MC = (TH2D*)f->Get("h_2D_Eff_HLTv4p2_MC")->Clone("h_2D_Eff_HLTv4p2_MC_CV");
+
+		TH2D *h_HLTv4p3_Data = (TH2D*)f->Get("h_2D_Eff_HLTv4p3_Data")->Clone("h_2D_Eff_HLTv4p3_Data_CV");
+		TH2D *h_HLTv4p3_MC = (TH2D*)f->Get("h_2D_Eff_HLTv4p3_MC")->Clone("h_2D_Eff_HLTv4p3_MC_CV");
+	}
+
+	void SaveEffMap_Smeared( Int_t i_map )
+	{
+		TString Numbering;
+		Numbering.Form("%d", i_map);
+
+		TH2D* h_2D_Eff_RecoID_Data = this->Make2DHist_EffMap( Eff_RecoID_Data_Smeared[i_map], "h_2D_Eff_RecoID_Data_Smeared_"+Numbering );
+		TH2D* h_2D_Eff_RecoID_MC = this->Make2DHist_EffMap( Eff_RecoID_MC_Smeared[i_map], "h_2D_Eff_RecoID_MC_Smeared_"+Numbering );
+
+		TH2D* h_2D_Eff_Iso_Data = this->Make2DHist_EffMap( Eff_Iso_Data_Smeared[i_map], "h_2D_Eff_Iso_Data_Smeared_"+Numbering );
+		TH2D* h_2D_Eff_Iso_MC = this->Make2DHist_EffMap( Eff_Iso_MC_Smeared[i_map], "h_2D_Eff_Iso_MC_Smeared_"+Numbering );
+
+		TH2D* h_2D_Eff_HLTv4p2_Data = this->Make2DHist_EffMap( Eff_HLTv4p2_Data_Smeared[i_map], "h_2D_Eff_HLTv4p2_Data_Smeared_"+Numbering );
+		TH2D* h_2D_Eff_HLTv4p2_MC = this->Make2DHist_EffMap( Eff_HLTv4p2_MC_Smeared[i_map], "h_2D_Eff_HLTv4p2_MC_Smeared_"+Numbering );
+
+		TH2D* h_2D_Eff_HLTv4p3_Data = this->Make2DHist_EffMap( Eff_HLTv4p3_Data_Smeared[i_map], "h_2D_Eff_HLTv4p3_Data_Smeared_"+Numbering );
+		TH2D* h_2D_Eff_HLTv4p3_MC = this->Make2DHist_EffMap( Eff_HLTv4p3_MC_Smeared[i_map], "h_2D_Eff_HLTv4p3_MC_Smeared_"+Numbering );
+
+		h_2D_Eff_RecoID_Data->Write();
+		h_2D_Eff_RecoID_MC->Write();
+
+		h_2D_Eff_Iso_Data->Write();
+		h_2D_Eff_Iso_MC->Write();
+
+		h_2D_Eff_HLTv4p2_Data->Write();
+		h_2D_Eff_HLTv4p2_MC->Write();
+
+		h_2D_Eff_HLTv4p3_Data->Write();
+		h_2D_Eff_HLTv4p3_MC->Write();
+	}
+
+	TH2D* Make2DHist_EffMap( Double_t EffMap[nEtaBin][nPtBin], TString HistName = "" )
+	{
+		TH2D* h_2D = this->h_2D_temp->Clone("h_2D");
+		if( HistName != "" )
+			h_2D->SetName( HistName );
+
+		for(Int_t i_eta = 0; i_eta < nEtaBins; i_eta++)
+		{
+			for(Int_t i_pt = 0; i_pt < nPtBins; i_pt++)
+			{
+				Int_t i_etabin = i_eta + 1;
+				Int_t i_ptbin =i_pt + 1;
+
+				h_2D->SetBinContent( i_etabin, i_ptbin, EffMap[i_eta][i_pt] );
+				h_2D->SetBinError( i_etabin, i_ptbin, 0 );
+			}
+		}
 	}
 
 	void LoadEffGraphs_fromROOTFile( TFile *f_effs )
