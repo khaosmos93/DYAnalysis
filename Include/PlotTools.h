@@ -934,6 +934,18 @@ TH1D* MultiplyEachBin_byBinWidth( TH1D* h, TString HistName = "" )
 	return h_return;
 }
 
+TGraphAsymmErrors* MakeGraph_Ratio( TGraphAsymmErrors* g_NUM, TGraphAsymmErrors *g_DEN, TString GraphName = "" )
+{
+	GraphInfo *Graph = new GraphInfo( kBlack, "temp" );
+	Graph->Set_Graph( g_NUM );
+	Graph->CalcRatio_DEN( g_DEN );
+
+	if( GraphName != "" )
+		Graph->g_ratio->SetName(GraphName);
+
+	return Graph->g_ratio;
+}
+
 class DrawCanvas_TwoHistRatio
 {
 public:
