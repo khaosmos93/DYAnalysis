@@ -197,7 +197,7 @@ public:
 	MyCanvas *myc_ValidPlot;
 	MyCanvas *myc_FpoF_ValidPlot;
 
-	TH1D* h_2D_temp; // -- for saving pt and eta bin edges -- //
+	TH2D* h_2D_temp; // -- for saving pt and eta bin edges -- //
 
 
 	SysUncTool_EffCorr()
@@ -951,7 +951,7 @@ public:
 			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
 			cout << "\t[Normalization factor: " << norm << "]" << endl;
 
-			// if( NEvents > 1000000 ) NEvents = 1000000;
+			// if( NEvents > 3000000 ) NEvents = 3000000;
 			// NEvents = 20000;
 			// -- Event loop starts -- //
 			for(Int_t i=0; i<NEvents; i++)
@@ -1131,7 +1131,7 @@ public:
 		cout << "[End Time(local time): " << ts_end.AsString("l") << "]" << endl;
 	}
 
-	void CalcXsec_AllMap(TString version, TString Ver_CMSSW)
+	void CalcXsec_AllMap()
 	{
 		cout << "=========================================================" << endl;
 		cout << "[Start the calculation of x-seciton for each Smeared map]" << endl;
@@ -1220,8 +1220,10 @@ public:
 
 		f_output->mkdir("EffMap_PtEtaBin");
 		f_output->cd("EffMap_PtEtaBin");
-		this->SaveEffMap_CV();
-		this->SaveEffMap_Smeared();
+		this->SaveEffMap_CV(f_output);
+
+		for(Int_t i_map=0; i_map<nEffMap; i_map++)
+			this->SaveEffMap_Smeared(i_map);
 
 		f_output->cd();
 		f_output->mkdir("Eff_MassBin");
@@ -1277,7 +1279,7 @@ public:
 			h_DiffXsec_Smeared[i_map]->Write();
 	}
 
-	void SaveEffMap_CV( TString ROOTFileName = "ROOTFile_TagProbeEfficiency_76X_v20160502.root" )
+	void SaveEffMap_CV( TFile *f_output, TString ROOTFileName = "ROOTFile_TagProbeEfficiency_76X_v20160502.root" )
 	{
 		TFile *f = new TFile(this->IncludePath + "/" + ROOTFileName);
 		TH2D *h_RecoID_Data = (TH2D*)f->Get("h_2D_Eff_RecoID_Data")->Clone("h_2D_Eff_RecoID_Data_CV");
@@ -1291,6 +1293,19 @@ public:
 
 		TH2D *h_HLTv4p3_Data = (TH2D*)f->Get("h_2D_Eff_HLTv4p3_Data")->Clone("h_2D_Eff_HLTv4p3_Data_CV");
 		TH2D *h_HLTv4p3_MC = (TH2D*)f->Get("h_2D_Eff_HLTv4p3_MC")->Clone("h_2D_Eff_HLTv4p3_MC_CV");
+
+		f_output->cd("EffMap_PtEtaBin");
+		h_RecoID_Data->Write();
+		h_RecoID_MC->Write();
+
+		h_Iso_Data->Write();
+		h_Iso_MC->Write();
+
+		h_HLTv4p2_Data->Write();
+		h_HLTv4p2_MC->Write();
+
+		h_HLTv4p3_Data->Write();
+		h_HLTv4p3_MC->Write();
 	}
 
 	void SaveEffMap_Smeared( Int_t i_map )
@@ -1325,13 +1340,13 @@ public:
 
 	TH2D* Make2DHist_EffMap( Double_t EffMap[nEtaBin][nPtBin], TString HistName = "" )
 	{
-		TH2D* h_2D = this->h_2D_temp->Clone("h_2D");
+		TH2D* h_2D = (TH2D*)this->h_2D_temp->Clone("h_2D");
 		if( HistName != "" )
 			h_2D->SetName( HistName );
 
-		for(Int_t i_eta = 0; i_eta < nEtaBins; i_eta++)
+		for(Int_t i_eta = 0; i_eta<nEtaBin; i_eta++)
 		{
-			for(Int_t i_pt = 0; i_pt < nPtBins; i_pt++)
+			for(Int_t i_pt = 0; i_pt<nPtBin; i_pt++)
 			{
 				Int_t i_etabin = i_eta + 1;
 				Int_t i_ptbin =i_pt + 1;
@@ -1340,6 +1355,8 @@ public:
 				h_2D->SetBinError( i_etabin, i_ptbin, 0 );
 			}
 		}
+
+		return h_2D;
 	}
 
 	void LoadEffGraphs_fromROOTFile( TFile *f_effs )

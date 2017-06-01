@@ -1,6 +1,6 @@
-#include "../SysUncTool_EffCorr.h"
+#include "SysUncTool_EffCorr.h"
 
-void SysUnc_EffCorr()
+void SysUnc_EffCorr_StatSource()
 {
 	SysUncTool_EffCorr *SysTool = new SysUncTool_EffCorr();
 	SysTool->SetIsDataDriven( kTRUE );
