@@ -235,19 +235,20 @@ protected:
 		Double_t lumi_MM = 2.8;
 		Double_t lumi_EE = 2.3;
 
+		latex.DrawLatexNDC(0.14, 0.96, "#font[62]{#scale[0.8]{CMS Preliminary}}");
+
 		if( this->Type == "Muon" )
 		{
-			Latex_Preliminary( latex, lumi_MM, 13 );
+			latex.DrawLatexNDC(0.70, 0.96, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_MM ) );
 			latex.DrawLatexNDC(0.16, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow #mu^{+}#mu^{-}}}");
 		}
 		else if( this->Type == "Electron" )
 		{
-			Latex_Preliminary( latex, lumi_EE, 13 );
+			latex.DrawLatexNDC(0.70, 0.96, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_EE ) );
 			latex.DrawLatexNDC(0.16, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow e^{+}e^{-}}}");
 		}
 		else if( this->Type == "Combined" )
 		{
-			Latex_Preliminary_NoDataInfo( latex );
 			latex.DrawLatexNDC(0.48, 0.96, TString::Format("#font[42]{#scale[0.7]{%.1lf fb^{-1} (ee) %.1lf fb^{-1} (#mu#mu)} #scale[0.8]{(13 TeV)}}", lumi_EE, lumi_MM) );
 			latex.DrawLatexNDC(0.16, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow e^{+}e^{-}, #mu^{+}#mu^{-}}}");
 		}

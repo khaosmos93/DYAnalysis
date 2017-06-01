@@ -260,19 +260,15 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	Double_t lumi = 2.8;
 	if( TStr_Channel == "EE" ) lumi = 2.3;
 	Int_t E_CM = 13;
+
+	// latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
+	// latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+	latex.DrawLatexNDC(0.09, 0.96, "#font[62]{#scale[0.8]{CMS Preliminary}}");
+
 	if( TStr_Channel == "MM" || TStr_Channel == "EE" )
-	{
 		latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
-		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
-		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
-	}
 	else if( TStr_Channel == "LL" )
-	{
-		latex.DrawLatexNDC( 0.55, 0.96, "#font[42]{#scale[0.8]{2.3 fb^{-1} (ee)}}");
-		latex.DrawLatexNDC( 0.75, 0.96, "#font[42]{#scale[0.8]{2.8 fb^{-1} (#mu#mu)}}");
-		latex.DrawLatexNDC(0.09, 0.96, "#font[62]{CMS}");
-		latex.DrawLatexNDC(0.19, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
-	}
+		latex.DrawLatexNDC( 0.55, 0.96, "#font[42]{#scale[0.8]{2.3 fb^{-1} (ee)  2.8 fb^{-1} (#mu#mu)}}");
 
 	// latex.DrawLatexNDC( 0.76, 0.004, "#font[42]{#scale[0.8]{m (#mu#mu) [GeV]}}");
 

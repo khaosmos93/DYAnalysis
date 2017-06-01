@@ -136,7 +136,7 @@ public:
 		TopPad->Draw();
 		TopPad->cd();
 
-		TopPad->SetTopMargin(0.04);
+		TopPad->SetTopMargin(0.05);
 		TopPad->SetBottomMargin(0.305);
 		TopPad->SetRightMargin(0.03);
 		TopPad->SetLeftMargin(0.13);
@@ -321,22 +321,23 @@ protected:
 		Double_t lumi_MM = 2.8;
 		Double_t lumi_EE = 2.3;
 
-		latex.DrawLatexNDC(0.14, 0.965, "#font[62]{CMS}");
-		latex.DrawLatexNDC(0.25, 0.965, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+		// latex.DrawLatexNDC(0.14, 0.965, "#font[62]{CMS}");
+		// latex.DrawLatexNDC(0.25, 0.965, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+		latex.DrawLatexNDC(0.14, 0.96, "#font[62]{#scale[0.8]{CMS Preliminary}}");
 
 		if( this->ChannelType == "Dimuon" )
 		{
-			latex.DrawLatexNDC(0.71, 0.965, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_MM ) );
+			latex.DrawLatexNDC(0.71, 0.96, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_MM ) );
 			latex.DrawLatexNDC(0.65, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow #mu^{+}#mu^{-}}}");
 		}
 		else if( this->ChannelType == "Dielectron" )
 		{
-			latex.DrawLatexNDC(0.71, 0.965, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_EE ) );
+			latex.DrawLatexNDC(0.71, 0.96, TString::Format("#font[42]{#scale[0.8]{%.1lf fb^{-1} (13 TeV)}}", lumi_EE ) );
 			latex.DrawLatexNDC(0.65, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow e^{+}e^{-}}}");
 		}
 		else if( this->ChannelType == "Combined" )
 		{
-			latex.DrawLatexNDC(0.48, 0.965, TString::Format("#font[42]{#scale[0.7]{%.1lf fb^{-1} (ee) %.1lf fb^{-1} (#mu#mu)} #scale[0.8]{(13 TeV)}}", lumi_EE, lumi_MM) );
+			latex.DrawLatexNDC(0.48, 0.96, TString::Format("#font[42]{#scale[0.7]{%.1lf fb^{-1} (ee) %.1lf fb^{-1} (#mu#mu)} #scale[0.8]{(13 TeV)}}", lumi_EE, lumi_MM) );
 			latex.DrawLatexNDC(0.65, 0.90, "#font[42]{#scale[0.9]{Z/#gamma* #rightarrow e^{+}e^{-}, #mu^{+}#mu^{-}}}");
 		}
 	}

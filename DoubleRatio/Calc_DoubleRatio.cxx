@@ -97,7 +97,8 @@ void Calc_DoubleRatio(TString TStr_Channel = "LL")
 	legend->Draw();
 
 	TLatex latex;
-	Latex_Preliminary_NoDataInfo( latex );
+	// Latex_Preliminary_NoDataInfo( latex );
+	latex.DrawLatexNDC(0.14, 0.96, "#font[62]{#scale[0.8]{CMS Preliminary}}");
 	if( TStr_Channel == "MM" )
 	{
 		latex.DrawLatexNDC( 0.17, 0.90, "#font[42]{#scale[0.7]{19.7 fb^{-1} #mu#mu (8 TeV)}}");
