@@ -394,68 +394,61 @@ public:
 		cout << endl;
 	}
 
-	void CalcTotalUnc_UsingFlatUnc_8TeV()
+	void SetUpSysUnc_EachSource( TString SystType )
 	{
-		cout << "[Use flat uncertainty recommended from MuonPOG @ 7-8TeV: (RecoID, Iso, Trig) = (0.5%, 0.2%, 0.2%)]" << endl;
+		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+		TString FileName = AnalyzerPath + "SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SystOnly/TnPEffs/ROOTFile_Syst_TnPEffs.root";
 
-		for(Int_t iter_x=0; iter_x< nEtaBin; iter_x++)
+
+
+		TFile *f_input = new TFile(this->IncludePath + "/" + ROOTFileName);
+
+		TH2D *h_Diff_RecoID_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_RecoID_Data" );
+		TH2D *h_Diff_RecoID_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_RecoID_MC" );
+
+		TH2D *h_Diff_Iso_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_Iso_Data" );
+		TH2D *h_Diff_Iso_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_Iso_MC" );
+
+		TH2D *h_Diff_HLTv4p2_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p2_Data" );
+		TH2D *h_Diff_HLTv4p2_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p2_MC" );
+
+		TH2D *h_Diff_HLTv4p3_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p3_Data" );
+		TH2D *h_Diff_HLTv4p3_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p3_MC" );
+
+		Int_t nEtaBins = h_Diff_RecoID_Data->GetNbinsX();
+		Int_t nPtBins = h_Diff_RecoID_Data->GetNbinsY();
+
+		if( nEtaBin != nEtaBins || nPtBin != nPtBins )
 		{
-			for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
+			printf("(nEtaBin, nPtBin) != (GetNbinsX, GetNbinsY) ... (%d, %d) != (%d, %d)\n", nEtaBin, nPtBin, nEtaBins, nPtBins);
+			return;
+		}
+
+		for(Int_t iter_x = 0; iter_x < nEtaBins; iter_x++)
+		{
+			for(Int_t iter_y = 0; iter_y < nPtBins; iter_y++)
 			{
-				// -- Reco+ID Efficinecy Error -- //
-				Double_t RecoID_Data_StatErr = EffErr_Stat_RecoID_Data[iter_x][iter_y];
-				Double_t RecoID_Data_FlatErr = Eff_RecoID_Data[iter_x][iter_y] * 0.005;
+				Int_t i_etabin = iter_x + 1;
+				Int_t i_ptbin = iter_y + 1;
 
-				Double_t TotErrSquare_RecoID_Data = RecoID_Data_StatErr * RecoID_Data_StatErr + RecoID_Data_FlatErr * RecoID_Data_FlatErr;
-				EffErr_Tot_RecoID_Data[iter_x][iter_y] = sqrt(TotErrSquare_RecoID_Data);
+				EffErr_Sys_RecoID_Data[iter_x][iter_y] = h_Diff_RecoID_Data->GetBinContent(i_etabin, i_ptbin);
+				EffErr_Sys_RecoID_MC[iter_x][iter_y] = h_Diff_RecoID_MC->GetBinContent(i_etabin, i_ptbin);
 
-				Double_t RecoID_MC_StatErr = EffErr_Stat_RecoID_MC[iter_x][iter_y];
-				Double_t RecoID_MC_FlatErr = Eff_RecoID_MC[iter_x][iter_y] * 0.005;
+				EffErr_Sys_Iso_Data[iter_x][iter_y] = h_Diff_Iso_Data->GetBinContent(i_etabin, i_ptbin);
+				EffErr_Sys_Iso_MC[iter_x][iter_y] = h_Diff_Iso_MC->GetBinContent(i_etabin, i_ptbin);
 
-				Double_t TotErrSquare_RecoID_MC = RecoID_MC_StatErr * RecoID_MC_StatErr + RecoID_MC_FlatErr * RecoID_MC_FlatErr;
-				EffErr_Tot_RecoID_MC[iter_x][iter_y] = sqrt(TotErrSquare_RecoID_MC);
+				EffErr_Sys_HLTv4p2_Data[iter_x][iter_y] = h_Diff_HLTv4p2_Data->GetBinContent(i_etabin, i_ptbin);
+				EffErr_Sys_HLTv4p2_MC[iter_x][iter_y] = h_Diff_HLTv4p2_MC->GetBinContent(i_etabin, i_ptbin);
 
-				// -- Isolation Efficinecy Error -- //
-				Double_t Iso_Data_StatErr = EffErr_Stat_Iso_Data[iter_x][iter_y];
-				Double_t Iso_Data_FlatErr = Eff_Iso_Data[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_Iso_Data = Iso_Data_StatErr * Iso_Data_StatErr + Iso_Data_FlatErr * Iso_Data_FlatErr;
-				EffErr_Tot_Iso_Data[iter_x][iter_y] = sqrt(TotErrSquare_Iso_Data);
-
-				Double_t Iso_MC_StatErr = EffErr_Stat_Iso_MC[iter_x][iter_y];
-				Double_t Iso_MC_FlatErr = Eff_Iso_MC[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_Iso_MC = Iso_MC_StatErr * Iso_MC_StatErr + Iso_MC_FlatErr * Iso_MC_FlatErr;
-				EffErr_Tot_Iso_MC[iter_x][iter_y] = sqrt(TotErrSquare_Iso_MC);
-
-				// -- Trigger Efficinecy Error -- //
-				Double_t HLTv4p2_Data_StatErr = EffErr_Stat_HLTv4p2_Data[iter_x][iter_y];
-				Double_t HLTv4p2_Data_FlatErr = Eff_HLTv4p2_Data[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_HLTv4p2_Data = HLTv4p2_Data_StatErr * HLTv4p2_Data_StatErr + HLTv4p2_Data_FlatErr * HLTv4p2_Data_FlatErr;
-				EffErr_Tot_HLTv4p2_Data[iter_x][iter_y] = sqrt(TotErrSquare_HLTv4p2_Data);
-
-				Double_t HLTv4p2_MC_StatErr = EffErr_Stat_HLTv4p2_MC[iter_x][iter_y];
-				Double_t HLTv4p2_MC_FlatErr = Eff_HLTv4p2_MC[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_HLTv4p2_MC = HLTv4p2_MC_StatErr * HLTv4p2_MC_StatErr + HLTv4p2_MC_FlatErr * HLTv4p2_MC_FlatErr;
-				EffErr_Tot_HLTv4p2_MC[iter_x][iter_y] = sqrt(TotErrSquare_HLTv4p2_MC);
-
-
-				Double_t HLTv4p3_Data_StatErr = EffErr_Stat_HLTv4p3_Data[iter_x][iter_y];
-				Double_t HLTv4p3_Data_FlatErr = Eff_HLTv4p3_Data[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_HLTv4p3_Data = HLTv4p3_Data_StatErr * HLTv4p3_Data_StatErr + HLTv4p3_Data_FlatErr * HLTv4p3_Data_FlatErr;
-				EffErr_Tot_HLTv4p3_Data[iter_x][iter_y] = sqrt(TotErrSquare_HLTv4p3_Data);
-
-				Double_t HLTv4p3_MC_StatErr = EffErr_Stat_HLTv4p3_MC[iter_x][iter_y];
-				Double_t HLTv4p3_MC_FlatErr = Eff_HLTv4p3_MC[iter_x][iter_y] * 0.002;
-
-				Double_t TotErrSquare_HLTv4p3_MC = HLTv4p3_MC_StatErr * HLTv4p3_MC_StatErr + HLTv4p3_MC_FlatErr * HLTv4p3_MC_FlatErr;
-				EffErr_Tot_HLTv4p3_MC[iter_x][iter_y] = sqrt(TotErrSquare_HLTv4p3_MC);
-
+				EffErr_Sys_HLTv4p3_Data[iter_x][iter_y] = h_Diff_HLTv4p3_Data->GetBinContent(i_etabin, i_ptbin);
+				EffErr_Sys_HLTv4p3_MC[iter_x][iter_y] = h_Diff_HLTv4p3_MC->GetBinContent(i_etabin, i_ptbin);
 			}
 		}
+
+		cout << "================================================" << endl;
+		cout << "[Setting for sys. uncertainty is completed: Type = " << SystType << "]" << endl;
+		cout << "================================================" << endl;
+		cout << endl;
 	}
 
 	void RemoveStatError()
@@ -590,6 +583,114 @@ public:
 		cout << "===========================================================" << endl;
 		cout << endl;
 	}
+
+	void Generate_SmearedEffMap_StatOnly()
+	{
+		TRandom3 eran;
+		eran.SetSeed(0);
+
+		for(Int_t i_map=0; i_map<nEffMap; i_map++)
+		{
+			for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++)
+			{
+				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
+				{
+					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
+					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
+
+					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_Data[iter_x][iter_y];
+					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_MC[iter_x][iter_y];
+
+					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_Data[iter_x][iter_y];
+					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_MC[iter_x][iter_y];
+
+					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_Data[iter_x][iter_y];
+					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_MC[iter_x][iter_y];
+
+				} // -- end of for(Int_t iter_y=0; iter_y<nPtBin; iter_y++) -- //
+
+			} // -- end of for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++) -- //
+
+		} // -- end of for(Int_t i_map=0; i_map<nEffMap; i_map++) -- //
+		cout << "==================================================================" << endl;
+		cout << "[" << nEffMap << " Smeared Maps are produced with stat. unc. only]" << endl;
+		cout << "==================================================================" << endl;
+		cout << endl;
+	}
+
+	// -- generator efficiency maps with taking into account the correlation between bins
+	// -- all pt-eta bins moves in same direction & distance
+	// -- by using same random seed among them -- //
+	void Generate_SmearedEffMap_SystOnly_Correlated()
+	{
+		TRandom3 eran;
+		eran.SetSeed(0);
+
+		for(Int_t i_map=0; i_map<nEffMap; i_map++)
+		{
+			Double_t rnd = eran.Gaus(0.0, 1.0); // -- share same random number for one efficiency map -- //
+
+			for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++)
+			{
+				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
+				{
+					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + rnd * EffErr_Sys_RecoID_MC[iter_x][iter_y];
+					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + rnd * EffErr_Sys_RecoID_MC[iter_x][iter_y];
+
+					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + rnd * EffErr_Sys_Iso_Data[iter_x][iter_y];
+					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + rnd * EffErr_Sys_Iso_MC[iter_x][iter_y];
+
+					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p2_Data[iter_x][iter_y];
+					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p2_MC[iter_x][iter_y];
+
+					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p3_Data[iter_x][iter_y];
+					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p3_MC[iter_x][iter_y];
+
+				} // -- end of for(Int_t iter_y=0; iter_y<nPtBin; iter_y++) -- //
+
+			} // -- end of for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++) -- //
+
+		} // -- end of for(Int_t i_map=0; i_map<nEffMap; i_map++) -- //
+		cout << "==================================================================" << endl;
+		cout << "[" << nEffMap << " Smeared Maps are produced with stat. unc. only]" << endl;
+		cout << "==================================================================" << endl;
+		cout << endl;
+	}
+
+	void Generate_SmearedEffMap_StatOnly()
+	{
+		TRandom3 eran;
+		eran.SetSeed(0);
+
+		for(Int_t i_map=0; i_map<nEffMap; i_map++)
+		{
+			for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++)
+			{
+				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
+				{
+					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
+					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
+
+					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_Data[iter_x][iter_y];
+					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_MC[iter_x][iter_y];
+
+					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_Data[iter_x][iter_y];
+					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_MC[iter_x][iter_y];
+
+					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_Data[iter_x][iter_y];
+					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_MC[iter_x][iter_y];
+
+				} // -- end of for(Int_t iter_y=0; iter_y<nPtBin; iter_y++) -- //
+
+			} // -- end of for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++) -- //
+
+		} // -- end of for(Int_t i_map=0; i_map<nEffMap; i_map++) -- //
+		cout << "==================================================================" << endl;
+		cout << "[" << nEffMap << " Smeared Maps are produced with stat. unc. only]" << endl;
+		cout << "==================================================================" << endl;
+		cout << endl;
+	}
+
 
 	void MakeSmearedEffMap()
 	{

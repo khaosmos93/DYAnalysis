@@ -698,6 +698,21 @@ TH1D* Get_Hist(TString FileName, TString HistName, TString HistName_New = "" )
 	return h_temp;
 }
 
+TH2D* Get_Hist_2D(TString FileName, TString HistName, TString HistName_New = "" )
+{
+	TH1::AddDirectory(kFALSE);
+
+	TFile *f_input = TFile::Open( FileName );
+	TH2D* h_temp = (TH2D*)f_input->Get(HistName)->Clone();
+	if( HistName_New != "" )
+		h_temp->SetName( HistName_New );
+
+	f_input->Close();
+	// delete f_input;
+
+	return h_temp;
+}
+
 TGraphAsymmErrors* Get_Graph(TString FileName, TString GraphName, TString GraphName_New = "" )
 {
 	TFile *f_input = TFile::Open( FileName );

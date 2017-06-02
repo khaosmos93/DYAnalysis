@@ -6,12 +6,7 @@ void SysUnc_EffCorr_StatSource()
 	SysTool->SetIsDataDriven( kTRUE );
 
 	SysTool->SetupCentralValueStatError("ROOTFile_TagProbeEfficiency_76X_v20160502.root");
-	SysTool->SetUpSysUnc("ROOTFile_SysUnc_TagProbeMethod_76X_v20160504.root");
-
-	SysTool->RemoveSystError(); // -- only stat. error should be used -- //
-
-	SysTool->CalcTotalUnc();
-	SysTool->MakeSmearedEffMap();
+	SysTool->Generate_SmearedEffMap_StatOnly();
 
 	SysTool->CorrectedEff_AllMap();
 	SysTool->CalcXsec_AllMap();
