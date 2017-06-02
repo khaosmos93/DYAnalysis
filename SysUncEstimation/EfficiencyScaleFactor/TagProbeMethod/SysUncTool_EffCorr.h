@@ -406,7 +406,7 @@ public:
 		this->SystType = _SystType;
 
 		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
-		TString FileName = AnalyzerPath + "SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SystOnly/TnPEffs/ROOTFile_Syst_TnPEffs.root";
+		TString FileName = AnalyzerPath + "/SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SystOnly/TnPEffs/ROOTFile_Syst_TnPEffs.root";
 
 		TH2D *h_Diff_RecoID_Data = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_RecoID_Data" );
 		TH2D *h_Diff_RecoID_MC = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_RecoID_MC" );
