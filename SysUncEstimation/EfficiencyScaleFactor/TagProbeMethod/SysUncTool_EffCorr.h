@@ -111,6 +111,9 @@ public:
 	Bool_t isDataDriven;
 	Double_t MassBinEdges[nMassBin+1];
 
+	Bool_t isSyst;
+	TString SystType;
+
 	// -- Reco + ID Efficiency & error -- //
 	Double_t Eff_RecoID_Data[nEtaBin][nPtBin];
 	Double_t EffErr_Stat_RecoID_Data[nEtaBin][nPtBin];
@@ -233,6 +236,9 @@ public:
 
 		this->IncludePath = gSystem->Getenv("KP_INCLUDE_PATH");
 		this->ROOTFilePath = gSystem->Getenv("KP_ROOTFILE_PATH");
+
+		this->isSyst = kFALSE;
+		this->SystType = "";
 	}
 
 	void SetIsDataDriven(Bool_t _isDataDriven)
@@ -394,26 +400,25 @@ public:
 		cout << endl;
 	}
 
-	void SetUpSysUnc_EachSource( TString SystType )
+	void SetUpSysUnc_EachSource( TString _SystType )
 	{
+		this->isSyst = kTRUE;
+		this->SystType = _SystType;
+
 		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
 		TString FileName = AnalyzerPath + "SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SystOnly/TnPEffs/ROOTFile_Syst_TnPEffs.root";
 
+		TH2D *h_Diff_RecoID_Data = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_RecoID_Data" );
+		TH2D *h_Diff_RecoID_MC = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_RecoID_MC" );
 
+		TH2D *h_Diff_Iso_Data = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_Iso_Data" );
+		TH2D *h_Diff_Iso_MC = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_Iso_MC" );
 
-		TFile *f_input = new TFile(this->IncludePath + "/" + ROOTFileName);
+		TH2D *h_Diff_HLTv4p2_Data = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_HLTv4p2_Data" );
+		TH2D *h_Diff_HLTv4p2_MC = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_HLTv4p2_MC" );
 
-		TH2D *h_Diff_RecoID_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_RecoID_Data" );
-		TH2D *h_Diff_RecoID_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_RecoID_MC" );
-
-		TH2D *h_Diff_Iso_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_Iso_Data" );
-		TH2D *h_Diff_Iso_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_Iso_MC" );
-
-		TH2D *h_Diff_HLTv4p2_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p2_Data" );
-		TH2D *h_Diff_HLTv4p2_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p2_MC" );
-
-		TH2D *h_Diff_HLTv4p3_Data = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p3_Data" );
-		TH2D *h_Diff_HLTv4p3_MC = Get_Hist_2D( FileName, SystType+"/h_2D_EffDiff_HLTv4p3_MC" );
+		TH2D *h_Diff_HLTv4p3_Data = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_HLTv4p3_Data" );
+		TH2D *h_Diff_HLTv4p3_MC = Get_Hist_2D( FileName, this->SystType+"/h_2D_EffDiff_HLTv4p3_MC" );
 
 		Int_t nEtaBins = h_Diff_RecoID_Data->GetNbinsX();
 		Int_t nPtBins = h_Diff_RecoID_Data->GetNbinsY();
@@ -446,7 +451,7 @@ public:
 		}
 
 		cout << "================================================" << endl;
-		cout << "[Setting for sys. uncertainty is completed: Type = " << SystType << "]" << endl;
+		cout << "[Setting for sys. uncertainty is completed: Type = " << this->SystType << "]" << endl;
 		cout << "================================================" << endl;
 		cout << endl;
 	}
@@ -651,46 +656,11 @@ public:
 			} // -- end of for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++) -- //
 
 		} // -- end of for(Int_t i_map=0; i_map<nEffMap; i_map++) -- //
-		cout << "==================================================================" << endl;
-		cout << "[" << nEffMap << " Smeared Maps are produced with stat. unc. only]" << endl;
-		cout << "==================================================================" << endl;
+		cout << "=======================================================================" << endl;
+		cout << "[" << nEffMap << " Smeared Maps are produced with syst. unc. only (Type=" << this->SystType << "]" << endl;
+		cout << "=======================================================================" << endl;
 		cout << endl;
 	}
-
-	void Generate_SmearedEffMap_StatOnly()
-	{
-		TRandom3 eran;
-		eran.SetSeed(0);
-
-		for(Int_t i_map=0; i_map<nEffMap; i_map++)
-		{
-			for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++)
-			{
-				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
-				{
-					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
-					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
-
-					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_Data[iter_x][iter_y];
-					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_MC[iter_x][iter_y];
-
-					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_Data[iter_x][iter_y];
-					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p2_MC[iter_x][iter_y];
-
-					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_Data[iter_x][iter_y];
-					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_HLTv4p3_MC[iter_x][iter_y];
-
-				} // -- end of for(Int_t iter_y=0; iter_y<nPtBin; iter_y++) -- //
-
-			} // -- end of for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++) -- //
-
-		} // -- end of for(Int_t i_map=0; i_map<nEffMap; i_map++) -- //
-		cout << "==================================================================" << endl;
-		cout << "[" << nEffMap << " Smeared Maps are produced with stat. unc. only]" << endl;
-		cout << "==================================================================" << endl;
-		cout << endl;
-	}
-
 
 	void MakeSmearedEffMap()
 	{
@@ -1317,7 +1287,11 @@ public:
 
 	void SaveResults()
 	{
-		TFile *f_output = new TFile("ROOTFile_Outputs_SysUncTool_EffCorr.root", "RECREATE"); f_output->cd();
+		TString OutputFileName = "ROOTFile_Outputs_SysUncTool_EffCorr_Stat.root";
+		if( this->isSyst )
+			OutputFileName.ReplaceAll( "_Stat.root", TString::Format("_Syst_%s.root", this->SystType.Data()) );
+
+		TFile *f_output = new TFile(OutputFileName, "RECREATE"); f_output->cd();
 
 		f_output->mkdir("EffMap_PtEtaBin");
 		f_output->cd("EffMap_PtEtaBin");
