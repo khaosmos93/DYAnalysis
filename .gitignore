@@ -1,6 +1,9 @@
 # Plots, Big files...
 Local/
 
+# output from batch jobs
+*.o*
+
 # Split jobs
 Outputs/
 
