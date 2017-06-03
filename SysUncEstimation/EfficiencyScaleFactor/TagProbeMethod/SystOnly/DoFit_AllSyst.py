@@ -7,7 +7,7 @@ FitCode = "GetRMS_UnbinnedLikelihoodFit.C"
 
 for SystType in List_SystType:
 	ROOTFileName = "ROOTFile_Outputs_SysUncTool_EffCorr_Syst_%s.root" % SystType
-	cmd_fit = "root -b -q %s/Local/%s %s" % (SystType, ROOTFileName, FitCode)
+	cmd_fit = "root -l -b -q %s/Local/%s %s" % (SystType, ROOTFileName, FitCode)
 	print cmd_fit
 	os.system( cmd_fit )
 
