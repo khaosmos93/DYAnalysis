@@ -347,59 +347,6 @@ public:
 		this->h_2D_temp->Reset("ICES");
 	}
 
-	void SetUpSysUnc(TString ROOTFileName)
-	{
-		TFile *f_input = new TFile(this->IncludePath + "/" + ROOTFileName);
-
-		TH2D *h_RelDiff_RecoID_Data = (TH2D*)f_input->Get("h_2D_RelDiff_RecoID_Data_Tot")->Clone();
-		TH2D *h_RelDiff_RecoID_MC = (TH2D*)f_input->Get("h_2D_RelDiff_RecoID_MC_Tot")->Clone();
-
-		TH2D *h_RelDiff_Iso_Data = (TH2D*)f_input->Get("h_2D_RelDiff_Iso_Data_Tot")->Clone();
-		TH2D *h_RelDiff_Iso_MC = (TH2D*)f_input->Get("h_2D_RelDiff_Iso_MC_Tot")->Clone();
-
-		TH2D *h_RelDiff_HLTv4p2_Data = (TH2D*)f_input->Get("h_2D_RelDiff_HLTv4p2_Data_Tot")->Clone();
-		TH2D *h_RelDiff_HLTv4p2_MC = (TH2D*)f_input->Get("h_2D_RelDiff_HLTv4p2_MC_Tot")->Clone();
-
-		TH2D *h_RelDiff_HLTv4p3_Data = (TH2D*)f_input->Get("h_2D_RelDiff_HLTv4p3_Data_Tot")->Clone();
-		TH2D *h_RelDiff_HLTv4p3_MC = (TH2D*)f_input->Get("h_2D_RelDiff_HLTv4p3_MC_Tot")->Clone();
-
-		Int_t nEtaBins = h_RelDiff_RecoID_Data->GetNbinsX();
-		Int_t nPtBins = h_RelDiff_RecoID_Data->GetNbinsY();
-
-		if( nEtaBin != nEtaBins || nPtBin != nPtBins )
-		{
-			printf("(nEtaBin, nPtBin) != (GetNbinsX, GetNbinsY) ... (%d, %d) != (%d, %d)\n", nEtaBin, nPtBin, nEtaBins, nPtBins);
-			return;
-		}
-
-		for(Int_t iter_x = 0; iter_x < nEtaBins; iter_x++)
-		{
-			for(Int_t iter_y = 0; iter_y < nPtBins; iter_y++)
-			{
-				Int_t i_etabin = iter_x + 1;
-				Int_t i_ptbin = iter_y + 1;
-
-				// -- Convert from relative uncertainty to absolute uncertainty -- //
-				EffErr_Sys_RecoID_Data[iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] * h_RelDiff_RecoID_Data->GetBinContent(i_etabin, i_ptbin);
-				EffErr_Sys_RecoID_MC[iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] * h_RelDiff_RecoID_MC->GetBinContent(i_etabin, i_ptbin);
-
-				EffErr_Sys_Iso_Data[iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] * h_RelDiff_Iso_Data->GetBinContent(i_etabin, i_ptbin);
-				EffErr_Sys_Iso_MC[iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] * h_RelDiff_Iso_MC->GetBinContent(i_etabin, i_ptbin);
-
-				EffErr_Sys_HLTv4p2_Data[iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] * h_RelDiff_HLTv4p2_Data->GetBinContent(i_etabin, i_ptbin);
-				EffErr_Sys_HLTv4p2_MC[iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] * h_RelDiff_HLTv4p2_MC->GetBinContent(i_etabin, i_ptbin);
-
-				EffErr_Sys_HLTv4p3_Data[iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] * h_RelDiff_HLTv4p3_Data->GetBinContent(i_etabin, i_ptbin);
-				EffErr_Sys_HLTv4p3_MC[iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] * h_RelDiff_HLTv4p3_MC->GetBinContent(i_etabin, i_ptbin);
-			}
-		}
-
-		cout << "===========================================" << endl;
-		cout << "[Setting for sys. uncertainty is completed]" << endl;
-		cout << "===========================================" << endl;
-		cout << endl;
-	}
-
 	void SetUpSysUnc_EachSource( TString _SystType )
 	{
 		this->isSyst = kTRUE;
@@ -454,48 +401,6 @@ public:
 		cout << "[Setting for sys. uncertainty is completed: Type = " << this->SystType << "]" << endl;
 		cout << "================================================" << endl;
 		cout << endl;
-	}
-
-	void RemoveStatError()
-	{
-		for(Int_t i_ptbin=0; i_ptbin<nPtBin; i_ptbin++)
-		{
-			for(Int_t i_etabin=0; i_etabin<nEtaBin; i_etabin++)
-			{
-				EffErr_Stat_RecoID_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Stat_RecoID_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Stat_Iso_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Stat_Iso_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Stat_HLTv4p2_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Stat_HLTv4p2_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Stat_HLTv4p3_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Stat_HLTv4p3_MC[i_etabin][i_ptbin] = 0;
-			}
-		}
-	}
-
-	void RemoveSystError()
-	{
-		for(Int_t i_ptbin=0; i_ptbin<nPtBin; i_ptbin++)
-		{
-			for(Int_t i_etabin=0; i_etabin<nEtaBin; i_etabin++)
-			{
-				EffErr_Sys_RecoID_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Sys_RecoID_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Sys_Iso_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Sys_Iso_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Sys_HLTv4p2_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Sys_HLTv4p2_MC[i_etabin][i_ptbin] = 0;
-
-				EffErr_Sys_HLTv4p3_Data[i_etabin][i_ptbin] = 0;
-				EffErr_Sys_HLTv4p3_MC[i_etabin][i_ptbin] = 0;
-			}
-		}
 	}
 
 	void CalcTotalUnc()
@@ -600,7 +505,7 @@ public:
 			{
 				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
 				{
-					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
+					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_Data[iter_x][iter_y];
 					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_RecoID_MC[iter_x][iter_y];
 
 					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + eran.Gaus(0.0, 1.0) * EffErr_Stat_Iso_Data[iter_x][iter_y];
@@ -633,23 +538,34 @@ public:
 
 		for(Int_t i_map=0; i_map<nEffMap; i_map++)
 		{
-			Double_t rnd = eran.Gaus(0.0, 1.0); // -- share same random number for one efficiency map -- //
+			// -- share same random number for one efficiency map -- //
+			Double_t rnd_RecoID_Data = eran.Gaus(0.0, 1.0);
+			Double_t rnd_RecoID_MC = eran.Gaus(0.0, 1.0);
+
+			Double_t rnd_Iso_Data = eran.Gaus(0.0, 1.0);
+			Double_t rnd_Iso_MC = eran.Gaus(0.0, 1.0);
+
+			Double_t rnd_HLTv4p2_Data = eran.Gaus(0.0, 1.0);
+			Double_t rnd_HLTv4p2_MC = eran.Gaus(0.0, 1.0);
+
+			Double_t rnd_HLTv4p3_Data = eran.Gaus(0.0, 1.0);
+			Double_t rnd_HLTv4p3_MC = eran.Gaus(0.0, 1.0);
 
 			for(Int_t iter_x=0; iter_x<nEtaBin; iter_x++)
 			{
 				for(Int_t iter_y=0; iter_y<nPtBin; iter_y++)
 				{
-					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + rnd * EffErr_Sys_RecoID_MC[iter_x][iter_y];
-					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + rnd * EffErr_Sys_RecoID_MC[iter_x][iter_y];
+					Eff_RecoID_Data_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_Data[iter_x][iter_y] + rnd_RecoID_Data * EffErr_Sys_RecoID_Data[iter_x][iter_y];
+					Eff_RecoID_MC_Smeared[i_map][iter_x][iter_y] = Eff_RecoID_MC[iter_x][iter_y] + rnd_RecoID_MC * EffErr_Sys_RecoID_MC[iter_x][iter_y];
 
-					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + rnd * EffErr_Sys_Iso_Data[iter_x][iter_y];
-					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + rnd * EffErr_Sys_Iso_MC[iter_x][iter_y];
+					Eff_Iso_Data_Smeared[i_map][iter_x][iter_y] = Eff_Iso_Data[iter_x][iter_y] + rnd_Iso_Data * EffErr_Sys_Iso_Data[iter_x][iter_y];
+					Eff_Iso_MC_Smeared[i_map][iter_x][iter_y] = Eff_Iso_MC[iter_x][iter_y] + rnd_Iso_MC * EffErr_Sys_Iso_MC[iter_x][iter_y];
 
-					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p2_Data[iter_x][iter_y];
-					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p2_MC[iter_x][iter_y];
+					Eff_HLTv4p2_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_Data[iter_x][iter_y] + rnd_HLTv4p2_Data * EffErr_Sys_HLTv4p2_Data[iter_x][iter_y];
+					Eff_HLTv4p2_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p2_MC[iter_x][iter_y] + rnd_HLTv4p2_MC * EffErr_Sys_HLTv4p2_MC[iter_x][iter_y];
 
-					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p3_Data[iter_x][iter_y];
-					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + rnd * EffErr_Sys_HLTv4p3_MC[iter_x][iter_y];
+					Eff_HLTv4p3_Data_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_Data[iter_x][iter_y] + rnd_HLTv4p3_Data * EffErr_Sys_HLTv4p3_Data[iter_x][iter_y];
+					Eff_HLTv4p3_MC_Smeared[i_map][iter_x][iter_y] = Eff_HLTv4p3_MC[iter_x][iter_y] + rnd_HLTv4p3_MC * EffErr_Sys_HLTv4p3_MC[iter_x][iter_y];
 
 				} // -- end of for(Int_t iter_y=0; iter_y<nPtBin; iter_y++) -- //
 
