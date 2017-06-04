@@ -1,7 +1,11 @@
-#include "../SysUncTool_EffCorr.h"
+#include <SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SysUncTool_EffCorr.h>
 
 void SysUnc_EffCorr_StatSource()
 {
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+
+	gSystem->cd( "./Local" );
 	SysUncTool_EffCorr *SysTool = new SysUncTool_EffCorr();
 	SysTool->SetIsDataDriven( kTRUE );
 
