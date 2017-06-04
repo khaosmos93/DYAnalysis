@@ -74,10 +74,17 @@ public:
 
 	HistInfo( Int_t _Color, TString _LegendName ): BaseInfo( _Color, _LegendName )
 	{
-		TH1::AddDirectory( kFALSE );
+		HistInfo();
+		// TH1::AddDirectory( kFALSE );
 
-		this->h = NULL;
-		this->h_ratio = NULL;
+		// this->h = NULL;
+		// this->h_ratio = NULL;
+	}
+
+	HistInfo( Int_t _Color, TString _LegendName, TH1D* _h ): HistInfo( _Color, _LegendName )
+	{
+		this->Set_Histogram( _h );
+		this->Set();
 	}
 
 	void Set()
