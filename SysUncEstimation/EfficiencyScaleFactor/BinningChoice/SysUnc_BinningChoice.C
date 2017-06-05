@@ -3,10 +3,10 @@
 void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D *h_tot );
 void DrawCanvas(TCanvas *c_RelUnc, TH1D* h_RelUnc_Coarse, TH1D* h_RelUnc_Fine, TH1D* h_RelUnc_Tot);
 
-void SysUnc_BinningChoice(TString version, TString Ver_CMSSW = "76X")
+void SysUnc_BinningChoice()
 {
 	// -- Coarse binning -- //
-	SysUncTool_BinningChoice* tool1 = new SysUncTool_BinningChoice("CoarseBinning", version, Ver_CMSSW);
+	SysUncTool_BinningChoice* tool1 = new SysUncTool_BinningChoice("CoarseBinning");
 
 	const Int_t nPtBin1 = 4;
 	Double_t PtBinEdges1[nPtBin1+1] = {10, 22, 40, 70, 250};
@@ -25,7 +25,7 @@ void SysUnc_BinningChoice(TString version, TString Ver_CMSSW = "76X")
 	tool1->SaveResults();
 
 
-	SysUncTool_BinningChoice* tool2 = new SysUncTool_BinningChoice("FineBinning", version, Ver_CMSSW);
+	SysUncTool_BinningChoice* tool2 = new SysUncTool_BinningChoice("FineBinning");
 
 	const Int_t nPtBin2 = 8;
 	Double_t PtBinEdges2[nPtBin2+1] = {10, 16, 22, 31, 40, 55, 70, 85, 250};

@@ -1,6 +1,6 @@
 #include "ZpeakSysUncTool_BinningChoice.h"
 
-void SysUnc_Zpeak_BinningChoice(TString version, TString HLTname = "IsoMu20_OR_IsoTkMu20")
+void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 {
 	if( gSystem->mkdir( "./Local" ) == 0 )
 		printf("Directory [Local] is created\n");
@@ -10,7 +10,7 @@ void SysUnc_Zpeak_BinningChoice(TString version, TString HLTname = "IsoMu20_OR_I
 	//////////////////////////
 	// -- Coarse Binning -- //
 	//////////////////////////
-	ZpeakSysUncTool_BinningChoice *tool_CoarseBinning = new ZpeakSysUncTool_BinningChoice(version, HLTname);
+	ZpeakSysUncTool_BinningChoice *tool_CoarseBinning = new ZpeakSysUncTool_BinningChoice(HLTname);
 	tool_CoarseBinning->SetIsDataDriven( kTRUE );
 
 	TString ROOTFile_TnPEff_CV = "ROOTFile_TagProbeEfficiency_76X_v20160502.root";

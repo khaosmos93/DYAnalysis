@@ -1,4 +1,4 @@
-#include "../ZpeakCrossSectionTool.h"
+#include <ZpeakCrossSection/ZpeakCrossSectionTool.h>
 #include <SysUncEstimation/EfficiencyScaleFactor/BinningChoice/SysUncTool_BinningChoice.h>
 
 class ZpeakSysUncTool_BinningChoice
@@ -80,9 +80,9 @@ public:
 
 	void SetSysUncTool(TString Type, Double_t nPtBin, Double_t *PtBinEdges, Int_t nEtaBin, Double_t *EtaBinEdges)
 	{
-		SysTool = new SysUncTool_BinningChoice(Type, version, "76X");
+		SysTool = new SysUncTool_BinningChoice(Type);
 		SysTool->SetupBinning(nPtBin, PtBinEdges, nEtaBin, EtaBinEdges);
-		SysTool->SetupEfficiencyScaleFactor( "./" + FileName_DB );
+		SysTool->SetupEfficiencyScaleFactor( FileName_DB );
 	}
 
 
@@ -131,10 +131,11 @@ public:
 			looptime.Start();
 
 			TChain *chain = new TChain("recoTree/DYTree");
-			TString BaseLocation = "/data4/Users/kplee/DYntuple";
+			TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
@@ -379,7 +380,7 @@ public:
 
 	Double_t Calc_ZpeakXsec_GivenEffSF(Double_t _Acc, Double_t _Eff, Double_t EffSF_HLTv4p2, Double_t EffSF_HLTv4p3)
 	{
-		ZpeakCrossSectionTool *XsecTool = new ZpeakCrossSectionTool(version, HLTname);
+		ZpeakCrossSectionTool *XsecTool = new ZpeakCrossSectionTool();
 		XsecTool->ObtainYield( isDataDriven );
 		XsecTool->ApplyAccEffCorrection(_Acc, _Eff);
 		XsecTool->EfficiencyScaleFactor(EffSF_HLTv4p2, EffSF_HLTv4p3);
