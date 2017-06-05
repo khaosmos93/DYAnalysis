@@ -1,7 +1,11 @@
-#include "Combine_RelUnc_ZPeak_TnPSyst.h"
+#include "Combine_RelUnc_Zpeak_TnPSyst.h"
 
 void Combine_RelUnc_Zpeak_TnPSyst()
 {
+	if( gSystem->mkdir( "./Local" ) == 0 )
+		printf("Directory [Local] is created\n");
+	gSystem->cd( "./Local" );
+	
 	// vector< TString > vec_Type = {"sgnChange", "bkgChange", "M60to130", "M70to120", "nBin30", "nBin50", "TagPt20", "TagPt24"};
 
 	CombineTool *tool = new CombineTool();

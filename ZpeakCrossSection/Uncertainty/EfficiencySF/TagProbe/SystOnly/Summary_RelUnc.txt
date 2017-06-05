@@ -1,0 +1,6 @@
+Signal change:   0.00685
+Bkg. change:   0.00392
+Mass range:   0.00927 (60 < M < 130:   0.00927, 70 < M < 120:   0.00054)
+# bins:   0.00089 (# bins = 30:   0.00027, # bins = 50:   0.00089)
+Tag pT:   0.00235 (Tag pT > 20:   0.00222, Tag pT > 24:   0.00235)
+Total (quad.sum):   0.01243

@@ -27,15 +27,20 @@ public:
 
 	void Print_All()
 	{
-		printf("Signal change: %9.5lf\n", this->RelUnc_sgnChange);
-		printf("Bkg. change: %9.5lf\n", this->RelUnc_bkgChange);
-		printf("Mass range: %9.5lf (60 < M < 130: %9.5lf, 70 < M < 120: %9.5lf)\n", 
+		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+		TString FileName = AnalyzerPath+"/ZpeakCrossSection/Uncertainty/EfficiencySF/TagProbe/SystOnly/Summary_RelUnc.txt";
+		FILE *fp = fopen(FileName.Data(), "w");
+		fprintf(fp, "Signal change: %9.5lf\n", this->RelUnc_sgnChange);
+		fprintf(fp, "Bkg. change: %9.5lf\n", this->RelUnc_bkgChange);
+		fprintf(fp, "Mass range: %9.5lf (60 < M < 130: %9.5lf, 70 < M < 120: %9.5lf)\n", 
 			this->RelUnc_MassRange, this->RelUnc_M60to130, this->RelUnc_M70to120);
-		printf("# bins: %9.5lf (# bins = 30: %9.5lf, # bins = 50: %9.5lf)\n", 
+		fprintf(fp, "# bins: %9.5lf (# bins = 30: %9.5lf, # bins = 50: %9.5lf)\n", 
 			this->RelUnc_nBin, this->RelUnc_nBin30, this->RelUnc_nBin50);
-		printf("Tag pT: %9.5lf (Tag pT > 20: %9.5lf, Tag pT > 24: %9.5lf)\n", 
+		fprintf(fp, "Tag pT: %9.5lf (Tag pT > 20: %9.5lf, Tag pT > 24: %9.5lf)\n", 
 			this->RelUnc_TagPt, this->RelUnc_TagPt20, this->RelUnc_TagPt24);
-		printf("Total (quad.sum): %9.5lf\n", this->RelUnc_Tot);
+		fprintf(fp, "Total (quad.sum): %9.5lf\n", this->RelUnc_Tot);
+
+		printf("Summary_RelUnc.txt is produced\n");
 	}
 
 	void Save( TFile *f_output )
@@ -84,7 +89,9 @@ protected:
 
 	Double_t GetContent_FromHist( TString SystType )
 	{
-		TString FileName = SystType+"/Local/ROOTFile_Output_SysUnc_Zpeak_TagProbe_SystSource.root";
+		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+
+		TString FileName = AnalyzerPath+"/ZpeakCrossSection/Uncertainty/EfficiencySF/TagProbe/SystOnly/"+SystType+"/Local/ROOTFile_Output_SysUnc_Zpeak_TagProbe_SystSource.root";
 
 		TH1D* h_RelUnc = Get_Hist(FileName, "h_RelUnc");
 
