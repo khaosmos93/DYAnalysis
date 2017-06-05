@@ -21,21 +21,21 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc"
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldBayes.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfoldResponse.h>
+#include <src/RooUnfoldBayes.h>
+#include <src/RooUnfoldInvert.h>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DiffXsecTools.h"
+#include <Include/MyCanvas.C>
+#include <Include/DYAnalyzer.h>
+#include <Include/DiffXsecTools.h>
 
 class MyDiffXsecTool : public DiffXsecTools
 {
 public:
-	MyDiffXsecTool(TString version, TString Ver_CMSSW) : DiffXsecTools(version, Ver_CMSSW)
+	MyDiffXsecTool() : DiffXsecTools()
 	{
 
 	}
@@ -92,7 +92,6 @@ class SysUncTool_BinningChoice
 {
 public:
 	TString Type;
-	TString version;
 	TString Ver_CMSSW;
 	TString FileLocation;
 	TFile *f_cv; // -- File containing central values -- //
@@ -154,20 +153,14 @@ public:
 	TH1D* h_FpoF_DiffXsec;
 	TFile *f_FpoF_output;
 
-	SysUncTool_BinningChoice(TString _Type, TString _version, TString _Ver_CMSSW)
+	SysUncTool_BinningChoice(TString _Type)
 	{
 		Type = _Type;
 		cout << "===================================" << endl;
 		cout << "[Type] " << Type << endl; 
 		cout << "===================================\n" << endl;
 
-		version = _version;
-		Ver_CMSSW = _Ver_CMSSW;
-
-		if( Ver_CMSSW == "74X" )
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles/"+version;
-		else if( Ver_CMSSW == "76X" )
-			FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/"+version;
+		this->FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 
 		Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 											 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -248,7 +241,9 @@ public:
 	void SetupEfficiencyScaleFactor(TString _ROOTFileName)
 	{
 		ROOTFileName_EffSF = _ROOTFileName;
-		TString Location_TnP = "./" + ROOTFileName_EffSF;
+		TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+
+		TString Location_TnP = AnalyzerPath+"/SysUncEstimation/EfficiencyScaleFactor/BinningChoice/"+ROOTFileName_EffSF;
 		cout << "[Tag&Probe efficiency is from " << Location_TnP << "]" << endl; 
 
 		TFile *f = new TFile( Location_TnP );
@@ -528,7 +523,7 @@ public:
 		h_mass_EffPass_EffSF_HLTv4p2 = new TH1D("h_mass_EffPass_EffSF_HLTv4p2", "", nMassBin, MassBinEdges);
 		h_mass_EffPass_EffSF_HLTv4p3 = new TH1D("h_mass_EffPass_EffSF_HLTv4p3", "", nMassBin, MassBinEdges);
 
-		TString BaseLocation = "/data4/Users/kplee/DYntuple";
+		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 		// -- Each ntuple directory & corresponding Tags -- //
 			// -- GenWeights are already taken into account in nEvents -- //
 		vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
@@ -555,6 +550,7 @@ public:
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
@@ -784,7 +780,7 @@ public:
 
 	void CalcDiffXsec_GivenEffSF()
 	{
-		MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
+		MyDiffXsecTool *XsecTool = new MyDiffXsecTool();
 		XsecTool->MakeSignalMCHistograms();
 
 		XsecTool->GetYieldHistograms(isDataDriven);
@@ -989,63 +985,63 @@ public:
 		cout << "]\r" << flush;
 	}
 
-	void FpoF_Calc_SysUnc()
-	{
-		if( f_cv == NULL )
-			f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
+	// void FpoF_Calc_SysUnc()
+	// {
+	// 	if( f_cv == NULL )
+	// 		f_cv = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
 
-		f_cv->cd();
-		TH1D *h_FpoF_DiffXsec_CV = (TH1D*)f_cv->Get("h_FpoF_DiffXsec_Data")->Clone();
+	// 	f_cv->cd();
+	// 	TH1D *h_FpoF_DiffXsec_CV = (TH1D*)f_cv->Get("h_FpoF_DiffXsec_Data")->Clone();
 
-		this->h_FpoF_DiffXsec = this->FpoF_CalcDiffXsec_GivenEffSF();
+	// 	this->h_FpoF_DiffXsec = this->FpoF_CalcDiffXsec_GivenEffSF();
 
-		for(Int_t i=0; i<nMassBin; i++)
-		{
-			Int_t i_bin = i+1;
+	// 	for(Int_t i=0; i<nMassBin; i++)
+	// 	{
+	// 		Int_t i_bin = i+1;
 			
-			Double_t central_value = h_FpoF_DiffXsec_CV->GetBinContent(i_bin);
-			Double_t alter_value = h_FpoF_DiffXsec->GetBinContent(i_bin);
+	// 		Double_t central_value = h_FpoF_DiffXsec_CV->GetBinContent(i_bin);
+	// 		Double_t alter_value = h_FpoF_DiffXsec->GetBinContent(i_bin);
 
-			Double_t AbsUnc = fabs( central_value - alter_value );
-			Double_t RelUnc = AbsUnc / central_value;
+	// 		Double_t AbsUnc = fabs( central_value - alter_value );
+	// 		Double_t RelUnc = AbsUnc / central_value;
 
-			h_RelSysUnc_Percent->SetBinContent(i_bin, RelUnc);
-			h_RelSysUnc_Percent->SetBinError(i_bin, 0);
-		}
-		h_RelSysUnc_Percent->Scale( 100 ); // -- percent -- //
+	// 		h_RelSysUnc_Percent->SetBinContent(i_bin, RelUnc);
+	// 		h_RelSysUnc_Percent->SetBinError(i_bin, 0);
+	// 	}
+	// 	h_RelSysUnc_Percent->Scale( 100 ); // -- percent -- //
 
-	}
+	// }
 
-	TH1D* FpoF_CalcDiffXsec_GivenEffSF()
-	{
-		MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
-		XsecTool->MakeSignalMCHistograms();
-		XsecTool->GetYieldHistograms(isDataDriven);
-		XsecTool->UnfoldingCorrection();
+	// TH1D* FpoF_CalcDiffXsec_GivenEffSF()
+	// {
+	// 	MyDiffXsecTool *XsecTool = new MyDiffXsecTool(version, Ver_CMSSW);
+	// 	XsecTool->MakeSignalMCHistograms();
+	// 	XsecTool->GetYieldHistograms(isDataDriven);
+	// 	XsecTool->UnfoldingCorrection();
 
-		XsecTool->FpoF_GetTheoryHist();
-		XsecTool->FpoF_EffCorrection();
+	// 	XsecTool->FpoF_GetTheoryHist();
+	// 	XsecTool->FpoF_EffCorrection();
 		
-		cout << g_EffSF_HLTv4p2 << ", " << g_EffSF_HLTv4p3 << endl;
+	// 	cout << g_EffSF_HLTv4p2 << ", " << g_EffSF_HLTv4p3 << endl;
 
-		XsecTool->FpoF_EfficiencyScaleFactor(this->g_EffSF_HLTv4p2, this->g_EffSF_HLTv4p3);
-		XsecTool->FpoF_CalcXsec();
+	// 	XsecTool->FpoF_EfficiencyScaleFactor(this->g_EffSF_HLTv4p2, this->g_EffSF_HLTv4p3);
+	// 	XsecTool->FpoF_CalcXsec();
 
-		return XsecTool->h_FpoF_DiffXsec_Data;
-	}
+	// 	return XsecTool->h_FpoF_DiffXsec_Data;
+	// }
 
-	void FpoF_SaveResults()
-	{
-		if( f_FpoF_output == NULL )
-			f_FpoF_output = new TFile("ROOTFile_FpoF_SysUnc_BinningChoice_"+Type+".root", "RECREATE");
+	// void FpoF_SaveResults()
+	// {
+	// 	if( f_FpoF_output == NULL )
+	// 		f_FpoF_output = new TFile("ROOTFile_FpoF_SysUnc_BinningChoice_"+Type+".root", "RECREATE");
 
-		f_FpoF_output->cd();
+	// 	f_FpoF_output->cd();
 
-		g_EffSF_HLTv4p2->Write();
-		g_EffSF_HLTv4p3->Write();
+	// 	g_EffSF_HLTv4p2->Write();
+	// 	g_EffSF_HLTv4p3->Write();
 
-		h_FpoF_DiffXsec->Write();
+	// 	h_FpoF_DiffXsec->Write();
 
-		h_RelSysUnc_Percent->Write();
-	}
+	// 	h_RelSysUnc_Percent->Write();
+	// }
 };

@@ -1,4 +1,4 @@
-#include "../ZpeakCrossSectionTool.h"
+#include <ZpeakCrossSection/ZpeakCrossSectionTool.h>
 #include <SysUncEstimation/EfficiencyScaleFactor/BinningChoice/SysUncTool_BinningChoice.h>
 
 class ZpeakSysUncTool_BinningChoice
@@ -80,7 +80,7 @@ public:
 
 	void SetSysUncTool(TString Type, Double_t nPtBin, Double_t *PtBinEdges, Int_t nEtaBin, Double_t *EtaBinEdges)
 	{
-		SysTool = new SysUncTool_BinningChoice(Type, version, "76X");
+		SysTool = new SysUncTool_BinningChoice(Type);
 		SysTool->SetupBinning(nPtBin, PtBinEdges, nEtaBin, EtaBinEdges);
 		SysTool->SetupEfficiencyScaleFactor( "./" + FileName_DB );
 	}
