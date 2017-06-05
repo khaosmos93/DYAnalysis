@@ -40,8 +40,8 @@ void MakeInputFile_Cov()
 	h_RelUnc_Stat_DetRes->Scale( 0.01 ); h_RelUnc_Stat_DetRes->SetYTitle("");
 	h_RelUnc_Syst_DetRes->Scale( 0.01 ); h_RelUnc_Syst_DetRes->SetYTitle("");
 
-	TH1D* h_RelUnc_Stat_EffSF = Get_Hist( BasePath+"/ROOTFile_RelUnc_Stat_Syst_Tot_EffSF.root", "h_RelUnc_Stat", HistName_RelUnc_Stat_EffSF );
-	TH1D* h_RelUnc_Syst_EffSF = Get_Hist( BasePath+"/ROOTFile_RelUnc_Stat_Syst_Tot_EffSF.root", "h_RelUnc_Syst", HistName_RelUnc_Syst_EffSF );
+	TH1D* h_RelUnc_Stat_EffSF = Get_Hist( BasePath+"/ROOTFile_SysUnc_EffSF.root", "h_RelUnc_Stat", HistName_RelUnc_Stat_EffSF );
+	TH1D* h_RelUnc_Syst_EffSF = Get_Hist( BasePath+"/ROOTFile_SysUnc_EffSF.root", "h_RelUnc_Syst", HistName_RelUnc_Syst_EffSF );
 	h_RelUnc_Stat_EffSF->Scale( 0.01 ); h_RelUnc_Stat_EffSF->SetYTitle("");
 	h_RelUnc_Syst_EffSF->Scale( 0.01 ); h_RelUnc_Syst_EffSF->SetYTitle("");
 
