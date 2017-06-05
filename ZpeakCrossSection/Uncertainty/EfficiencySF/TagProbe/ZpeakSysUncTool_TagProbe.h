@@ -5,7 +5,7 @@
 #include "RooPlot.h"
 #include "TTree.h"
 
-#include "../ZpeakCrossSectionTool.h"
+#include <ZpeakCrossSection/ZpeakCrossSectionTool.h>
 #include <SysUncEstimation/EfficiencyScaleFactor/TagProbeMethod/SysUncTool_EffCorr.h>
 
 using namespace RooFit;
@@ -107,17 +107,17 @@ public:
 		SysTool->Generate_SmearedEffMap_StatOnly();
 	}
 
-	void SetupROOTFile_TagProbeEff(TString _ROOTFile_TnPEff_CV, TString _ROOTFile_TnPEff_SysUnc)
-	{
-		ROOTFile_TnPEff_CV = _ROOTFile_TnPEff_CV;
-		ROOTFile_TnPEff_SysUnc = _ROOTFile_TnPEff_SysUnc;
+	// void SetupROOTFile_TagProbeEff(TString _ROOTFile_TnPEff_CV, TString _ROOTFile_TnPEff_SysUnc)
+	// {
+	// 	ROOTFile_TnPEff_CV = _ROOTFile_TnPEff_CV;
+	// 	ROOTFile_TnPEff_SysUnc = _ROOTFile_TnPEff_SysUnc;
 
-		SysTool = new SysUncTool_EffCorr();
-		SysTool->SetupCentralValueStatError( ROOTFile_TnPEff_CV );
-		SysTool->SetUpSysUnc( ROOTFile_TnPEff_SysUnc );
-		SysTool->CalcTotalUnc();
-		SysTool->MakeSmearedEffMap();
-	}
+	// 	SysTool = new SysUncTool_EffCorr();
+	// 	SysTool->SetupCentralValueStatError( ROOTFile_TnPEff_CV );
+	// 	SysTool->SetUpSysUnc( ROOTFile_TnPEff_SysUnc );
+	// 	SysTool->CalcTotalUnc();
+	// 	SysTool->MakeSmearedEffMap();
+	// }
 
 	void Calc_EffSF_AllMap(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO")
 	{
@@ -167,7 +167,7 @@ public:
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 			
 			NtupleHandle *ntuple = new NtupleHandle( chain );
-			ntuple->TurnOnBranches_HLT():
+			ntuple->TurnOnBranches_HLT();
 			ntuple->TurnOnBranches_Muon();
 			ntuple->TurnOnBranches_GenLepton();
 
@@ -193,7 +193,7 @@ public:
 			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
 			cout << "\t[Normalization factor: " << norm << "]" << endl;
 
-			// NEvents = 1000000;
+			// NEvents = 3000000;
 			for(Int_t i=0; i<NEvents; i++)
 			{
 				loadBar(i+1, NEvents, 100, 100);
@@ -441,10 +441,10 @@ public:
 		TString CanvasName = c->GetName();
 		c->SaveAs(CanvasName+".pdf");
 		
-		f_output->cd();
+		// f_output->cd();
 
-		tree->Write();
-		c->Write();
+		// tree->Write();
+		// c->Write();
 
 		RelSysUnc = sigma.getVal();
 
@@ -472,7 +472,7 @@ public:
 
 	Double_t Calc_ZpeakXsec_GivenEffSF(Double_t _Acc, Double_t _Eff, Double_t EffSF_HLTv4p2, Double_t EffSF_HLTv4p3)
 	{
-		MyZpeakXsecTool *XsecTool = new MyZpeakXsecTool();
+		MyZpeakXsecTool *XsecTool = new MyZpeakXsecTool(this->HLTname);
 		XsecTool->ObtainYield( isDataDriven );
 		XsecTool->ApplyAccEffCorrection(_Acc, _Eff);
 		XsecTool->EfficiencyScaleFactor(EffSF_HLTv4p2, EffSF_HLTv4p3);
