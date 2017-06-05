@@ -538,10 +538,20 @@ public:
 		for(Int_t i=0; i<nEffMap; i++)
 		{
 			Int_t i_bin = i+1;
+
+			h_EffSF_HLTv4p2_Smeared->SetBinContent(i_bin, this->EffSF_HLTv4p2[i] );
+			h_EffSF_HLTv4p2_Smeared->SetBinError(i_bin, 0);
+
+			h_EffSF_HLTv4p3_Smeared->SetBinContent(i_bin, this->EffSF_HLTv4p3[i] );
+			h_EffSF_HLTv4p3_Smeared->SetBinError(i_bin, 0);
+
 			h_xSec_Smeared->SetBinContent(i_bin, this->xSec[i] );
 			h_xSec_Smeared->SetBinError(i_bin, 0 );
 		}
+		
 		f_output->cd();
+		h_EffSF_HLTv4p2_Smeared->Write();
+		h_EffSF_HLTv4p3_Smeared->Write();
 		h_xSec_Smeared->Write();
 
 		this->h_RelDiff->SetName("h_RelDiff");
