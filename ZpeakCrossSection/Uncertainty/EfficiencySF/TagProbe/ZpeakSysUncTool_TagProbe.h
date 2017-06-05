@@ -53,8 +53,6 @@ public:
 
 	TH1D *h_RelDiff;
 
-	TFile *f_output;
-
 	Double_t RelSysUnc;
 
 	ZpeakSysUncTool_TagProbe(TString _HLTname)
@@ -84,7 +82,6 @@ public:
 		this->isDataDriven = kFALSE;
 
 		this->h_RelDiff = new TH1D("h_RelDiff", "", 5000, -1, 1);
-		this->f_output = new TFile("ROOTFile_Zpeak_SysUnc_TagProbe.root", "RECREATE");
 
 		this->RelSysUnc = 0;
 	}
@@ -96,6 +93,18 @@ public:
 		cout << "isDataDriven = " << isDataDriven << endl;
 		cout << "=================================\n\n" << endl;
 
+	}
+
+	void InputFileName_CV( TString _FileName )
+	{
+		this->ROOTFile_TnPEff_CV = _FileName;
+	}
+
+	void SetupEffMaps_StatOnly()
+	{
+		SysTool = new SysUncTool_EffCorr();
+		SysTool->SetupCentralValueStatError( ROOTFile_TnPEff_CV );
+		SysTool->Generate_SmearedEffMap_StatOnly();
 	}
 
 	void SetupROOTFile_TagProbeEff(TString _ROOTFile_TnPEff_CV, TString _ROOTFile_TnPEff_SysUnc)
@@ -501,26 +510,26 @@ public:
 
 	void Save_Results( TFile *f_output )
 	{
-		this->SaveAsTVector( this->xSec_CV, xSec_CV, f_output );
+		SaveAsHist_OneContent( this->EffSF_HLTv4p2_CV, "h_EffSF_HLTv4p2_CV", f_output );
+		SaveAsHist_OneContent( this->EffSF_HLTv4p3_CV, "h_EffSF_HLTv4p3_CV", f_output );
+		SaveAsHist_OneContent( this->xSec_CV, "h_xSec_CV", f_output );
 
-		f_output->cd();
-		TVectorD *XSec_Smeared = new TVectorD(nEffMap);
+		TH1D* h_EffSF_HLTv4p2_Smeared = new TH1D("h_EffSF_HLTv4p2_Smeared", "", nEffMap, 0, nEffMap);
+		TH1D* h_EffSF_HLTv4p3_Smeared = new TH1D("h_EffSF_HLTv4p3_Smeared", "", nEffMap, 0, nEffMap);
+		TH1D* h_xSec_Smeared = new TH1D("h_xSec_Smeared", "", nEffMap, 0, nEffMap);
 		for(Int_t i=0; i<nEffMap; i++)
-			XSec_Smeared[i] = this->xSec[i];
-		XSec_Smeared->Write( "XSec_Smeared" );
-
-		this->h_RelDiff->Write("h_RelDiff");
-
-		this->SaveAsTVector( this->RelSysUnc, "RelSystUnc", f_output );
-	}
-
-	void SaveAsTVector( Double_t var, TString Name, TFile *f_output )
-	{
-		TVectorD *Vec = new TVectorD(1);
-		Vec[0] = var;
-
+		{
+			Int_t i_bin = i+1;
+			h_xSec_Smeared->SetBinContent(i_bin, this->xSec[i] );
+			h_xSec_Smeared->SetBinError(i_bin, 0 );
+		}
 		f_output->cd();
-		Vec->Write( Name );
+		h_xSec_Smeared->Write();
+
+		this->h_RelDiff->SetName("h_RelDiff");
+		this->h_RelDiff->Write();
+
+		SaveAsHist_OneContent( this->RelSysUnc, "h_RelUnc", f_output );
 	}
 };
 

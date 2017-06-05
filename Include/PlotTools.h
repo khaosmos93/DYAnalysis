@@ -968,6 +968,24 @@ TGraphAsymmErrors* MakeGraph_Ratio( TGraphAsymmErrors* g_NUM, TGraphAsymmErrors 
 	return Graph->g_ratio;
 }
 
+void SaveAsHist_OneContent( Double_t content, TString HistName, TFile *f_output )
+{
+	TH1D *h = new TH1D(HistName, "", 1, 0, 1);
+	h->SetBinContent(1, content);
+	h->SetBinError(1, 0);
+	f_output->cd();
+	h->Write();
+}
+
+void SaveAsHist_OneContent_WithError( Double_t content, Double_t error, TString HistName, TFile *f_output )
+{
+	TH1D *h = new TH1D(HistName, "", 1, 0, 1);
+	h->SetBinContent(1, content);
+	h->SetBinError(1, error);
+	f_output->cd();
+	h->Write();
+}
+
 class DrawCanvas_TwoHistRatio
 {
 public:
