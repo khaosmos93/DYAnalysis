@@ -28,7 +28,7 @@ root -l -b << EOF
 TString BasePath = gSystem->Getenv("KP_ROOUNFOLD_PATH")
 gSystem->Load(BasePath+"/libRooUnfold.so")
 
-.x SysUnc_EffCorr_SystSource.cxx++("{_SystType}")
+.x {_CodeName}++("{_SystType}")
 
 .q
 
@@ -40,7 +40,7 @@ echo "job is completed"
 
 # -- PLEASE ENTER AFTER THE LAST LINE! ... IF YOU DON'T, LAST LINE WILL NOT BE EXECUTED BY BATCH JOB -- #
 
-""".format(_SystType=_Type) )
+""".format(_CodeName=CodeName, _SystType=_Type) )
 
 	f.close()
 
