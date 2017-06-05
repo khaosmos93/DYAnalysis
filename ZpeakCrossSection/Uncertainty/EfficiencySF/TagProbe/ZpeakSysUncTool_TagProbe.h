@@ -55,6 +55,8 @@ public:
 
 	Double_t RelSysUnc;
 
+	Int_t nEvent_Test;
+
 	ZpeakSysUncTool_TagProbe(TString _HLTname)
 	{
 		this->FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
@@ -84,6 +86,13 @@ public:
 		this->h_RelDiff = new TH1D("h_RelDiff", "", 5000, -1, 1);
 
 		this->RelSysUnc = 0;
+
+		this->nEvent_Test = -1;
+	}
+
+	void Set_nEvent_Test( Int_t nEvent )
+	{
+		this->nEvent_Test = nEvent;
 	}
 
 	void SetIsDataDriven(Bool_t _isDataDriven)
@@ -105,6 +114,14 @@ public:
 		SysTool = new SysUncTool_EffCorr();
 		SysTool->SetupCentralValueStatError( ROOTFile_TnPEff_CV );
 		SysTool->Generate_SmearedEffMap_StatOnly();
+	}
+
+	void SetupEffMaps_SystOnly( TString SystType )
+	{
+		SysTool = new SysUncTool_EffCorr();
+		SysTool->SetupCentralValueStatError( ROOTFile_TnPEff_CV );
+		SysTool->SetUpSysUnc_EachSource(SystType);
+		SysTool->Generate_SmearedEffMap_SystOnly_Correlated();
 	}
 
 	// void SetupROOTFile_TagProbeEff(TString _ROOTFile_TnPEff_CV, TString _ROOTFile_TnPEff_SysUnc)
@@ -194,6 +211,7 @@ public:
 			cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 			// NEvents = 3000000;
+			if( this->nEvent_Test > 0 ) NEvents = this->nEvent_Test;
 			for(Int_t i=0; i<NEvents; i++)
 			{
 				loadBar(i+1, NEvents, 100, 100);
