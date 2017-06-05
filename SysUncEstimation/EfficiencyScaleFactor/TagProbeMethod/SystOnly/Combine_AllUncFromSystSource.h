@@ -28,8 +28,8 @@ public:
 	{
 		this->h_RelUnc_sgnChange = this->Get_RelUncHist( "sgnChange" );
 		this->h_RelUnc_bkgChange = this->Get_RelUncHist( "bkgChange" );
-		this->h_RelUnc_MassRange = this->Take_LargerUnc( "M60to130", "60 < M < 130", "M70to120", "70 < M < 120" );
-		this->h_RelUnc_TagPt = this->Take_LargerUnc( "TagPt20", "Tag P_{T} > 20", "TagPt24", "Tag P_{T} > 24" );
+		this->h_RelUnc_MassRange = this->Take_LargerUnc( "M60to130", "60 < M < 130 [GeV]", "M70to120", "70 < M < 120 [GeV]" );
+		this->h_RelUnc_TagPt = this->Take_LargerUnc( "TagPt20", "Tag P_{T} > 20 GeV", "TagPt24", "Tag P_{T} > 24 GeV" );
 		this->h_RelUnc_nBin = this->Take_LargerUnc( "nBin30", "# bin = 30", "nBin50", "# bin = 50" );
 
 		this->Make_TotalHist_QuadSum();
@@ -37,11 +37,11 @@ public:
 
 	void Draw_SummaryPlot()
 	{
-		HistInfo *Hist_sgnChange = new HistInfo( kBlue, "Signal shape", this->h_RelUnc_sgnChange );
+		HistInfo *Hist_sgnChange = new HistInfo( kRed+2, "Signal shape", this->h_RelUnc_sgnChange );
 		HistInfo *Hist_bkgChange = new HistInfo( kGreen+2, "Bkg. shape", this->h_RelUnc_bkgChange );
 		HistInfo *Hist_MassRange = new HistInfo( kOrange+1, "Mass range", this->h_RelUnc_MassRange );
 		HistInfo *Hist_TagPt = new HistInfo( kViolet, "Tag P_{T}", this->h_RelUnc_TagPt );
-		HistInfo *Hist_nBin = new HistInfo( kBlack, "# bins", this->h_RelUnc_nBin );
+		HistInfo *Hist_nBin = new HistInfo( kCyan, "# bins", this->h_RelUnc_nBin );
 		HistInfo *Hist_Total = new HistInfo( kRed, "Total", this->h_RelUnc_Total );
 
 		// -- convert to % -- //
@@ -64,10 +64,11 @@ public:
 		Hist_Total->Draw("HISTLPSAME");
 
 		SetHistFormat_SinglePad( Hist_sgnChange->h, "m [GeV]", "Unc. (%)" );
-		Hist_sgnChange->h->GetYaxis()->SetRangeUser(0, 1);
+		Hist_sgnChange->h->GetYaxis()->SetRangeUser(0, 7);
 
 		TLegend *legend;
-		SetLegend( legend, 0.70, 0.63, 0.95, 0.94 );
+		SetLegend( legend, 0.15, 0.80, 0.55, 0.94 );
+		legend->SetNColumns( 2 );
 		Hist_sgnChange->AddToLegend( legend );
 		Hist_bkgChange->AddToLegend( legend );
 		Hist_MassRange->AddToLegend( legend );
@@ -78,7 +79,7 @@ public:
 
 		TLatex latex;
 		Latex_Preliminary( latex, 2.8, 13 );
-		latex.DrawLatexNDC(0.15, 0.91, "#scale[0.8]{#font[42]{Unc. from TnP (syst. source)}}");
+		latex.DrawLatexNDC(0.60, 0.91, "#scale[0.6]{#font[42]{Unc. from TnP (syst. source)}}");
 
 		c->SaveAs(".pdf");
 	}
@@ -188,10 +189,10 @@ protected:
 		Hist_total->Draw("HISTLPSAME");
 
 		SetHistFormat_SinglePad( Hist1->h, "m [GeV]", "Unc. (%)" );
-		Hist1->h->GetYaxis()->SetRangeUser(0, 0.5);
+		Hist1->h->GetYaxis()->SetRangeUser(0, 2.5);
 
 		TLegend *legend;
-		SetLegend( legend, 0.50, 0.75, 0.95, 0.95 );
+		SetLegend( legend, 0.70, 0.80, 0.95, 0.95 );
 		Hist1->AddToLegend( legend );
 		Hist2->AddToLegend( legend );
 		Hist_total->AddToLegend( legend );
