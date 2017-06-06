@@ -69,7 +69,7 @@ void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	// printf("[Relative Systematic uncertainty from binning choice (total): %.5lf (%%)]\n", RelSysUnc_Binning*100);
 	// cout << "====================================================================\n" <<endl;
 
-	TFile *f_output = TFile::Open("ROOTFIle_RelUnc_Zpeak_BinningChoice.root", "RECREATE");
+	TFile *f_output = TFile::Open("ROOTFile_RelUnc_Zpeak_BinningChoice.root", "RECREATE");
 	SaveAsHist_OneContent( RelSysUnc_CoarseBinning, "h_RelUnc_Coarse", f_output );
 	SaveAsHist_OneContent( RelSysUnc_FineBinning, "h_RelUnc_Fine", f_output );
 	SaveAsHist_OneContent( RelSysUnc_Binning, "h_RelUnc", f_output );
