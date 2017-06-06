@@ -1,4 +1,5 @@
 #include "ZpeakSysUncTool_BinningChoice.h"
+#include <Include/PlotTools.h>
 
 void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 {
@@ -51,12 +52,16 @@ void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 
 	Double_t RelSysUnc_FineBinning = tool_FineBinning->RelSysUnc;
 
-	Double_t RelSysUnc_Binning = sqrt( RelSysUnc_CoarseBinning * RelSysUnc_CoarseBinning + RelSysUnc_FineBinning * RelSysUnc_FineBinning);
+	Double_t RelSysUnc_Binning = 0;
+	if( RelSysUnc_CoarseBinning > RelSysUnc_FineBinning ) RelSysUnc_Binning = RelSysUnc_CoarseBinning;
+	else RelSysUnc_Binning = RelSysUnc_FineBinning;
 
 	cout << "======================================================================" <<endl;
 	printf("[Relative Systematic uncertainty from binning choice (total): %.5lf (%%)]\n", RelSysUnc_Binning*100);
 	cout << "====================================================================\n" <<endl;
 
-
-
+	TFile *f_output = TFile::Open("ROOTFIle_RelUnc_Zpeak_BinningChoice.root", "RECREATE");
+	SaveAsHist_OneContent( RelSysUnc_CoarseBinning, "h_RelUnc_Coarse", f_output );
+	SaveAsHist_OneContent( RelSysUnc_FineBinning, "h_RelUnc_Fine", f_output );
+	SaveAsHist_OneContent( RelSysUnc_Binning, "h_RelUnc", f_output );
 }

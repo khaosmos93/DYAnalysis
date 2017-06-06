@@ -32,6 +32,8 @@ public:
 	Double_t xSec_DB;
 	Double_t RelSysUnc;
 
+	Double_t nEvent_Test;
+
 	ZpeakSysUncTool_BinningChoice(TString _HLTname)
 	{
 		FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH"); // -- 76X -- //
@@ -56,6 +58,13 @@ public:
 		xSec_DB = 0;
 
 		RelSysUnc = 0;
+
+		this->nEvent_Test = -1;
+	}
+
+	void Set_nEvent_Test( Double_t _nEvent )
+	{
+		this->nEvent_Test = _nEvent;
 	}
 
 	void SetIsDataDriven(Bool_t _isDataDriven)
@@ -156,6 +165,7 @@ public:
 			Double_t SumWeights_Separated = 0;
 
 			Int_t NEvents = chain->GetEntries();
+			if( this->nEvent_Test > 0 ) nEvents = nEvent_Test;
 			cout << "\t[Total Events: " << NEvents << "]" << endl;
 
 			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
