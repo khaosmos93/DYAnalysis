@@ -986,6 +986,18 @@ void SaveAsHist_OneContent_WithError( Double_t content, Double_t error, TString 
 	h->Write();
 }
 
+Double_t GetContent_OneBinHist( TString FileName, TString HistName )
+{
+	TH1D* h_temp = Get_Hist( FileName, HistName );
+	if( h_temp->GetNbinsX() != 1 )
+	{
+		cout << "This histogram has more than 1 bin! ... please check. Return -999" << endl;
+		return -999;
+	}
+
+	return h_temp->GetBinContent(1);
+}
+
 class DrawCanvas_TwoHistRatio
 {
 public:
