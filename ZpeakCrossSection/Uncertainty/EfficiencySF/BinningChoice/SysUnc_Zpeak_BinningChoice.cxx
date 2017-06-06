@@ -12,6 +12,7 @@ void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	// -- Coarse Binning -- //
 	//////////////////////////
 	ZpeakSysUncTool_BinningChoice *tool_CoarseBinning = new ZpeakSysUncTool_BinningChoice(HLTname);
+	// tool_CoarseBinning->Set_nEvent_Test( 1000000 );
 	tool_CoarseBinning->SetIsDataDriven( kTRUE );
 
 	TString ROOTFile_TnPEff_CV = "ROOTFile_TagProbeEfficiency_76X_v20160502.root";
@@ -34,7 +35,8 @@ void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	///////////////////////
 	// -- Fine binning - //
 	///////////////////////
-	ZpeakSysUncTool_BinningChoice *tool_FineBinning = new ZpeakSysUncTool_BinningChoice(version, HLTname);
+	ZpeakSysUncTool_BinningChoice *tool_FineBinning = new ZpeakSysUncTool_BinningChoice(HLTname);
+	// tool_FineBinning->Set_nEvent_Test( 1000000 );
 	tool_FineBinning->SetIsDataDriven( kTRUE );
 
 	TString ROOTFile_TnPEff_FineBinning = "ROOTFile_TagProbeEff_SysUnc_BinningChoice_FineBinning.root";
@@ -56,9 +58,16 @@ void SysUnc_Zpeak_BinningChoice(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 	if( RelSysUnc_CoarseBinning > RelSysUnc_FineBinning ) RelSysUnc_Binning = RelSysUnc_CoarseBinning;
 	else RelSysUnc_Binning = RelSysUnc_FineBinning;
 
-	cout << "======================================================================" <<endl;
-	printf("[Relative Systematic uncertainty from binning choice (total): %.5lf (%%)]\n", RelSysUnc_Binning*100);
-	cout << "====================================================================\n" <<endl;
+	TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+	TString FileName = AnalyzerPath+"/ZpeakCrossSection/Uncertainty/EfficiencySF/BinningChoice/Summary_Unc_Zpeak_BinningChoice.txt";
+	FILE *fp = fopen(FileName.Data(), "w");
+	fprintf(fp, "Rel.Unc. from coarse binning: %9.5lf\n", RelSysUnc_CoarseBinning);
+	fprintf(fp, "Rel.Unc. from fine binning: %9.5lf\n", RelSysUnc_FineBinning);
+	fprintf(fp, "Rel.Unc. from binning (take larger one): %9.5lf\n", RelSysUnc_Binning);
+
+	// cout << "======================================================================" <<endl;
+	// printf("[Relative Systematic uncertainty from binning choice (total): %.5lf (%%)]\n", RelSysUnc_Binning*100);
+	// cout << "====================================================================\n" <<endl;
 
 	TFile *f_output = TFile::Open("ROOTFIle_RelUnc_Zpeak_BinningChoice.root", "RECREATE");
 	SaveAsHist_OneContent( RelSysUnc_CoarseBinning, "h_RelUnc_Coarse", f_output );

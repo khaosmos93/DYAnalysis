@@ -165,7 +165,7 @@ public:
 			Double_t SumWeights_Separated = 0;
 
 			Int_t NEvents = chain->GetEntries();
-			if( this->nEvent_Test > 0 ) nEvents = nEvent_Test;
+			if( this->nEvent_Test > 0 ) NEvents = nEvent_Test;
 			cout << "\t[Total Events: " << NEvents << "]" << endl;
 
 			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
@@ -390,7 +390,7 @@ public:
 
 	Double_t Calc_ZpeakXsec_GivenEffSF(Double_t _Acc, Double_t _Eff, Double_t EffSF_HLTv4p2, Double_t EffSF_HLTv4p3)
 	{
-		ZpeakCrossSectionTool *XsecTool = new ZpeakCrossSectionTool();
+		ZpeakCrossSectionTool *XsecTool = new ZpeakCrossSectionTool(this->HLTname);
 		XsecTool->ObtainYield( isDataDriven );
 		XsecTool->ApplyAccEffCorrection(_Acc, _Eff);
 		XsecTool->EfficiencyScaleFactor(EffSF_HLTv4p2, EffSF_HLTv4p3);
