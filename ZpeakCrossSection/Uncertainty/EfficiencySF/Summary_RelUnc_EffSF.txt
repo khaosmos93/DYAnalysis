@@ -1,0 +1,4 @@
+Stat.Unc:   0.00429
+TnP. Unc:   0.01243
+Bin. Unc:   0.00102
+Total. unc:   0.01319
