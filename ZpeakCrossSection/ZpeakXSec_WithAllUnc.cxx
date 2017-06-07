@@ -5,7 +5,8 @@ void ZpeakXSec_WithAllUnc()
 	TString FileName_CV = "ROOTFile_Output_ZpeakCrossSection.root";
 	TString FileName_Stat = "./Uncertainty/ROOTFile_StatUnc_Zpeak.root";
 	TString FileName_EffSF = "./Uncertainty/EfficiencySF/ROOTFile_SysUnc_Zpeak_EffSF.root";
-	TString FileName_Acc = "";
+	TString ROOTFilePath = gSystem->Getenv("KP_ROOTFILE_PATH");
+	TString FileName_Acc = ROOTFilePath+"/ROOTFile_SysUnc_Acceptance.root";
 
 	Double_t XSec = GetContent_OneBinHist( FileName_CV, "h_XSec" );
 	Double_t RelUnc_Stat = GetContent_OneBinHist( FileName_Stat, "h_RelUnc" );
@@ -13,7 +14,8 @@ void ZpeakXSec_WithAllUnc()
 	Double_t RelUnc_EffSF = GetContent_OneBinHist( FileName_EffSF, "h_RelUnc_Tot" );
 	Double_t RelUnc_TotExp = sqrt( RelUnc_Bkg*RelUnc_Bkg + RelUnc_EffSF*RelUnc_EffSF );
 
-	Double_t RelUnc_Acc = 1.57197 / 100.0; // -- should be fixed -- //
+	// Double_t RelUnc_Acc = 1.57197 / 100.0; // -- should be fixed -- //
+	Double_t RelUnc_Acc = GetContent_OneBinHist( FileName_Acc, "h_RelUnc_Zpeak_Tot" );
 	Double_t RelUnc_TotSyst = sqrt( RelUnc_Acc*RelUnc_Acc + RelUnc_TotExp*RelUnc_TotExp ); 
 	Double_t RelUnc_Lumi = GetContent_OneBinHist( FileName_CV, "h_RelLumiError" );
 
