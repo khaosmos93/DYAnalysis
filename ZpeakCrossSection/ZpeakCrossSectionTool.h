@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <Include/DYAnalyzer.h>
+#include <Include/PlotTools.h>
 
 // -- for Rochester Muon momentum correction -- //
 #include <Include/RochesterMomCorr_76X/RoccoR.cc>
@@ -465,7 +466,8 @@ public:
 
 		this->yield_HLTv4p2_AccEff = this->yield_HLTv4p2 / (this->Acc*this->Eff);
 		this->yield_HLTv4p3_AccEff = this->yield_HLTv4p3 / (this->Acc*this->Eff);
-		printf("[Acc*Eff Correction] (HLTv4.2, HLTv4.3, Total) = (%.1lf, %.1lf, %.1lf)\n", yield_HLTv4p2_AccEff, yield_HLTv4p3_AccEff, yield_HLTv4p2_AccEff+yield_HLTv4p3_AccEff);
+		this->yield_total_AccEff = yield_HLTv4p2_AccEff + yield_HLTv4p3_AccEff;
+		printf("[Acc*Eff Correction] (HLTv4.2, HLTv4.3, Total) = (%.1lf, %.1lf, %.1lf)\n", yield_HLTv4p2_AccEff, yield_HLTv4p3_AccEff, this->yield_total_AccEff);
 	}
 
 	void EfficiencyScaleFactor()
@@ -703,86 +705,72 @@ public:
 
 	void Save_Results( TFile *f_output )
 	{
-		// Double_t nEvents_Observed; // -- for the estimation of stat. uncertainty -- //
-		// Double_t yield_HLTv4p2;
-		// Double_t yield_HLTv4p3;
-		// Double_t yield_total;
-
-		// Double_t Acc;
-		// Double_t Eff;
-		// Double_t Eff_HLTv4p2;
-		// Double_t Eff_HLTv4p3;
-		// Double_t EffSF_HLTv4p2;
-		// Double_t EffSF_HLTv4p3;
-
-		// Double_t yield_HLTv4p2_AccEff;
-		// Double_t yield_HLTv4p3_AccEff;
-		// Double_t yield_total_AccEff;
-
-		// Double_t yield_HLTv4p2_EffSF;
-		// Double_t yield_HLTv4p3_EffSF;
-		// Double_t yield_total_EffSF;
-
-		// Double_t xSec;
-
-		// // -- for fiducial, post-FSR cross section -- //
-		// Double_t FpoF_yield_HLTv4p2_Eff;
-		// Double_t FpoF_yield_HLTv4p3_Eff;
-		// Double_t FpoF_yield_Eff;
-
-		// Double_t FpoF_yield_HLTv4p2_EffSF;
-		// Double_t FpoF_yield_HLTv4p3_EffSF;
-		// Double_t FpoF_yield_EffSF;
-
-		// Double_t FpoF_xSec;
-
 		f_output->cd();
 
-		this->SaveAsTVector( this->nEvents_Observed, "nEvents_Observed", f_output );
-		this->SaveAsTVector( this->yield_HLTv4p2, "yield_HLTv4p2", f_output );
-		this->SaveAsTVector( this->yield_HLTv4p3, "yield_HLTv4p3", f_output );
-		this->SaveAsTVector( this->yield_total, "yield_total", f_output );
+		SaveAsHist_OneContent( this->nEvents_Observed, "h_nEvents_Observed", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p2, "h_yield_HLTv4p2", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p3, "h_yield_HLTv4p3", f_output );
+		SaveAsHist_OneContent( this->yield_total, "h_yield_total", f_output );
 
-		this->SaveAsTVector( this->Acc, "Acc", f_output );
-		this->SaveAsTVector( this->Eff, "Eff", f_output );
-		this->SaveAsTVector( this->Eff_HLTv4p2, "Eff_HLTv4p2", f_output );
-		this->SaveAsTVector( this->Eff_HLTv4p3, "Eff_HLTv4p3", f_output );
-		this->SaveAsTVector( this->EffSF_HLTv4p2, "EffSF_HLTv4p2", f_output );
-		this->SaveAsTVector( this->EffSF_HLTv4p3, "EffSF_HLTv4p3", f_output );
+		SaveAsHist_OneContent( this->Acc, "h_Acc", f_output );
+		SaveAsHist_OneContent( this->Eff, "h_Eff", f_output );
+		SaveAsHist_OneContent( this->Eff_HLTv4p2, "h_Eff_HLTv4p2", f_output );
+		SaveAsHist_OneContent( this->Eff_HLTv4p3, "h_Eff_HLTv4p3", f_output );
+		SaveAsHist_OneContent( this->EffSF_HLTv4p2, "h_EffSF_HLTv4p2", f_output );
+		SaveAsHist_OneContent( this->EffSF_HLTv4p3, "h_EffSF_HLTv4p3", f_output );
 
-		this->SaveAsTVector( this->yield_HLTv4p2_AccEff, "yield_HLTv4p2_AccEff", f_output );
-		this->SaveAsTVector( this->yield_HLTv4p3_AccEff, "yield_HLTv4p3_AccEff", f_output );
-		this->SaveAsTVector( this->yield_total_AccEff, "yield_total_AccEff", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p2_AccEff, "h_yield_HLTv4p2_AccEff", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p3_AccEff, "h_yield_HLTv4p3_AccEff", f_output );
+		SaveAsHist_OneContent( this->yield_total_AccEff, "h_yield_total_AccEff", f_output );
 
-		this->SaveAsTVector( this->yield_HLTv4p2_EffSF, "yield_HLTv4p2_EffSF", f_output );
-		this->SaveAsTVector( this->yield_HLTv4p3_EffSF, "yield_HLTv4p3_EffSF", f_output );
-		this->SaveAsTVector( this->yield_total_EffSF, "yield_total_EffSF", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p2_EffSF, "h_yield_HLTv4p2_EffSF", f_output );
+		SaveAsHist_OneContent( this->yield_HLTv4p3_EffSF, "h_yield_HLTv4p3_EffSF", f_output );
+		SaveAsHist_OneContent( this->yield_total_EffSF, "h_yield_total_EffSF", f_output );
 
-		this->SaveAsTVector( this->xSec, "XSec", f_output );
+		SaveAsHist_OneContent( this->xSec, "h_XSec", f_output );
 
-		this->SaveAsTVector( this->RelStatError, "RelStatError", f_output );
-		this->SaveAsTVector( this->RelLumiError, "RelLumiError", f_output );
-		this->SaveAsTVector( this->RelSystUnc_BkgEst, "RelSystUnc_BkgEst", f_output );
+		// SaveAsHist_OneContent( this->RelStatError, "h_RelStatError", f_output );
+		SaveAsHist_OneContent( this->RelLumiError, "h_RelLumiError", f_output );
+		SaveAsHist_OneContent( this->RelSystUnc_BkgEst, "h_RelSystUnc_BkgEst", f_output );
 
 		// -- for fiducial, post-FSR cross section -- //
-		this->SaveAsTVector( this->FpoF_yield_HLTv4p2_Eff, "FpoF_yield_HLTv4p2_Eff", f_output );
-		this->SaveAsTVector( this->FpoF_yield_HLTv4p3_Eff, "FpoF_yield_HLTv4p3_Eff", f_output );
-		this->SaveAsTVector( this->FpoF_yield_Eff, "FpoF_yield_Eff", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_HLTv4p2_Eff, "h_FpoF_yield_HLTv4p2_Eff", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_HLTv4p3_Eff, "h_FpoF_yield_HLTv4p3_Eff", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_Eff, "h_FpoF_yield_Eff", f_output );
 
-		this->SaveAsTVector( this->FpoF_yield_HLTv4p2_EffSF, "FpoF_yield_HLTv4p2_EffSF", f_output );
-		this->SaveAsTVector( this->FpoF_yield_HLTv4p3_EffSF, "FpoF_yield_HLTv4p3_EffSF", f_output );
-		this->SaveAsTVector( this->FpoF_yield_EffSF, "FpoF_yield_EffSF", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_HLTv4p2_EffSF, "h_FpoF_yield_HLTv4p2_EffSF", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_HLTv4p3_EffSF, "h_FpoF_yield_HLTv4p3_EffSF", f_output );
+		SaveAsHist_OneContent( this->FpoF_yield_EffSF, "h_FpoF_yield_EffSF", f_output );
 
-		this->SaveAsTVector( this->FpoF_xSec, "FpoF_XSec", f_output );
+		SaveAsHist_OneContent( this->FpoF_xSec, "h_FpoF_XSec", f_output );
 	}
 
-	void SaveAsTVector( Double_t var, TString Name, TFile *f_output )
+	void WriteAsText_Results()
 	{
-		TVectorD *Vec = new TVectorD(1);
-		Vec[0] = var;
+		FILE *fp = fopen("Summary_ZpeakXSec.txt", "w");
+		fprintf(fp, "# observed events: %.1lf\n", this->nEvents_Observed);
+		fprintf(fp, "# events after bkg.sub.: %.1lf\n", this->yield_total);
+		fprintf(fp, "\tHLT v4.2: %.1lf\n", this->yield_HLTv4p2);
+		fprintf(fp, "\tHLT v4.3: %.1lf\n\n", this->yield_HLTv4p3);
 
-		f_output->cd();
-		Vec->Write( Name );
+		fprintf(fp, "Acceptance: %9.5lf\n", this->Acc);
+		fprintf(fp, "Efficiency: %9.5lf\n", this->Eff);
+
+		fprintf(fp, "# events after acc*eff correction: %.1lf\n", this->yield_total_AccEff);
+		fprintf(fp, "\tHLT v4.2: %.1lf\n", this->yield_HLTv4p2_AccEff);
+		fprintf(fp, "\tHLT v4.3: %.1lf\n\n", this->yield_HLTv4p3_AccEff);
+
+		fprintf(fp, "SF (HLT v4.2): %9.5lf\n", this->EffSF_HLTv4p2);
+		fprintf(fp, "SF (HLT v4.3): %9.5lf\n\n", this->EffSF_HLTv4p3);
+
+		fprintf(fp, "# events after eff.SF: %.1lf\n", this->yield_total_EffSF);
+		fprintf(fp, "\tHLT v4.2: %.1lf\n", this->yield_HLTv4p2_EffSF);
+		fprintf(fp, "\tHLT v4.3: %.1lf\n\n", this->yield_HLTv4p3_EffSF);
+
+		fprintf(fp, "Cross section: %.1lf\n", this->xSec);
+		fprintf(fp, "Fiducial cross section: %.1lf\n", this->FpoF_xSec);
+		fprintf(fp, "\tLumi. error (Rel.): %.5lf\n", this->RelLumiError);
+		fprintf(fp, "\tBkg. error (Rel.): %.5lf\n", this->RelSystUnc_BkgEst);
 	}
 };
 

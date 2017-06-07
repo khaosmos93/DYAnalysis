@@ -33,6 +33,7 @@ void ZpeakCrossSection(TString HLTname = "IsoMu20_OR_IsoTkMu20")
 
 	TFile *f_output = TFile::Open("ROOTFile_Output_ZpeakCrossSection.root", "RECREATE");
 	tool->Save_Results( f_output );
+	tool->WriteAsText_Results();
 
 	f_output->Close();
 }

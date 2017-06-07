@@ -1,0 +1,22 @@
+# observed events: 2116866.0
+# events after bkg.sub.: 2101229.2
+	HLT v4.2: 639093.3
+	HLT v4.3: 1462135.8
+
+Acceptance:   0.45373
+Efficiency:   0.91420
+# events after acc*eff correction: 5065599.9
+	HLT v4.2: 1540713.0
+	HLT v4.3: 3524886.9
+
+SF (HLT v4.2):   0.95805
+SF (HLT v4.3):   0.96488
+
+# events after eff.SF: 5261372.9
+	HLT v4.2: 1608171.0
+	HLT v4.3: 3653201.9
+
+Cross section: 1907.0
+Fiducial cross section: 865.3
+	Lumi. error (Rel.): 0.02300
+	Bkg. error (Rel.): 0.00046
