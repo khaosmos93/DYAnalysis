@@ -129,10 +129,10 @@ void SysUnc_Acc()
 	cout << "\n======[total uncertainty]=======" << endl;
 	Double_t RelUnc_Zpeak_Tot = Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Tot_Percent);
 
-	SaveAsHist_OneContent( RelUnc_Zpeak_PDF, "h_RelUnc_Zpeak_PDF", f_output );
-	SaveAsHist_OneContent( RelUnc_Zpeak_Alpha, "h_RelUnc_Zpeak_Alpha", f_output );
-	SaveAsHist_OneContent( RelUnc_Zpeak_AccDiff, "h_RelUnc_Zpeak_AccDiff", f_output );
-	SaveAsHist_OneContent( RelUnc_Zpeak_Tot, "h_RelUnc_Zpeak_Tot", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_PDF/100.0, "h_RelUnc_Zpeak_PDF", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_Alpha/100.0, "h_RelUnc_Zpeak_Alpha", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_AccDiff/100.0, "h_RelUnc_Zpeak_AccDiff", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_Tot/100.0, "h_RelUnc_Zpeak_Tot", f_output );
 }
 
 Double_t Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc)
