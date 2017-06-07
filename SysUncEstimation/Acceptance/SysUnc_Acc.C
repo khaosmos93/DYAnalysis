@@ -2,12 +2,14 @@
 #include <Include/PlotTools.h>
 
 void MakeHistogram_XSec(TH1D *h, Double_t *value, Double_t *error);
-void Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc);
+Double_t Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc);
 void Calc_RelSysUnc_Alpha( TH1D* h_xSec_alpha_0118, TH1D* h_xSec_alpha_0117, TH1D* h_xSec_alpha_0119, TH1D* h_RelSysUnc );
 void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D* h3, TH1D *h_tot, TFile *f_output);
 void TotRelSysUnc( TH1D *h1, TH1D *h2, TH1D* h3, TH1D *h_tot );
 void SysUnc_Acc()
 {
+	if( gSystem->mkdir( "./Local" ) == 0 ) printf("Directory [Local] is created\n");
+
 	const Int_t nMassBin = 43;
 	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
@@ -76,12 +78,12 @@ void SysUnc_Acc()
 	TH1D* h_xSec_alpha_0119 = new TH1D("h_xSec_alpha_0119", "", nMassBin, MassBinEdges);
 	MakeHistogram_XSec( h_xSec_alpha_0119, xSec_0119, error_0119 );
 
-	MyCanvas *myc3 = new MyCanvas("c_NLOXsec_VariationOfAlpha", "Dimuon mass [GeV]", "#sigma [pb] (NLO)");
-	myc3->SetLogx(1);
-	myc3->SetLogy(0);
-	myc3->SetRatioRange(0.98, 1.02);
-	myc3->CanvasWithThreeHistogramsRatioPlot( (TH1D*)h_xSec_alpha_0117->Clone(), (TH1D*)h_xSec_alpha_0119->Clone(), (TH1D*)h_xSec_alpha_0118->Clone(), "#alpha = 0.117", "#alpha = 0.119", "#alpha = 0.118 (C.V.)", "Ratio to 0.118");
-	myc3->PrintCanvas();
+	// MyCanvas *myc3 = new MyCanvas("c_NLOXsec_VariationOfAlpha", "Dimuon mass [GeV]", "#sigma [pb] (NLO)");
+	// myc3->SetLogx(1);
+	// myc3->SetLogy(0);
+	// myc3->SetRatioRange(0.98, 1.02);
+	// myc3->CanvasWithThreeHistogramsRatioPlot( (TH1D*)h_xSec_alpha_0117->Clone(), (TH1D*)h_xSec_alpha_0119->Clone(), (TH1D*)h_xSec_alpha_0118->Clone(), "#alpha = 0.117", "#alpha = 0.119", "#alpha = 0.118 (C.V.)", "Ratio to 0.118");
+	// myc3->PrintCanvas();
 
 	TH1D *h_RelSysUnc_Alpha_Percent = (TH1D*)h_xSec_alpha_0118->Clone("h_RelSysUnc_Alpha_Percent");
 	Calc_RelSysUnc_Alpha( h_xSec_alpha_0118, h_xSec_alpha_0117, h_xSec_alpha_0119, h_RelSysUnc_Alpha_Percent );
@@ -100,7 +102,7 @@ void SysUnc_Acc()
 	h_xSec_alpha_0118->Write();
 	h_xSec_alpha_0117->Write();
 	h_xSec_alpha_0119->Write();
-	myc3->c->Write();
+	// myc3->c->Write();
 	h_RelSysUnc_Alpha_Percent->Write();
 	h_RelSysUnc_AccDiff_Percent->Write();
 
@@ -116,19 +118,24 @@ void SysUnc_Acc()
 	TH1D *h_MC_postFSR = (TH1D*)f_input->Get("h_DYMC_Gen_postFSR")->Clone();
 
 	cout << "\n======[from PDF uncertainty]=======" << endl;
-	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_PDF_Percent);
+	Double_t RelUnc_Zpeak_PDF = Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_PDF_Percent);
 
 	cout << "\n======[from alpha uncertainty]=======" << endl;
-	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Alpha_Percent);
+	Double_t RelUnc_Zpeak_Alpha = Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Alpha_Percent);
 
 	cout << "\n======[from diff. with NNLO uncertainty]=======" << endl;
-	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_AccDiff_Percent);
+	Double_t RelUnc_Zpeak_AccDiff = Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_AccDiff_Percent);
 
 	cout << "\n======[total uncertainty]=======" << endl;
-	Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Tot_Percent);
+	Double_t RelUnc_Zpeak_Tot = Calc_WeightedAverage_Zpeak(h_MC_postFSR, h_RelSysUnc_Tot_Percent);
+
+	SaveAsHist_OneContent( RelUnc_Zpeak_PDF, "h_RelUnc_Zpeak_PDF", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_Alpha, "h_RelUnc_Zpeak_Alpha", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_AccDiff, "h_RelUnc_Zpeak_AccDiff", f_output );
+	SaveAsHist_OneContent( RelUnc_Zpeak_Tot, "h_RelUnc_Zpeak_Tot", f_output );
 }
 
-void Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc)
+Double_t Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc)
 {
 	Double_t nEvent_Zpeak = 0;
 	Int_t nBin = h_RelSysUnc->GetNbinsX();
@@ -165,6 +172,7 @@ void Calc_WeightedAverage_Zpeak(TH1D* h_mass, TH1D* h_RelSysUnc)
 
 	printf("[Weighted average of the uncertainty in Z-peak region: %.5lf (%%)]\n", Sum_Weighted);
 
+	return Sum_Weighted;
 }
 
 void MakeHistogram_XSec(TH1D *h, Double_t *value, Double_t *error)
@@ -277,7 +285,7 @@ void DrawCanvas_SysUnc(TH1D* h1, TH1D* h2, TH1D* h3, TH1D *h_tot, TFile* f_outpu
 	legend->AddEntry( h_tot, "Total Syst. from Acceptance" );
 	legend->Draw();
 
-	c_RelUnc->SaveAs( "c_RelSysUnc_Acc.pdf" );
+	c_RelUnc->SaveAs( "./Local/c_RelSysUnc_Acc.pdf" );
 
 	f_output->cd();
 	c_RelUnc->Write();
