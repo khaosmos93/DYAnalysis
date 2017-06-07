@@ -1,6 +1,8 @@
 #include <SysUncEstimation/StatUnc/StatUnc_RandomizedYield.h>
 #include <ZpeakCrossSection/ZpeakCrossSectionTool.h>
 
+using namespace std;
+
 class MyZpeakXsecTool : public ZpeakCrossSectionTool
 {
 public:
@@ -38,6 +40,8 @@ public:
 	Double_t FpoF_XSec_CV;
 	Double_t FpoF_XSec_Smeared[nMap];
 
+	Double_t RelUnc;
+	Double_t FpoF_RelUnc;
 
 	StatUncTool_Zpeak()
 	{
@@ -51,6 +55,9 @@ public:
 			this->XSec_Smeared[i_map] = 0;
 			this->FpoF_XSec_Smeared[i_map] = 0;
 		}
+
+		this->RelUnc = 0;
+		this->FpoF_RelUnc = 0;
 	}
 
 	void Estimate()
@@ -68,6 +75,30 @@ public:
 		this->FitGaussian_GetSigma("FpoF");
 	}
 
+	void Save( TFile *f_output )
+	{
+		SaveAsHist_OneContent( this->XSec_CV, "h_XSec_CV", f_output );
+		SaveAsHist_OneContent( this->FpoF_XSec_CV, "h_FpoF_XSec_CV", f_output );
+
+		TH1D* h_XSec_Smeared = new TH1D("h_XSec_Smeared", "", nMap, 0, nMap );
+		TH1D* h_FpoF_XSec_Smeared = new TH1D("h_FpoF_XSec_Smeared", "", nMap, 0, nMap );
+		for(Int_t i=0; i<nMap; i++)
+		{
+			Int_t i_bin = i+1;
+			h_XSec_Smeared->SetBinContent(i_bin, this->XSec_Smeared[i]);
+			h_XSec_Smeared->SetBinError(i_bin, 0);
+
+			h_FpoF_XSec_Smeared->SetBinContent(i_bin, this->FpoF_XSec_Smeared[i]);
+			h_FpoF_XSec_Smeared->SetBinError(i_bin, 0);
+		}
+		f_output->cd();
+		h_XSec_Smeared->Write();
+		h_FpoF_XSec_Smeared->Write();
+
+		SaveAsHist_OneContent( this->RelUnc, "h_RelUnc", f_output );
+		SaveAsHist_OneContent( this->FpoF_RelUnc, "h_FpoF_RelUnc", f_output );
+	}
+	
 protected:
 	void FitGaussian_GetSigma( TString Type )
 	{
@@ -115,6 +146,11 @@ protected:
 
 		Double_t AbsStatUnc = value_CV * RMS;
 		printf("[Statistical uncertainty (Type = %s) = %.3lf (%.3lf%%)]\n", Type.Data(), AbsStatUnc, RMS*100);
+
+		if( Type == "All" )
+			this->RelUnc = RMS;
+		else if( Type == "FpoF" )
+			this->FpoF_RelUnc = RMS;
 	}
 
 	TTree* makeTTree( TString Type )
@@ -171,7 +207,6 @@ protected:
 		FpoF_XSec = XSecTool->FpoF_xSec;
 	}
 
-
 };
 
 void StatUnc_Zpeak()
@@ -182,4 +217,7 @@ void StatUnc_Zpeak()
 
 	StatUncTool_Zpeak *tool = new StatUncTool_Zpeak();
 	tool->Estimate();
+
+	TFile *f_output = TFile::Open("ROOTFile_StatUnc_Zpeak.root", "RECREATE");
+	tool->Save( f_output );
 }
