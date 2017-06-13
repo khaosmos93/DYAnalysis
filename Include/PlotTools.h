@@ -223,6 +223,11 @@ public:
 		this->g_ratio = NULL;
 	}
 
+	GraphInfo( Int_t _Color, TString _LegendName, TGraphAsymmErrors* _g ): GraphInfo( _Color, _LegendName )
+	{
+		this->Set_Graph( _g );
+	}
+
 	void Set()
 	{
 		if( g == NULL )
@@ -245,8 +250,7 @@ public:
 	// -- same with DrawGraph -- //
 	void Draw( TString DrawOp )
 	{
-		this->g->Draw( DrawOp );
-		this->Set_Attributes();
+		this->DrawGraph( DrawOp );
 	}
 
 	void DrawRatio( TString DrawOp )
@@ -264,9 +268,17 @@ public:
 		this->g->SetTitle( "" );
 
 		this->g->SetLineColor( this->Color );
+		this->g->SetLineWidth( 1 );
 		this->g->SetMarkerStyle( 20 );
+		this->g->SetMarkerSize( 1.3 );
 		this->g->SetMarkerColor( this->Color );
 		this->g->SetFillColorAlpha( kWhite, 0 );
+		this->g->GetXaxis()->SetTitleFont(42);
+		this->g->GetYaxis()->SetTitleFont(42);
+		this->g->GetXaxis()->SetLabelFont(42);
+		this->g->GetYaxis()->SetLabelFont(42);
+		this->g->GetXaxis()->SetLabelSize(0.04);
+		this->g->GetYaxis()->SetLabelSize(0.04);
 
 		if( g_ratio != NULL )
 		{
@@ -425,9 +437,9 @@ protected:
 	}
 };
 
-void SetCanvas_Square( TCanvas*& c, TString CanvasName, Bool_t isLogx = kFALSE, Bool_t isLogy = kFALSE )
+void SetCanvas_Square( TCanvas*& c, TString CanvasName, Bool_t isLogx = kFALSE, Bool_t isLogy = kFALSE, Double_t SizeX = 800, Double_t SizeY = 800 )
 {
-	c = new TCanvas(CanvasName, "", 800, 800);
+	c = new TCanvas(CanvasName, "", SizeX, SizeY);
 	c->cd();
 	
 	c->SetTopMargin(0.05);
@@ -483,20 +495,6 @@ void DrawLine( TF1*& f_line, Int_t color = kRed )
 	f_line->Draw("PSAME");
 }
 
-void Latex_Preliminary( TLatex &latex, Double_t lumi  )
-{
-	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (13 TeV)}}");
-	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
-	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
-}
-
-void Latex_Preliminary( TLatex &latex, Double_t lumi, Int_t E_CM  )
-{
-	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
-	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
-	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
-}
-
 void Latex_Preliminary_NoDataInfo( TLatex &latex )
 {
 	// latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
@@ -504,11 +502,34 @@ void Latex_Preliminary_NoDataInfo( TLatex &latex )
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
+void Latex_Preliminary( TLatex &latex, Double_t lumi  )
+{
+	Latex_Preliminary_NoDataInfo( latex );
+	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (13 TeV)}}");
+	// latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
+	// latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+}
+
+void Latex_Preliminary( TLatex &latex, Double_t lumi, Int_t E_CM  )
+{
+	Latex_Preliminary_NoDataInfo( latex );
+	latex.DrawLatexNDC(0.69, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.1lf fb^{-1} (%d TeV)", lumi, E_CM)+"}}");
+	// latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
+	// latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
+}
+
 void Latex_Simulation( TLatex &latex )
 {
 	latex.DrawLatexNDC(0.82, 0.96, "#font[42]{#scale[0.8]{13 TeV}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+}
+
+void Latex_Preliminary_EffPlotStyle( TLatex &latex, Int_t year, Int_t E_CM = 13 )
+{
+	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%d, %d TeV", year, E_CM)+"}}");
+	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
+	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
 
 void SetAxis_SinglePad( TAxis *X_axis, TAxis *Y_axis, TString XTitle, TString YTitle )
