@@ -53,6 +53,9 @@ elif [ "$HOSTNAME" == "cms.snu.ac.kr" ]; then
 	KP_ROOT6_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc530/lcg/root/6.06.00-ikhhed6/bin/thisroot.sh" # -- CMSSW_8_0_25 -- #
 fi
 
+# -- Directory for official style plots -- #
+export KP_PLOT_PATH=$KP_ANALYZER_PATH/Local/Plots
+
 echo "================ environment ================"
 echo "KP_ANALYZER_PATH:" ${KP_ANALYZER_PATH}
 echo "KP_INCLUDE_PATH:" ${KP_INCLUDE_PATH}
@@ -69,5 +72,7 @@ echo "KP_ROOUNFOLD_PATH:" ${KP_ROOUNFOLD_PATH}
 if [ -z $KP_ROOUNFOLD_PATH ]; then
 	echo "     [WARNING]: RooUnfold package is not available in this machine"
 fi
+
+echo "KP_PLOT_PATH:" ${KP_PLOT_PATH}
 echo "============================================="
 echo "setup is finished. Welcome :)"
