@@ -230,10 +230,10 @@ protected:
 	{
 		// -- Z-peak -- //
 		this->h_ZpeakXSec_13 = new TH1D("h_ZpeakXSec_13", "", 1, 0, 1 );
-		h_ZpeakXSec_13->SetBinContent( 1, 1910 );
-		h_ZpeakXSec_13->SetBinError( 1, sqrt(13*13 + 29*29) );
+		h_ZpeakXSec_13->SetBinContent( 1, 1922 );
+		h_ZpeakXSec_13->SetBinError( 1, sqrt(19*19 + 31*31) );
 
-		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_v2mdfEEAcc.root"; // -- result without luminosity uncertainty -- //
+		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_wLumi_inpYieldUnc_v3a.root";
 		// -- differential cross section: convert TH1F to TH1D -- //
 		TFile *f_input = TFile::Open( FileName_CenV ); f_input->cd();
 		TH1F* h_temp = (TH1F*)f_input->Get( "h1Combi" )->Clone();

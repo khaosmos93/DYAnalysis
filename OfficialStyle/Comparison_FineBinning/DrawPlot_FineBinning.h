@@ -63,7 +63,7 @@ public:
 	{
 		this->Load_TheoryHistograms();
 
-		TString FileName_CenV = GetBasePath() + "Include/Results_ROOTFiles_76X/dyll-combi-_corr_v2mdfEEAcc.root";
+		TString FileName_CenV = GetBasePath() + "Include/Results_ROOTFiles_76X/dyll-combi-_corr_wLumi_inpYieldUnc_v3a.root";
 		// -- convert TH1F to TH1D -- //
 		TFile *f_input = TFile::Open( FileName_CenV );
 		f_input->cd();
@@ -249,7 +249,21 @@ public:
 		g_TotUnc->SetFillColorAlpha( kBlack, 1 );
 		g_TotUnc->SetFillStyle( 3354 );
 		g_TotUnc->SetMarkerColorAlpha(kBlack, 0);
+		g_TotUnc->SetLineColorAlpha(kBlack, 0);
+		
 		g_StatUnc->SetMarkerColorAlpha(kBlack, 0);
+		g_StatUnc->SetLineColor(kBlack);
+		g_StatUnc->SetLineWidth(1);
+
+		TLegend *legend_ratio = new TLegend( 0.15, 0.41, 0.60, 0.56 );
+		legend_ratio->SetBorderSize(0);
+		legend_ratio->SetFillStyle(0);
+		legend_ratio->SetTextFont(62);
+		legend_ratio->SetNColumns(3);
+		legend_ratio->AddEntry( g_StatUnc, "Stat. Unc." );
+		legend_ratio->AddEntry( g_TotUnc, "Tot. Unc." );
+		legend_ratio->AddEntry( g_ratio, "Theo. Unc." );
+		legend_ratio->Draw();
 
 
 		// -- flat line = 1.00 -- //
@@ -260,7 +274,9 @@ public:
 
 		g_ratio->Draw("EPSAME");
 
-		c->SaveAs(".pdf");		
+		c->SaveAs(".pdf");
+		TString PlotPath = gSystem->Getenv("KP_PLOT_PATH");
+		c->SaveAs(PlotPath+"/"+CanvasName+".pdf");
 	}
 
 protected:

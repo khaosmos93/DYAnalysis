@@ -45,7 +45,8 @@ public:
 	void Draw_Below200GeV()
 	{
 		TCanvas *c;
-		SetCanvas_Square( c, this->Type+"_ratio_theoryData_Below200GeV", 1, 0 );
+		TString CanvasName = this->Type+"_ratio_theoryData_Below200GeV";
+		SetCanvas_Square( c, CanvasName, 1, 0 );
 
 		TH1D* h_TotUnc_temp = this->Rebin_Below200GeV( this->h_Ratio_TotUnc );
 		TH1D* h_StatUnc_temp = this->Rebin_Below200GeV( this->h_Ratio_StatUnc );
@@ -74,13 +75,16 @@ public:
 		DrawLatexNDC( latex );
 
 		c->SaveAs(".pdf");
+		TString PlotPath = gSystem->Getenv("KP_PLOT_PATH");
+		c->SaveAs(PlotPath+"/"+CanvasName+".pdf");
 
 	}
 
 	void Draw_Above200GeV()
 	{
 		TCanvas *c;
-		SetCanvas_Square( c, this->Type+"_ratio_theoryData_Above200GeV", 1, 0 );
+		TString CanvasName = this->Type+"_ratio_theoryData_Above200GeV";
+		SetCanvas_Square( c, CanvasName, 1, 0 );
 
 		TH1D* h_TotUnc_temp = this->Rebin_Above200GeV( this->h_Ratio_TotUnc );
 		TH1D* h_StatUnc_temp = this->Rebin_Above200GeV( this->h_Ratio_StatUnc );
@@ -109,6 +113,8 @@ public:
 		DrawLatexNDC( latex );
 
 		c->SaveAs(".pdf");
+		TString PlotPath = gSystem->Getenv("KP_PLOT_PATH");
+		c->SaveAs(PlotPath+"/"+CanvasName+".pdf");
 	}
 protected:
 	void Set_Histograms_Theory()
@@ -148,7 +154,7 @@ protected:
 		this->Set_Histograms_Theory();
 		// -- fill -- //
 
-		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_v2mdfEEAcc.root";
+		TString FileName_CenV = this->ROOTFilePath + "/dyll-combi-_corr_wLumi_inpYieldUnc_v3a.root";
 		// -- convert TH1F to TH1D -- //
 		TFile *f_input = TFile::Open( FileName_CenV );
 		f_input->cd();

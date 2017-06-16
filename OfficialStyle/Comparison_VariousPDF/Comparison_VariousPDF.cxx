@@ -94,10 +94,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	printf( "[FileName = %s]\n", FileName.Data() );
 
 	// -- data x-section with stat. unc. only -- //
-	HistInfo *Hist_Data_StatUnc = new HistInfo( kBlack, "Data" );
-	Hist_Data_StatUnc->Set_FileName_ObjectName( FileName, HistName_Data );
-	Hist_Data_StatUnc->Set();
-	Hist_Data_StatUnc->Calc_RatioHist_Denominator( Hist_Data_StatUnc->h ); // -- ratio = 1 -- //
+	TH1D* h_DXSec = Get_Hist( FileName, HistName_Data );
+	HistInfo *Hist_Data_StatUnc = new HistInfo( kBlack, "Data", h_DXSec );
+	Hist_Data_StatUnc->CalcRatio_DEN( Hist_Data_StatUnc->h ); // -- ratio = 1 -- //
 
 	TH1D* h_RelStatUnc = Get_Hist( FileName, HistName_RelStatUnc );
 	AssignErrors( Hist_Data_StatUnc->h, h_RelStatUnc, kFALSE);
@@ -108,10 +107,8 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	// Print_Histogram( Hist_Data_StatUnc->h_ratio );
 
 	// -- data x-section with stat. + syst. unc. without lumi. -- //
-	HistInfo *Hist_Data_TotUnc = new HistInfo( kBlack, "Data" );
-	Hist_Data_TotUnc->Set_FileName_ObjectName( FileName, HistName_Data );
-	Hist_Data_TotUnc->Set();
-	Hist_Data_TotUnc->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h ); // -- ratio = 1 -- //
+	HistInfo *Hist_Data_TotUnc = new HistInfo( kBlack, "Data", h_DXSec );
+	Hist_Data_TotUnc->CalcRatio_DEN( Hist_Data_TotUnc->h ); // -- ratio = 1 -- //
 
 	TH1D* h_RelTotUnc = Get_Hist( FileName, HistName_RelTotUnc );
 	AssignErrors( Hist_Data_TotUnc->h, h_RelTotUnc, kFALSE);
@@ -125,10 +122,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	// Print_Histogram( Hist_Data_TotUnc->h_ratio );
 
 	// -- NNPDF 3.0 -- //
-	HistInfo *Hist_NNPDF = new HistInfo( color_NNPDF, "NNPDF 3.0" );
-	Hist_NNPDF->Set_FileName_ObjectName( FileName, HistName_NNPDF );
-	Hist_NNPDF->Set();
-	Hist_NNPDF->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
+	TH1D* h_NNPDF = Get_Hist( FileName, HistName_NNPDF );
+	HistInfo *Hist_NNPDF = new HistInfo( color_NNPDF, "NNPDF 3.0", h_NNPDF );
+	Hist_NNPDF->CalcRatio_DEN( Hist_Data_TotUnc->h );
 
 	TH1D* h_NNPDF_RelUnc = Get_Hist( FileName, HistName_NNPDF_RelUnc );
 	AssignErrors( Hist_NNPDF->h_ratio, h_NNPDF_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -141,10 +137,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	// Print_Histogram( Hist_NNPDF->h_ratio );
 
 	// -- CT14 -- //
-	HistInfo *Hist_CT = new HistInfo( color_CT, "CT14" );
-	Hist_CT->Set_FileName_ObjectName( FileName, HistName_CT );
-	Hist_CT->Set();
-	Hist_CT->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
+	TH1D* h_CT = Get_Hist( FileName, HistName_CT );
+	HistInfo *Hist_CT = new HistInfo( color_CT, "CT14", h_CT );
+	Hist_CT->CalcRatio_DEN( Hist_Data_TotUnc->h );
 
 	TH1D* h_CT_RelUnc = Get_Hist( FileName, HistName_CT_RelUnc );
 	AssignErrors( Hist_CT->h_ratio, h_CT_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -153,10 +148,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	Hist_CT->h_ratio->SetFillColorAlpha( color_CT, 0.7 );
 
 	// -- MMHT2014 -- //
-	HistInfo *Hist_MMHT = new HistInfo( color_MMHT, "MMHT2014" );
-	Hist_MMHT->Set_FileName_ObjectName( FileName, HistName_MMHT );
-	Hist_MMHT->Set();
-	Hist_MMHT->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
+	TH1D* h_MMHT = Get_Hist( FileName, HistName_MMHT );
+	HistInfo *Hist_MMHT = new HistInfo( color_MMHT, "MMHT2014", h_MMHT );
+	Hist_MMHT->CalcRatio_DEN( Hist_Data_TotUnc->h );
 
 	TH1D* h_MMHT_RelUnc = Get_Hist( FileName, HistName_MMHT_RelUnc );
 	AssignErrors( Hist_MMHT->h_ratio, h_MMHT_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -165,10 +159,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	Hist_MMHT->h_ratio->SetFillColorAlpha( color_MMHT, 0.7 );
 
 	// -- HERAPDF15 -- //
-	HistInfo *Hist_HERAPDF = new HistInfo( color_HERAPDF, "HERAPDF15" );
-	Hist_HERAPDF->Set_FileName_ObjectName( FileName, HistName_HERAPDF );
-	Hist_HERAPDF->Set();
-	Hist_HERAPDF->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
+	TH1D* h_HERAPDF = Get_Hist( FileName, HistName_HERAPDF );
+	HistInfo *Hist_HERAPDF = new HistInfo( color_HERAPDF, "HERAPDF15", h_HERAPDF );
+	Hist_HERAPDF->CalcRatio_DEN( Hist_Data_TotUnc->h );
 
 	TH1D* h_HERAPDF_RelUnc = Get_Hist( FileName, HistName_HERAPDF_RelUnc );
 	AssignErrors( Hist_HERAPDF->h_ratio, h_HERAPDF_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -177,10 +170,9 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	Hist_HERAPDF->h_ratio->SetFillColorAlpha( color_HERAPDF, 0.7 );
 
 	// -- ABM12LHC -- //
-	HistInfo *Hist_ABM = new HistInfo( color_ABM, "ABM12LHC" );
-	Hist_ABM->Set_FileName_ObjectName( FileName, HistName_ABM );
-	Hist_ABM->Set();
-	Hist_ABM->Calc_RatioHist_Denominator( Hist_Data_TotUnc->h );
+	TH1D* h_ABM = Get_Hist( FileName, HistName_ABM );
+	HistInfo *Hist_ABM = new HistInfo( color_ABM, "ABM12LHC", h_ABM );
+	Hist_ABM->CalcRatio_DEN( Hist_Data_TotUnc->h );
 
 	TH1D* h_ABM_RelUnc = Get_Hist( FileName, HistName_ABM_RelUnc );
 	AssignErrors( Hist_ABM->h_ratio, h_ABM_RelUnc, kFALSE ); // -- uncertainty on the ratio: theo. unc. only -- //
@@ -190,7 +182,8 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 
 	// -- Draw Canvas -- //
 	TCanvas *c;
-	SetCanvas_Square( c, "c_Comparison_VariousPDF_"+TStr_Channel );
+	TString CanvasName = "c_Comparison_VariousPDF_"+TStr_Channel;
+	SetCanvas_Square( c, CanvasName );
 
 	gStyle->SetPadBorderMode(0);
 	gStyle->SetFrameBorderMode(0);
@@ -273,6 +266,10 @@ void Comparison_VariousPDF(TString TStr_Channel = "LL")
 	// latex.DrawLatexNDC( 0.76, 0.004, "#font[42]{#scale[0.8]{m (#mu#mu) [GeV]}}");
 
 	c->SaveAs(".pdf");
+	TString PlotPath = gSystem->Getenv("KP_PLOT_PATH");
+	c->SaveAs(PlotPath+"/"+CanvasName+".pdf");
+
+
 
 
 	// BigPad->cd();
