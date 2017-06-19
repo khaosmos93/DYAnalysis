@@ -4,7 +4,7 @@ void CalcAcc_Dressed_MM()
 {
 	AccTool *tool = new AccTool( "Muon" );
 
-	TFile *f_output = TFile::Open("ROOTFIle_Acc_Dressed_MM.root", "RECREATE");
+	TFile *f_output = TFile::Open("ROOTFile_Acc_Dressed_MM.root", "RECREATE");
 	
 	tool->Analyze();
 	tool->Save( f_output );
