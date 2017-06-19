@@ -25,6 +25,7 @@
 
 class AccTool
 {
+public:
 	TString TStr_Channel;
 
 	Double_t PtCut_Lead;
@@ -44,7 +45,7 @@ class AccTool
 
 	Int_t nEvent_Test;
 
-	AccTool( TString TStr_Channel )
+	AccTool( TString _TStr_Channel )
 	{
 		this->TStr_Channel = _TStr_Channel;
 
@@ -79,6 +80,8 @@ class AccTool
 
 	void Analyze()
 	{
+		DYAnalyzer *analyzer = new DYAnalyzer( "IsoMu20_OR_IsoTkMu20" );
+
 		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 		vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2(this->SampleName, &ntupleDirectory, &Tag, &Xsec, &nEvents);
@@ -106,7 +109,7 @@ class AccTool
 			Int_t nTotEvent = chain->GetEntries();
 			if( this->nEvent_Test > 0 ) 
 			{
-				cout << "# total event: " << nTotEvent << " -> " << this->nEvent_Test << "as a test" << endl;
+				cout << "# total event: " << nTotEvent << " -> " << this->nEvent_Test << " as a test" << endl;
 				nTotEvent = this->nEvent_Test;
 			}
 			cout << "\t[Total Events: " << nTotEvent << "]" << endl;
@@ -141,7 +144,7 @@ class AccTool
 					{
 						GenLepton genlep;
 						genlep.FillFromNtuple(ntuple, i_gen);
-						if( genlep.ID == this->LeptonID && genlep.fromHardProcessFinalState )
+						if( fabs(genlep.ID) == this->LeptonID && genlep.fromHardProcessFinalState )
 							GenLeptonCollection.push_back( genlep );
 					}
 
@@ -170,12 +173,12 @@ class AccTool
 
 					if( Flag_Acc )
 					{
-						h_mass_AccTotal->Fill( M_GEN, TotWeight );
-						h_mass_AccPass->Fill( M_GEN, TotWeight );
+						h_AccTotal->Fill( M_GEN, TotWeight );
+						h_AccPass->Fill( M_GEN, TotWeight );
 					}
 					else
 					{
-						h_mass_AccTotal->Fill( M_GEN, TotWeight );
+						h_AccTotal->Fill( M_GEN, TotWeight );
 					}
 				} // -- GenFlag == kTRUE -- //
 
@@ -189,8 +192,8 @@ class AccTool
 
 		} // -- end of sample iteration -- //
 
-		this->TEff_Acc = new TEfficiency(*h_mass_AccPass, *h_mass_AccTotal);
-		this->g_Acc = (TGraphAsymmErrors*)TEff_Acc->->CreateGraph()->Clone();
+		this->TEff_Acc = new TEfficiency(*h_AccPass, *h_AccTotal);
+		this->g_Acc = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
 	}
 
 	void Save( TFile *f_output )
@@ -211,7 +214,7 @@ class AccTool
 	}
 
 protected:
-	void Test_Acc( GenLepton genlep1, GenLepton genlep2 )
+	Bool_t Test_Acc( GenLepton genlep1, GenLepton genlep2 )
 	{
 		Bool_t Flag = kFALSE;
 
@@ -250,6 +253,7 @@ protected:
 
 		return Flag;
 	}
+
 	void Setup_AccCut()
 	{
 		if( this->TStr_Channel == "Muon" )
@@ -268,7 +272,7 @@ protected:
 		}
 	}
 
-	void Setup_GenParam()
+	void Setup_Param()
 	{
 		if( this->TStr_Channel == "Muon" )
 		{
