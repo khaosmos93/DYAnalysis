@@ -95,7 +95,7 @@ public:
 
 	// -- outdated -- //
 	Double_t EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *ntuple);
-	Double_t EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple);
+	Double_t EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2);
 	
 	////////////////////////////
 	// -- Event Selections -- //
@@ -103,7 +103,7 @@ public:
 	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Mu50(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
-	Bool_t EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
+	Bool_t EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, Bool_t& isMoreThanOneCand); // -- output: 2 muons passing event selection conditions -- //
@@ -115,9 +115,9 @@ public:
 	void DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2);
 
 	// -- for electron channel - //
-	Bool_t EventSelection_Electron(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
-	Bool_t EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
-	Bool_t EventSelection_ElectronChannel(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
+	Bool_t EventSelection_Electron(vector< Electron > ElectronCollection, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
+	Bool_t EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
+	Bool_t EventSelection_ElectronChannel(vector< Electron > ElectronCollection, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
 	Bool_t isPassAccCondition_Electron(Electron Elec1, Electron Elec2);
 	Bool_t isPassAccCondition_GenLepton_ECALGAP(GenLepton genlep1, GenLepton genlep2);
 	void CompareElectron(Electron *Elec1, Electron *Elec2, Electron *leadElec, Electron *subElec);
@@ -1686,7 +1686,7 @@ Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *
 	return weight;
 }
 
-Double_t DYAnalyzer::EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple)
+Double_t DYAnalyzer::EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2)
 {
 	Double_t weight = -999;
 
@@ -2123,7 +2123,7 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 }
 
 // -- Event selection used for differential Z cross section measurement @ 13TeV -- // 
-Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
+Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, // -- input: All muons in a event & NtupleHandle -- //
 						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
@@ -2304,7 +2304,7 @@ void DYAnalyzer::DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Do
 }
 
 // -- Event selecton for the electron channel (test) -- //
-Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection, NtupleHandle *ntuple, // -- input: All electrons in a event & NtupleHandle -- //
+Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection, // -- input: All electrons in a event & NtupleHandle -- //
 						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
@@ -2345,7 +2345,7 @@ Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection
 }
 
 // -- Event selecton for the electron channel (2016.02.11) -- //
-Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCollection, NtupleHandle *ntuple, // -- input: All electrons in a event & NtupleHandle -- //
+Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCollection, // -- input: All electrons in a event & NtupleHandle -- //
 						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
@@ -2387,7 +2387,7 @@ Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCol
 }
 
 // -- Event selecton for the electron channel (2016.02.11) -- //
-Bool_t DYAnalyzer::EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, NtupleHandle *ntuple, // -- input: All electrons in a event & NtupleHandle -- //
+Bool_t DYAnalyzer::EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, // -- input: All electrons in a event & NtupleHandle -- //
 						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
