@@ -49,9 +49,9 @@ public:
 	{
 		this->TStr_Channel = _TStr_Channel;
 
-		if( this->TStr_Channel != "Muon" && this->TStr_Channel != "Electron" && this->TStr_Channel == "Muon_ElecAcc" )
+		if( this->TStr_Channel != "Muon" && this->TStr_Channel != "Electron" && this->TStr_Channel != "Muon_ElecAcc" )
 		{
-			cout << this->TStr_Channel << "is Wrong channel!" << endl;
+			cout << this->TStr_Channel << " is Wrong channel!" << endl;
 			return;
 		}
 
@@ -263,7 +263,7 @@ protected:
 			this->EtaCut_Lead = 2.4;
 			this->EtaCut_Sub = 2.4;
 		}
-		else if( this->TStr_Channel == "Electron" && this->TStr_Channel == "Muon_ElecAcc" )
+		else if( this->TStr_Channel == "Electron" || this->TStr_Channel == "Muon_ElecAcc" )
 		{
 			this->PtCut_Lead = 30;
 			this->PtCut_Sub = 10;
@@ -274,7 +274,7 @@ protected:
 
 	void Setup_Param()
 	{
-		if( this->TStr_Channel == "Muon" && this->TStr_Channel == "Muon_ElecAcc" )
+		if( this->TStr_Channel == "Muon" || this->TStr_Channel == "Muon_ElecAcc" )
 		{
 			this->SampleName = "aMCNLO_AdditionalSF";
 			this->LeptonID = 13;
