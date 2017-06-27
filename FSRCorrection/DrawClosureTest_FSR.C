@@ -21,24 +21,22 @@
 #include <TROOT.h>
 #include <TLatex.h>
 
-#include </home/kplee/Unfolding/src/RooUnfold.h>
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfold.h>
+#include <src/RooUnfoldResponse.h>
+#include <src/RooUnfoldInvert.h>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
+#include <Include/MyCanvas.C>
 
 void CalculateFractionPerBin(TH2D *h_nEvents, TH1* h_Truth, TH2D *h_Response);
 TH2D* Transpose( TH2D* h_2D );
 void MakeCanvas_RespM( TH2D *h_RespM );
 
-void DrawClosureTest_FSR(TString version = "None")
+void DrawClosureTest_FSR()
 {
 	gROOT->SetBatch( kTRUE );
 	// gSystem->Load("/home/kplee/Unfolding/libRooUnfold.so");
 
-	TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
-	if (version == "None" )
-		FileLocation = "./";
+	TString FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
 	TFile *f_input = new TFile(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root");
 
 	///////////////////////////
@@ -127,7 +125,7 @@ void MakeCanvas_RespM( TH2D *h_RespM )
 {
 	TH2D *hT_RespM = Transpose( h_RespM );
 
-	TCanvas *c = new TCanvas("c_RespM_DetRes", "", 800, 800);
+	TCanvas *c = new TCanvas("c_RespM_FSR", "", 800, 800);
 	gPad->SetGridx();
 	gPad->SetGridy();
 	gPad->SetLogx();
@@ -141,10 +139,13 @@ void MakeCanvas_RespM( TH2D *h_RespM )
 
 	hT_RespM->Draw("COLZ");
 
-	hT_RespM->GetXaxis()->SetTitle("generated mass (post-FSR) [GeV]");
+	hT_RespM->SetTitle("");
+	hT_RespM->SetStats(kFALSE);
+
+	hT_RespM->GetXaxis()->SetTitle("generated mass (dressed lepton) [GeV]");
 	hT_RespM->GetXaxis()->SetNoExponent();
 	hT_RespM->GetXaxis()->SetMoreLogLabels();
-	hT_RespM->GetYaxis()->SetTitle("reconstructed mass [GeV]");
+	hT_RespM->GetYaxis()->SetTitle("generated mass (post-FSR) [GeV]");
 	hT_RespM->GetYaxis()->SetNoExponent();
 	hT_RespM->GetYaxis()->SetMoreLogLabels();
 	hT_RespM->GetYaxis()->SetTitleOffset(2);
