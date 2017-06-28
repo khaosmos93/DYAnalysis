@@ -28,7 +28,7 @@ void XCheck_Acc_Dressed()
 	DrawCanvas_TwoHistRatio *canvas = new DrawCanvas_TwoHistRatio(CanvasName, Hist_KP, Hist_Ridhi);
 	canvas->SetTitle("m [GeV]", "Acceptance (dressed)", "KP/Ridhi");
 	canvas->SetLegendPosition( 0.55, 0.32, 0.95, 0.45 );
-	canvas->SetRatioRange( 0.7, 1.3 );
+	canvas->SetRatioRange( 0.93, 1.07 );
 	canvas->SetLatex( "Simulation" );
 	canvas->Draw( 1, 0 );
 }
