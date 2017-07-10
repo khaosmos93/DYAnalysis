@@ -120,7 +120,8 @@ protected:
 	void Set_Histograms_Theory()
 	{
 		TString FileName_DY = ROOTFilePath + "/ROOTFile_DiffXSec_FullUnc.root";
-		TString FileName_DYPI = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root";
+		// TString FileName_DYPI = AnalyzerPath + "/TheoryValues/NLO_MRST2004qed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root"; // -- MRST2004qed -- //
+		TString FileName_DYPI = AnalyzerPath + "/TheoryValues/NLO_LUXqed_DYPI_PI/ROOTFile_DYXSecNNLO_WithPI.root"; // -- LUX qed -- //
 
 		this->h_DY = Get_Hist(FileName_DY, "h_DiffXsec_FEWZ_NNPDF_NNLO");
 		this->h_DYPI = Get_Hist(FileName_DYPI, "h_DYDiffXSecNNLO_WithPI");
