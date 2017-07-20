@@ -24,7 +24,7 @@ void XCheck_WithRidhi_Acc_Dressed()
 	TH1D* h_KP = Convert_GraphToHist( g_KP );
 
 	HistInfo *Hist_Ridhi = new HistInfo( kGreen+2, "Ridhi", h_Ridhi );
-	HistInfo *Hist_KP = new HistInfo( kBlue, "KP (largeN for M10-50 & M50-inf)", h_KP );
+	HistInfo *Hist_KP = new HistInfo( kBlue, "KP (largeN for M10-50)", h_KP );
 
 	TString CanvasName = "Local/c_Acc_Dressed_KP_vs_Ridhi";
 	DrawCanvas_TwoHistRatio *canvas = new DrawCanvas_TwoHistRatio(CanvasName, Hist_KP, Hist_Ridhi);
