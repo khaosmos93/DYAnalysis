@@ -284,7 +284,7 @@ protected:
 		}
 		else if( this->TStr_Channel == "Electron" )
 		{
-			this->SampleName = "aMCNLO_ee_AdditionalSF_LargeN_M10to50_XSecFromRidhi";
+			this->SampleName = "aMCNLO_ee_AdditionalSF_LargeN_M10to50";
 			this->LeptonID = 11;
 		}
 	}
