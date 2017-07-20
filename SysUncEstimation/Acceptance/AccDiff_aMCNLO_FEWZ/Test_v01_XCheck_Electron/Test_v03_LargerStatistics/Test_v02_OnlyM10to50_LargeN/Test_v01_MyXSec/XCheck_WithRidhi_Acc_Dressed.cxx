@@ -7,7 +7,8 @@ void XCheck_WithRidhi_Acc_Dressed()
 {
 	if( gSystem->mkdir( "./Local" ) == 0 ) printf("Directory [Local] is created\n");
 
-	TString FileName_Ridhi = "../../Test_v01_XCheck_Ridhi/DYEE_AccEff_M10to3000.root";
+	TString AnalyzerPath = gSystem->Getenv("KP_ANALYZER_PATH");
+	TString FileName_Ridhi = AnalyzerPath+"/SysUncEstimation/Acceptance/AccDiff_aMCNLO_FEWZ/Test_v01_XCheck_Electron/Test_v01_XCheck_Ridhi/DYEE_AccEff_M10to3000.root";
 	TString HistName_AccTotal = "h_mass_AccTotal";
 	TString HistName_AccPass = "h_mass_AccPass";
 
@@ -71,10 +72,13 @@ void Comparison_MassHist( TH1D* h_KP, TH1D* h_Ridhi )
 	DrawCanvas_TwoHistRatio *canvas = new DrawCanvas_TwoHistRatio(CanvasName, Hist_KP, Hist_Ridhi);
 	canvas->SetTitle("m [GeV]", "# events", "KP/Ridhi");
 	canvas->SetLegendPosition( 0.40, 0.32, 0.97, 0.45 );
-	canvas->SetRatioRange( 0.94, 1.06 );
+	canvas->SetRatioRange( 0.96, 1.04 );
 	canvas->SetLatex( "Simulation" );
 	canvas->Draw( 1, 1 );
 	canvas->c->cd();
 	canvas->TopPad->cd();
 	canvas->c->SaveAs(".pdf");
+
+	cout << "HistType: " << HistType << endl;
+	Print_Histogram( Hist_KP->h_ratio );
 }

@@ -45,6 +45,10 @@ public:
 
 	Int_t nEvent_Test;
 
+	// -- test -- //
+	TH1D* h_AccTotal_postFSR;
+	TH1D* h_AccPass_postFSR;
+
 	AccTool( TString _TStr_Channel )
 	{
 		this->TStr_Channel = _TStr_Channel;
@@ -71,6 +75,9 @@ public:
 		this->h_AccPass = new TH1D("h_AccPass", "", nMassBin, MassBinEdges);
 
 		this->nEvent_Test = -1;
+
+		this->h_AccTotal_postFSR = new TH1D("h_AccTotal_postFSR", "", nMassBin, MassBinEdges);
+		this->h_AccPass_postFSR = new TH1D("h_AccPass_postFSR", "", nMassBin, MassBinEdges);
 	}
 
 	void Set_nEvent_Test( Double_t _nEv )
@@ -183,6 +190,19 @@ public:
 					{
 						h_AccTotal->Fill( M_GEN, TotWeight );
 					}
+
+					// -- post-FSR -- //
+					Double_t M_postFSR = (genlep_postFSR1.Momentum + genlep_postFSR2.Momentum).M();
+					Bool_t Flag_Acc_postFSR =this->Test_Acc( genlep_postFSR1, genlep_postFSR2 );
+					
+					if( Flag_Acc_postFSR )
+					{
+						this->h_AccTotal_postFSR->Fill( M_postFSR, TotWeight );
+						this->h_AccPass_postFSR->Fill( M_postFSR, TotWeight );
+					}
+					else
+						this->h_AccTotal_postFSR->Fill( M_postFSR, TotWeight );
+
 				} // -- GenFlag == kTRUE -- //
 
 			} // -- end of event iteration -- //
@@ -214,6 +234,9 @@ public:
 
 		this->g_Acc->SetName("g_Acc");
 		this->g_Acc->Write();
+
+		this->h_AccTotal_postFSR->Write();
+		this->h_AccPass_postFSR->Write();
 	}
 
 protected:
