@@ -1,3 +1,28 @@
+#include <TChain.h>
+#include <TFile.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TLorentzVector.h>
+#include <TStopwatch.h>
+#include <TTimeStamp.h>
+#include <TString.h>
+#include <TLegend.h>
+#include <THStack.h>
+#include <TPad.h>
+#include <TCanvas.h>
+#include <TColor.h>
+#include <TAttMarker.h>
+#include <TF1.h>
+#include <TStyle.h>
+#include <TROOT.h>
+#include <TApplication.h>
+#include <vector>
+#include <TMath.h>
+
+// -- for Rochester Muon momentum correction -- //
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
+
 #include <Include/DYAnalyzer.h>
 
 static inline void loadBar(int x, int n, int r, int w)
@@ -70,7 +95,7 @@ public:
 			h->Write();
 
 		TString FileName = f_output->GetName();
-		printf("[HistContainer] All histograms are saved in %s\n", FileName);
+		printf("[HistContainer] All histograms are saved in %s\n", FileName.Data());
 	}
 
 	void Init_Hist()
@@ -81,7 +106,7 @@ public:
 											 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
 											 830, 1000, 1500, 3000};
 
-		this->h_mass = new TH1D("h_mass_"+this->Type, nMassBin, MassBinEdges); vec_Hist.push_back( h_mass );
+		this->h_mass = new TH1D("h_mass_"+this->Type, "", nMassBin, MassBinEdges); vec_Hist.push_back( h_mass );
 		this->h_absdiRap_M20to30 = new TH1D("h_absdiRap_M20to30_"+this->Type, "", 24, 0, 2.4); vec_Hist.push_back( h_absdiRap_M20to30 );
 		this->h_absdiRap_M30to45 = new TH1D("h_absdiRap_M30to45_"+this->Type, "", 24, 0, 2.4); vec_Hist.push_back( h_absdiRap_M30to45 );
 		this->h_absdiRap_M45to60 = new TH1D("h_absdiRap_M45to60_"+this->Type, "", 24, 0, 2.4); vec_Hist.push_back( h_absdiRap_M45to60 );
@@ -107,7 +132,7 @@ public:
 		TString HLTname = "IsoMu20_OR_IsoTkMu20";
 		DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-		HistContainer *Hists = new HistContainer();
+		HistContainer *Hists = new HistContainer("DYMuMu");
 
 		TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 		//Each ntuple directory & corresponding Tags
@@ -119,7 +144,7 @@ public:
 		{
 			cout << "\t<" << Tag[i_sample] << ">" << endl;
 
-			if( !(Tag[i_sample] == "DYMuMu_M100to200") ) continue;
+			// if( !(Tag[i_sample] == "DYMuMu_M100to200") ) continue;
 
 			TChain *chain = new TChain("recoTree/DYTree");
 			chain->Add(BaseLocation + "/" + ntupleDirectory[i_sample]+"/ntuple_*.root");
@@ -131,13 +156,14 @@ public:
 			
 			rochcor2015 *rmcor = new rochcor2015();
 
+			Bool_t isMC = kTRUE;
 			analyzer->SetupPileUpReWeighting_76X( isMC );
 
 			Int_t NEvents = chain->GetEntries();
 			cout << "\t[Total Events: " << NEvents << "]" << endl;
 
 			Double_t norm_2016 = ( Xsec[i_sample] * Lumi_2016 ) / nEvents[i_sample];
-			printf("[norm_2016: %.lf]\n", norm_2016);
+			printf("[norm_2016: %.3lf]\n", norm_2016);
 
 			for(Int_t i=0; i<NEvents; i++)
 			{
@@ -187,7 +213,7 @@ public:
 					}
 
 					// -- Event Selection -- //
-					vector< Muon > SelectedMuonCollection = this->EventSelection( MuonCollection, ntuple );
+					vector< Muon > SelectedMuonCollection = this->EventSelection( MuonCollection, ntuple, analyzer );
 
 					if( SelectedMuonCollection.size() == 2 )
 					{
@@ -205,7 +231,7 @@ public:
 		Hists->Save( f_output );
 	}
 
-	vector< Muon > EventSelection( vector<Muon>& MuonCollection, NtupleHandle *ntuple )
+	vector< Muon > EventSelection( vector<Muon>& MuonCollection, NtupleHandle *ntuple, DYAnalyzer *analyzer )
 	{
 		vector< Muon > vec_MuonSelected;
 
@@ -245,7 +271,7 @@ public:
 
 				Double_t VtxProb = -999;
 				Double_t VtxNormChi2 = 999;
-				DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
+				analyzer->DimuonVertexProbNormChi2(ntuple, recolep1.Inner_pT, recolep2.Inner_pT, &VtxProb, &VtxNormChi2);
 
 				TLorentzVector inner_v1 = recolep1.Momentum_Inner;
 				TLorentzVector inner_v2 = recolep2.Momentum_Inner;
@@ -259,7 +285,6 @@ public:
 				// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
 				if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 				{
-					isPassEventSelection = kTRUE;
 					vec_MuonSelected.push_back( recolep1 );
 					vec_MuonSelected.push_back( recolep2 );
 				}
@@ -295,7 +320,7 @@ public:
 								{
 									Double_t VtxProb_temp = -999;
 									Double_t VtxNormChi2_temp = 999;
-									DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
+									analyzer->DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
 
 									// -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
 									if( VtxNormChi2_temp < VtxNormChi2_BestPair )
@@ -325,7 +350,6 @@ public:
 
 					if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 					{
-						isPassEventSelection = kTRUE;
 						vec_MuonSelected.push_back( mu1_BestPair );
 						vec_MuonSelected.push_back( mu2_BestPair );
 					}
