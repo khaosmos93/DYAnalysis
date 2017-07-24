@@ -163,7 +163,7 @@ public:
 			cout << "\t[Total Events: " << NEvents << "]" << endl;
 
 			Double_t norm_2016 = ( Xsec[i_sample] * Lumi_2016 ) / nEvents[i_sample];
-			printf("[norm_2016: %.3lf]\n", norm_2016);
+			printf("[norm_2016: %lf]\n", norm_2016);
 
 			for(Int_t i=0; i<NEvents; i++)
 			{
@@ -219,7 +219,7 @@ public:
 					{
 						Muon mu1 = SelectedMuonCollection[0];
 						Muon mu2 = SelectedMuonCollection[1];
-						Hists->Fill( mu1, mu2, GenWeight*PUWeight );
+						Hists->Fill( mu1, mu2, GenWeight*PUWeight*norm_2016 );
 					}
 					
 				} //End of if( isTriggered )
