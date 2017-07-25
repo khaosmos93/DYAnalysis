@@ -280,7 +280,7 @@ protected:
 			{
 				
 				// Double_t dR = Calc_dR_GenLepton_GenOthers(*genlep_postFSR, genlep);
-				Double_t dR = genlep_postFSR.Momentum.deltaR( genlep.Momentum );
+				Double_t dR = genlep_postFSR.Momentum.DeltaR( genlep.Momentum );
 
 				// -- Sum of all photon's momentum near the post-FSR muon -- //
 				if( dR < dRCut )
