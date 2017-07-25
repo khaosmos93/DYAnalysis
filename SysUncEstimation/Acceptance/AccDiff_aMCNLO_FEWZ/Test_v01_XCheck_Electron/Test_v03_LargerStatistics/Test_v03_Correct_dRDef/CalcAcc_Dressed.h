@@ -263,7 +263,7 @@ protected:
 	{
 		GenLepton genlep_dressed = genlep_postFSR; // -- copy the member variable values -- //
 
-		TLorentzVector genlep_Mom_postFSR = genlep_postFSR->Momentum;
+		TLorentzVector genlep_Mom_postFSR = genlep_postFSR.Momentum;
 
 		TLorentzVector SumPhotonMom;
 		SumPhotonMom.SetPxPyPzE(0,0,0,0);
@@ -289,14 +289,14 @@ protected:
 		}
 
 		// -- Momentum(pre-FSR) = Momentum(post-FSR) + Sum of all Photon's momentum near the post-FSR muon -- //
-		genlep_preFSR->Momentum = genlep_Mom_postFSR + SumPhotonMom;
-		genlep_preFSR->Et = genlep_preFSR->Momentum.Et();
-		genlep_preFSR->Pt = genlep_preFSR->Momentum.Pt();
-		genlep_preFSR->eta = genlep_preFSR->Momentum.Eta();
-		genlep_preFSR->phi = genlep_preFSR->Momentum.Phi();
-		genlep_preFSR->Px = genlep_preFSR->Momentum.Px();
-		genlep_preFSR->Py = genlep_preFSR->Momentum.Py();
-		genlep_preFSR->Pz = genlep_preFSR->Momentum.Pz();
+		genlep_dressed.Momentum = genlep_Mom_postFSR + SumPhotonMom;
+		genlep_dressed.Et = genlep_dressed.Momentum.Et();
+		genlep_dressed.Pt = genlep_dressed.Momentum.Pt();
+		genlep_dressed.eta = genlep_dressed.Momentum.Eta();
+		genlep_dressed.phi = genlep_dressed.Momentum.Phi();
+		genlep_dressed.Px = genlep_dressed.Momentum.Px();
+		genlep_dressed.Py = genlep_dressed.Momentum.Py();
+		genlep_dressed.Pz = genlep_dressed.Momentum.Pz();
 
 		return genlep_dressed;
 	}
