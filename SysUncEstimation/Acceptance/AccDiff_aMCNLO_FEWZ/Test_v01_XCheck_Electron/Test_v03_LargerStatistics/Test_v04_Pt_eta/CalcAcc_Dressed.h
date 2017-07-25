@@ -122,8 +122,8 @@ public:
 
 			cout << "\t<" << Tag[i_tup] << ">" << endl;
 
-			if( Tag[i_tup].Contains("M50to100") )
-				ntupleDirectory[i_tup] = "76X/v20160304_76X_MINIAODv2_DYLL_M50toInf_25ns"; // -- a sample with usual statistics -- //
+			// if( Tag[i_tup].Contains("M50to100") )
+			// 	ntupleDirectory[i_tup] = "76X/v20160304_76X_MINIAODv2_DYLL_M50toInf_25ns"; // -- a sample with usual statistics -- //
 
 			TChain *chain = new TChain("recoTree/DYTree");
 			chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
@@ -283,7 +283,7 @@ protected:
 		if( genlep_dressed1.Pt > genlep_dressed2.Pt )
 		{
 			Pt_Lead = genlep_dressed1.Pt;
-			Pt_Lead = genlep_dressed1.eta;
+			Eta_Lead = genlep_dressed1.eta;
 
 			Pt_Sub = genlep_dressed2.Pt;
 			Eta_Sub = genlep_dressed2.eta;
@@ -291,7 +291,7 @@ protected:
 		else
 		{
 			Pt_Lead = genlep_dressed2.Pt;
-			Pt_Lead = genlep_dressed2.eta;
+			Eta_Lead = genlep_dressed2.eta;
 
 			Pt_Sub = genlep_dressed1.Pt;
 			Eta_Sub = genlep_dressed1.eta;
