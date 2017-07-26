@@ -23,18 +23,18 @@
 // #include </home/kplee/Unfolding/src/RooUnfold_LinkDef.h>
 // #include </home/kplee/Unfolding/src/RooUnfold.h>
 // #include </home/kplee/Unfolding/src/RooUnfold.cxx>
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-// #include </home/kplee/Unfolding/src/RooUnfoldResponse.cxx>
-#include </home/kplee/Unfolding/src/RooUnfoldBayes.h>
-// #include </home/kplee/Unfolding/src/RooUnfoldBayes.cxx>
-// #include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfoldResponse.h>
+// #include <src/RooUnfoldResponse.cxx>
+#include <src/RooUnfoldBayes.h>
+// #include <src/RooUnfoldBayes.cxx>
+// #include <src/RooUnfoldInvert.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/RochesterMomCorr_76X/RoccoR.cc>
+#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 #include <vector>
 
 static inline void loadBar(int x, int n, int r, int w);
@@ -99,7 +99,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO"
 	h_responseM->SetXTitle("Reconstruction level M(#mu#mu) [GeV]");
 	h_responseM->SetYTitle("Generator level M(#mu#mu) [GeV]");
 	
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 	//Each ntuple directory & corresponding Tags
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 
@@ -127,6 +127,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO"
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 
 		NtupleHandle *ntuple = new NtupleHandle( chain );
+		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_Muon();
 
