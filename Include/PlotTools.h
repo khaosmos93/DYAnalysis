@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TH1D.h>
+#include <TH2D.h>
 #include <TColor.h>
 #include <TLegend.h>
 #include <TCanvas.h>
@@ -920,14 +921,14 @@ TH1D* ConvertHist_AbsToRel( TH1D* h_CenV, TH1D* h_AbsUnc, Bool_t ConvertToPercen
 	return h_RelUnc;
 }
 
-void SaveAsTVector( Double_t var, TString Name, TFile *f_output )
-{
-	TVectorD *Vec = new TVectorD(1);
-	Vec[0] = var;
+// void SaveAsTVector( Double_t var, TString Name, TFile *f_output )
+// {
+// 	TVectorD *Vec = new TVectorD(1);
+// 	Vec[0] = var;
 
-	f_output->cd();
-	Vec->Write( Name );
-}
+// 	f_output->cd();
+// 	Vec->Write( Name );
+// }
 
 TH1D* DivideEachBin_ByBinWidth( TH1D* h, TString HistName = "" )
 {
