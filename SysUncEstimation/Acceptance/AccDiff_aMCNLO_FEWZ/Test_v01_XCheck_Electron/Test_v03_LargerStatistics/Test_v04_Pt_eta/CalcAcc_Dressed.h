@@ -22,32 +22,12 @@
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
 
-
-class AccTool
+class HistContainer
 {
 public:
-	TString TStr_Channel;
-
-	Double_t PtCut_Lead;
-	Double_t PtCut_Sub;
-	Double_t EtaCut_Lead;
-	Double_t EtaCut_Sub;
-
-	TString SampleName;
-	Int_t LeptonID;
-
-	Double_t MassBinEdges[nMassBin+1];
-
+	TString Type;
 	TH1D* h_AccTotal;
 	TH1D* h_AccPass;
-	TEfficiency *TEff_Acc;
-	TGraphAsymmErrors* g_Acc;
-
-	Int_t nEvent_Test;
-
-	// -- test -- //
-	TH1D* h_AccTotal_postFSR;
-	TH1D* h_AccPass_postFSR;
 
 	TH1D* h_AccTotal_Pt_Lead;
 	TH1D* h_AccTotal_Pt_Sub;
@@ -58,6 +38,118 @@ public:
 	TH1D* h_AccPass_Pt_Sub;
 	TH1D* h_AccPass_Eta_Lead;
 	TH1D* h_AccPass_Eta_Sub;
+
+	HistContainer(TString _Type )
+	{
+		this->Type = _Type;
+		this->Init_Hist();
+	}
+
+	void Fill( GenLepton genlep1, GenLepton genlep2, Double_t weight, Bool_t Flag_Acc )
+	{
+		Double_t M = (genlep1.Momentum + genlep2.Momentum).M();
+		this->h_AccTotal->Fill( M, weight );
+		if( Flag_Acc ) this->h_AccPass->Fill( M, weight );
+
+		Double_t Pt_Lead;
+		Double_t Eta_Lead;
+		Double_t Pt_Sub;
+		Double_t Eta_Sub;
+		if( genlep1.Pt > genlep2.Pt )
+		{
+			Pt_Lead = genlep1.Pt;
+			Eta_Lead = genlep1.eta;
+
+			Pt_Sub = genlep2.Pt;
+			Eta_Sub = genlep2.eta;
+		}
+		else
+		{
+			Pt_Lead = genlep2.Pt;
+			Eta_Lead = genlep2.eta;
+
+			Pt_Sub = genlep1.Pt;
+			Eta_Sub = genlep1.eta;
+		}
+
+		this->h_AccTotal_Pt_Lead->Fill( Pt_Lead, weight );
+		this->h_AccTotal_Pt_Sub->Fill( Pt_Sub, weight );
+		this->h_AccTotal_Eta_Lead->Fill( Eta_Lead, weight );
+		this->h_AccTotal_Eta_Sub->Fill( Eta_Sub, weight );
+
+		if( Flag_Acc )
+		{
+			this->h_AccPass_Pt_Lead->Fill( Pt_Lead, weight );
+			this->h_AccPass_Pt_Sub->Fill( Pt_Sub, weight );
+			this->h_AccPass_Eta_Lead->Fill( Eta_Lead, weight );
+			this->h_AccPass_Eta_Sub->Fill( Eta_Sub, weight );
+		}
+	}
+
+	void Save( TFile *f_output )
+	{
+		f_output->cd();
+		this->h_AccTotal->Write();
+		this->h_AccPass->Write();
+
+		this->h_AccTotal_Pt_Lead->Write();
+		this->h_AccTotal_Pt_Sub->Write();
+		this->h_AccTotal_Eta_Lead->Write();
+		this->h_AccTotal_Eta_Sub->Write();
+
+		this->h_AccPass_Pt_Lead->Write();
+		this->h_AccPass_Pt_Sub->Write();
+		this->h_AccPass_Eta_Lead->Write();
+		this->h_AccPass_Eta_Sub->Write();
+
+		cout << "All histograms with [Type = " << this->Type << "] are saved in " << f_output->GetName() << endl;
+	}
+
+	void Init_Hist()
+	{
+		this->h_AccTotal = new TH1D("h_AccTotal_"+this->Type, "", 10000, 0, 10000 );
+		this->h_AccPass = new TH1D("h_AccPass_"+this->Type, "", 10000, 0, 10000 );
+
+		this->h_AccTotal_Pt_Lead = new TH1D("h_AccTotal_Pt_Lead_"+this->Type, "", 10000, 0, 10000 );
+		this->h_AccTotal_Pt_Sub = new TH1D("h_AccTotal_Pt_Sub_"+this->Type, "", 10000, 0, 10000 );
+		this->h_AccTotal_Eta_Lead = new TH1D("h_AccTotal_Eta_Lead_"+this->Type, "", 2000, -10, 10 );
+		this->h_AccTotal_Eta_Sub = new TH1D("h_AccTotal_Eta_Sub_"+this->Type, "", 2000, -10, 10 );
+
+		this->h_AccPass_Pt_Lead = new TH1D("h_AccPass_Pt_Lead_"+this->Type, "", 10000, 0, 10000 );
+		this->h_AccPass_Pt_Sub = new TH1D("h_AccPass_Pt_Sub_"+this->Type, "", 10000, 0, 10000 );
+		this->h_AccPass_Eta_Lead = new TH1D("h_AccPass_Eta_Lead_"+this->Type, "", 600, -3, 3 );
+		this->h_AccPass_Eta_Sub = new TH1D("h_AccPass_Eta_Sub_"+this->Type, "", 600, -3, 3 );
+	}
+
+
+};
+
+class AccTool
+{
+public:
+	TFile *f_output;
+	TString TStr_Channel;
+
+	Double_t Luminosity;
+	Double_t PtCut_Lead;
+	Double_t PtCut_Sub;
+	Double_t EtaCut_Lead;
+	Double_t EtaCut_Sub;
+
+	TString SampleName;
+	Int_t LeptonID;
+
+	Double_t MassBinEdges[nMassBin+1];
+
+	// -- DY bins -- //
+	TH1D* h_AccTotal;
+	TH1D* h_AccPass;
+	TH1D* h_AccTotal_postFSR;
+	TH1D* h_AccPass_postFSR;
+	TEfficiency *TEff_Acc;
+	TGraphAsymmErrors* g_Acc;
+
+	Int_t nEvent_Test;
 
 	AccTool( TString _TStr_Channel )
 	{
@@ -83,22 +175,9 @@ public:
 
 		this->h_AccTotal = new TH1D("h_AccTotal", "", nMassBin, MassBinEdges);
 		this->h_AccPass = new TH1D("h_AccPass", "", nMassBin, MassBinEdges);
-
-
-		this->nEvent_Test = -1;
-
 		this->h_AccTotal_postFSR = new TH1D("h_AccTotal_postFSR", "", nMassBin, MassBinEdges);
 		this->h_AccPass_postFSR = new TH1D("h_AccPass_postFSR", "", nMassBin, MassBinEdges);
-
-		this->h_AccTotal_Pt_Lead = new TH1D("h_AccTotal_Pt_Lead", "", 10000, 0, 10000 );
-		this->h_AccTotal_Pt_Sub = new TH1D("h_AccTotal_Pt_Sub", "", 10000, 0, 10000 );
-		this->h_AccTotal_Eta_Lead = new TH1D("h_AccTotal_Eta_Lead", "", 600, -3, 3 );
-		this->h_AccTotal_Eta_Sub = new TH1D("h_AccTotal_Eta_Sub", "", 600, -3, 3 );
-
-		this->h_AccPass_Pt_Lead = new TH1D("h_AccPass_Pt_Lead", "", 10000, 0, 10000 );
-		this->h_AccPass_Pt_Sub = new TH1D("h_AccPass_Pt_Sub", "", 10000, 0, 10000 );
-		this->h_AccPass_Eta_Lead = new TH1D("h_AccPass_Eta_Lead", "", 600, -3, 3 );
-		this->h_AccPass_Eta_Sub = new TH1D("h_AccPass_Eta_Sub", "", 600, -3, 3 );
+		this->nEvent_Test = -1;
 	}
 
 	void Set_nEvent_Test( Double_t _nEv )
@@ -114,6 +193,9 @@ public:
 		vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2(this->SampleName, &ntupleDirectory, &Tag, &Xsec, &nEvents);
 
+		HistContainer* Hists_All = HistContainer( "All" );
+		HistContainer* Hists_All_postFSR = HistContainer( "All_postFSR" );
+
 		const Int_t Ntup = ntupleDirectory.size();
 		for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 		{
@@ -121,6 +203,9 @@ public:
 			looptime.Start();
 
 			cout << "\t<" << Tag[i_tup] << ">" << endl;
+
+			HistContainer* Hists = HistContainer( Tag[i_tup] );
+			HistContainer* Hists_postFSR = HistContainer( Tag[i_tup]+"_postFSR" );
 
 			// if( Tag[i_tup].Contains("M50to100") )
 			// 	ntupleDirectory[i_tup] = "76X/v20160304_76X_MINIAODv2_DYLL_M50toInf_25ns"; // -- a sample with usual statistics -- //
@@ -145,7 +230,7 @@ public:
 			}
 			cout << "\t[Total Events: " << nTotEvent << "]" << endl;
 
-			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
+			Double_t norm = ( Xsec[i_tup] * this->Luminosity ) / (Double_t)nEvents[i_tup];
 			cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 			for(Int_t i=0; i<nTotEvent; i++)
@@ -211,13 +296,12 @@ public:
 					{
 						h_AccTotal->Fill( M_GEN, TotWeight );
 					}
-
-					this->Fill_SingleMuonHist( Flag_Acc, genlep_dressed1, genlep_dressed2, TotWeight );
+					Hists->Fill( genlep_dressed1, genlep_dressed2, TotWeight, Flag_Acc );
+					Hists_All->Fill( genlep_dressed1, genlep_dressed2, TotWeight, Flag_Acc );
 
 					// -- post-FSR -- //
 					Double_t M_postFSR = (genlep_postFSR1.Momentum + genlep_postFSR2.Momentum).M();
-					Bool_t Flag_Acc_postFSR =this->Test_Acc( genlep_postFSR1, genlep_postFSR2 );
-					
+					Bool_t Flag_Acc_postFSR =this->Test_Acc( genlep_postFSR1, genlep_postFSR2 );			
 					if( Flag_Acc_postFSR )
 					{
 						this->h_AccTotal_postFSR->Fill( M_postFSR, TotWeight );
@@ -226,9 +310,16 @@ public:
 					else
 						this->h_AccTotal_postFSR->Fill( M_postFSR, TotWeight );
 
+					Hists_postFSR->Fill( genlep_postFSR1, genlep_postFSR2, TotWeight, Flag_Acc_postFSR );
+					Hists_All_postFSR->Fill( genlep_postFSR1, genlep_postFSR2, TotWeight, Flag_Acc_postFSR );
+
 				} // -- GenFlag == kTRUE -- //
 
 			} // -- end of event iteration -- //
+
+			f_output->cd();
+			Hists->Save( f_output );
+			Hists_postFSR->Save( f_output );
 
 			cout << "Total Sum of Weight: " << SumWeights << endl;
 			cout << "\tSum of Weights of Separated Events: " << SumWeights_Separated << endl;
@@ -240,10 +331,8 @@ public:
 
 		this->TEff_Acc = new TEfficiency(*h_AccPass, *h_AccTotal);
 		this->g_Acc = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
-	}
 
-	void Save( TFile *f_output )
-	{
+		// -- save -- //
 		f_output->cd();
 
 		this->h_AccTotal->SetName("h_AccTotal");
@@ -261,15 +350,13 @@ public:
 		this->h_AccTotal_postFSR->Write();
 		this->h_AccPass_postFSR->Write();
 
-		this->h_AccTotal_Pt_Lead->Write();
-		this->h_AccTotal_Pt_Sub->Write();
-		this->h_AccTotal_Eta_Lead->Write();
-		this->h_AccTotal_Eta_Sub->Write();
+		Hists_All->Save( f_output );
+		Hists_All_postFSR->Save( f_output );
+	}
 
-		this->h_AccPass_Pt_Lead->Write();
-		this->h_AccPass_Pt_Sub->Write();
-		this->h_AccPass_Eta_Lead->Write();
-		this->h_AccPass_Eta_Sub->Write();
+	void Set_Output( TFile *_f_output )
+	{
+		this->f_output = _f_output;
 	}
 
 protected:
@@ -375,11 +462,13 @@ protected:
 		{
 			this->SampleName = "aMCNLO_AdditionalSF_LargeN";
 			this->LeptonID = 13;
+			this->Luminosity = Lumi; // -- MuonPhys -- //
 		}
 		else if( this->TStr_Channel == "Electron" )
 		{
 			this->SampleName = "aMCNLO_ee_AdditionalSF_LargeN_M10to50";
 			this->LeptonID = 11;
+			this->Luminosity = 2257.998; // -- Golden JSON -- //
 		}
 	}
 

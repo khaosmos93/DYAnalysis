@@ -6,8 +6,8 @@ void CalcAcc_Dressed_EE()
 
 	TFile *f_output = TFile::Open("ROOTFile_Acc_Dressed_EE.root", "RECREATE");
 	// tool->Set_nEvent_Test( 1000000 );
-	
+
+	tool->Set_Output( f_output );	
 	tool->Analyze();
-	tool->Save( f_output );
 	f_output->Close();
 }
