@@ -1,0 +1,66 @@
+<DYMuMu_M10to50>
+	[Total Events: 30811665]
+	[Sum of weights: (total, separated) = (22419221.0, 7486166.0)]
+
+	Loop RunTime(DYMuMu_M10to50): 509.93 seconds
+
+<DYMuMu_M50to100>
+	[Total Events: 28750986]
+	[Sum of weights: (total, separated) = (19259544.0, 6167092.0)]
+
+	Loop RunTime(DYMuMu_M50to100): 370.61 seconds
+
+<DYMuMu_M100to200>
+	[Total Events: 1054867]
+	[Sum of weights: (total, separated) = (684329.0, 227522.0)]
+
+	Loop RunTime(DYMuMu_M100to200): 14.95 seconds
+
+<DYMuMu_M200to400>
+	[Total Events: 894276]
+	[Sum of weights: (total, separated) = (512722.0, 170955.0)]
+
+	Loop RunTime(DYMuMu_M200to400): 17.28 seconds
+
+<DYMuMu_M400to500>
+	[Total Events: 287260]
+	[Sum of weights: (total, separated) = (151190.0, 50136.0)]
+
+	Loop RunTime(DYMuMu_M400to500): 3.35 seconds
+
+<DYMuMu_M500to700>
+	[Total Events: 278885]
+	[Sum of weights: (total, separated) = (143003.0, 47833.0)]
+
+	Loop RunTime(DYMuMu_M500to700): 3.13 seconds
+
+<DYMuMu_M700to800>
+	[Total Events: 275020]
+	[Sum of weights: (total, separated) = (136230.0, 44740.0)]
+
+	Loop RunTime(DYMuMu_M700to800): 3.32 seconds
+
+<DYMuMu_M800to1000>
+	[Total Events: 271768]
+	[Sum of weights: (total, separated) = (131586.0, 43496.0)]
+
+	Loop RunTime(DYMuMu_M800to1000): 3.94 seconds
+
+<DYMuMu_M1000to1500>
+	[Total Events: 263008]
+	[Sum of weights: (total, separated) = (122062.0, 40783.0)]
+
+	Loop RunTime(DYMuMu_M1000to1500): 4.38 seconds
+
+<DYMuMu_M1500to2000>
+	[Total Events: 258625]
+	[Sum of weights: (total, separated) = (111709.0, 37176.0)]
+
+	Loop RunTime(DYMuMu_M1500to2000): 4.88 seconds
+
+<DYMuMu_M2000to3000>
+	[Total Events: 256161]
+	[Sum of weights: (total, separated) = (101623.0, 33493.0)]
+
+	Loop RunTime(DYMuMu_M2000to3000): 4.47 seconds
+
