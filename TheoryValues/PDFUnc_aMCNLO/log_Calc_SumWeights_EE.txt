@@ -1,0 +1,66 @@
+<DYEE_M10to50>
+	[Total Events: 30811665]
+	[Sum of weights: (total, separated) = (22419221.0, 7486174.0)]
+
+	Loop RunTime(DYEE_M10to50): 506.81 seconds
+
+<DYEE_M50to100>
+	[Total Events: 28750986]
+	[Sum of weights: (total, separated) = (19259544.0, 6163930.0)]
+
+	Loop RunTime(DYEE_M50to100): 505.36 seconds
+
+<DYEE_M100to200>
+	[Total Events: 1054867]
+	[Sum of weights: (total, separated) = (684329.0, 228151.0)]
+
+	Loop RunTime(DYEE_M100to200): 19.21 seconds
+
+<DYEE_M200to400>
+	[Total Events: 894276]
+	[Sum of weights: (total, separated) = (512722.0, 171446.0)]
+
+	Loop RunTime(DYEE_M200to400): 17.26 seconds
+
+<DYEE_M400to500>
+	[Total Events: 287260]
+	[Sum of weights: (total, separated) = (151190.0, 50421.0)]
+
+	Loop RunTime(DYEE_M400to500): 4.78 seconds
+
+<DYEE_M500to700>
+	[Total Events: 278885]
+	[Sum of weights: (total, separated) = (143003.0, 47674.0)]
+
+	Loop RunTime(DYEE_M500to700): 5.77 seconds
+
+<DYEE_M700to800>
+	[Total Events: 275020]
+	[Sum of weights: (total, separated) = (136230.0, 45913.0)]
+
+	Loop RunTime(DYEE_M700to800): 5.51 seconds
+
+<DYEE_M800to1000>
+	[Total Events: 271768]
+	[Sum of weights: (total, separated) = (131586.0, 44256.0)]
+
+	Loop RunTime(DYEE_M800to1000): 6.09 seconds
+
+<DYEE_M1000to1500>
+	[Total Events: 263008]
+	[Sum of weights: (total, separated) = (122062.0, 40438.0)]
+
+	Loop RunTime(DYEE_M1000to1500): 5.74 seconds
+
+<DYEE_M1500to2000>
+	[Total Events: 258625]
+	[Sum of weights: (total, separated) = (111709.0, 37287.0)]
+
+	Loop RunTime(DYEE_M1500to2000): 5.68 seconds
+
+<DYEE_M2000to3000>
+	[Total Events: 256161]
+	[Sum of weights: (total, separated) = (101623.0, 34121.0)]
+
+	Loop RunTime(DYEE_M2000to3000): 6.47 seconds
+
