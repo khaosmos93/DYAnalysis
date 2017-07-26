@@ -58,6 +58,7 @@ class HistProducer
 public:
 	TString Flavor;
 	TString SampleType;
+	TString Luminosity;
 
 	Double_t PtCut_Lead;
 	Double_t PtCut_Sub;
@@ -149,7 +150,7 @@ public:
 			Int_t nTotEvent = chain->GetEntries();
 			cout << "\t[Total Events: " << nTotEvent << "]" << endl; 
 
-			Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
+			Double_t norm = ( Xsec[i_tup] * this->Luminosity ) / (Double_t)nEvents[i_tup];
 			cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 			// nTotEvent = 1000;
@@ -258,6 +259,7 @@ protected:
 		{
 			this->SampleType = "aMCNLO_AdditionalSF_PDFUnc";
 			this->LeptonID = 13;
+			this->Luminosity = Lumi;
 
 			this->PtCut_Lead = 22;
 			this->PtCut_Sub = 10;
@@ -268,6 +270,7 @@ protected:
 		{
 			this->SampleType = "aMCNLO_ee_AdditionalSF_PDFUnc";
 			this->LeptonID = 11;
+			this->Luminosity = 2257.998; // -- Golden JSON -- //
 
 			this->PtCut_Lead = 30;
 			this->PtCut_Sub = 10;
