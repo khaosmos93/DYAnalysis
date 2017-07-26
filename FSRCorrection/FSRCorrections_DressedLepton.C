@@ -20,12 +20,12 @@
 #include <vector>
 
 //Customized header files
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 
 // -- RooUnfold Package -- //
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldBayes.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+#include <src/RooUnfoldResponse.h>
+#include <src/RooUnfoldBayes.h>
+#include <src/RooUnfoldInvert.h>
 
 static inline void loadBar(int x, int n, int r, int w);
 void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = "IsoMu20_OR_IsoTkMu20" )
@@ -45,7 +45,7 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
 										 830, 1000, 1500, 3000};
 
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
 
 	// -- Each ntuple directory & corresponding Tags -- //
 	// -- GenWeights are already taken into account in nEvents -- //
