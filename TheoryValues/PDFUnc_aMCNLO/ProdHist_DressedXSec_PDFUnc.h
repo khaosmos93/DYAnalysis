@@ -58,7 +58,8 @@ class HistProducer
 public:
 	TString Flavor;
 	TString SampleType;
-	TString Luminosity;
+	Int_t LeptonID;
+	Double_t Luminosity;
 
 	Double_t PtCut_Lead;
 	Double_t PtCut_Sub;
@@ -205,6 +206,7 @@ public:
 					}
 
 					// -- construct dressed leptons -- //
+					Double_t dRCut = 0.1;
 					GenLepton genlep_postFSR1 = GenLeptonCollection[0];
 					GenLepton genlep_dressed1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
 					vector< GenOthers > GenPhotonCollection1;
