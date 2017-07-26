@@ -61,17 +61,17 @@ void Calc_SumWeights()
 
 	vector< TString > vec_NtupleDir; vector< TString > vec_Tag;
 
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns"); vec_Tag.push_back("DYEE_M10to50");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M50toInf_25ns"); vec_Tag.push_back("DYEE_M50to100");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M100to200_25ns"); vec_Tag.push_back("DYEE_M100to200");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M200to400_25ns"); vec_Tag.push_back("DYEE_M200to400");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M400to500_25ns"); vec_Tag.push_back("DYEE_M400to500");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M500to700_25ns"); vec_Tag.push_back("DYEE_M500to700");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M700to800_25ns"); vec_Tag.push_back("DYEE_M700to800");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M800to1000_25ns"); vec_Tag.push_back("DYEE_M800to1000");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M1000to1500_25ns"); vec_Tag.push_back("DYEE_M1000to1500");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M1500to2000_25ns"); vec_Tag.push_back("DYEE_M1500to2000");
-	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M2000to3000_25ns"); vec_Tag.push_back("DYEE_M2000to3000");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M10to50_25ns"); vec_Tag.push_back("DYMuMu_M10to50");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M50toInf_25ns"); vec_Tag.push_back("DYMuMu_M50to100");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M100to200_25ns"); vec_Tag.push_back("DYMuMu_M100to200");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M200to400_25ns"); vec_Tag.push_back("DYMuMu_M200to400");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M400to500_25ns"); vec_Tag.push_back("DYMuMu_M400to500");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M500to700_25ns"); vec_Tag.push_back("DYMuMu_M500to700");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M700to800_25ns"); vec_Tag.push_back("DYMuMu_M700to800");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M800to1000_25ns"); vec_Tag.push_back("DYMuMu_M800to1000");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M1000to1500_25ns"); vec_Tag.push_back("DYMuMu_M1000to1500");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M1500to2000_25ns"); vec_Tag.push_back("DYMuMu_M1500to2000");
+	vec_NtupleDir.push_back("76X/DYntuple_v20170504_76X_MINIAODv2_PDFWeights_DYLL_M2000to3000_25ns"); vec_Tag.push_back("DYMuMu_M2000to3000");
 
 	const Int_t nNtuple = vec_NtupleDir.size();
 	for(Int_t i_ntuple = 0; i_ntuple<nNtuple; i_ntuple++)
