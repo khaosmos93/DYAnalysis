@@ -113,7 +113,7 @@ public:
       vec_Hist[i]->Sumw2();
   }
 
-  void Fill( Muon mu1, Bool_t pass1, Muon mu2, Bool_t pass2, Double_t weight )    FIXME
+  void Fill( Muon mu1, Bool_t pass1, Muon mu2, Bool_t pass2, Double_t weight )
   {
     Double_t M = (mu1.Momentum + mu2.Momentum).M();
 
@@ -339,38 +339,42 @@ public:
           }
 
           MuPair SelectedPair_DEN;
-          Bool_t IsSelected_DEN = this->EventSelection_Zprime_DEN( ntuple, analyzer, MuonCollection, SelectedPair_DEN );
+          pair<Bool_t,Bool_t> SelectedPairPass_DEN;
+          Bool_t IsSelected_DEN = this->EventSelection_Zprime_DEN( ntuple, analyzer, MuonCollection, SelectedPair_DEN, SelectedPairPass_DEN );
 
           if( IsSelected_DEN )
           {
             Muon mu1 = SelectedPair_DEN.First;
             Muon mu2 = SelectedPair_DEN.Second;
-            Hist_DEN->Fill( mu1, mu2, TotWeight);  FIXME
+            Bool_t pass1 = SelectedPairPass_DEN.first;
+            Bool_t pass2 = SelectedPairPass_DEN.second;
+            Hist_DEN->Fill( mu1, pass1, mu2, pass2, TotWeight);
 
             if( !isMC ) // -- data -- //
             {
               if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
-                Hist_DEN_RunBtoF->Fill( mu1, mu2, TotWeight );  FIXME
+                Hist_DEN_RunBtoF->Fill( mu1, pass1, mu2, pass2, TotWeight );
               else
-                Hist_DEN_RunGtoH->Fill( mu1, mu2, TotWeight );  FIXME
+                Hist_DEN_RunGtoH->Fill( mu1, pass1, mu2, pass2, TotWeight );
             }
           }
 
           MuPair SelectedPair_NUM;
-          Bool_t IsSelected_NUM = this->EventSelection_Zprime_NUM( ntuple, analyzer, MuonCollection, SelectedPair_NUM );
+          pair<Bool_t,Bool_t> SelectedPairPass_NUM;
+          Bool_t IsSelected_NUM = this->EventSelection_Zprime_NUM( ntuple, analyzer, MuonCollection, SelectedPair_NUM, SelectedPairPass_NUM );
 
           if( IsSelected_NUM )
           {
             Muon mu1 = SelectedPair_NUM.First;
             Muon mu2 = SelectedPair_NUM.Second;
-            Hist_NUM->Fill( mu1, mu2, TotWeight);  FIXME
+            Hist_NUM->Fill( mu1, pass1, mu2, pass2, TotWeight);
 
             if( !isMC ) // -- data -- //
             {
               if( ntuple->runNum <= 278808 ) // -- RunBtoF -- //
-                Hist_NUM_RunBtoF->Fill( mu1, mu2, TotWeight );  FIXME
+                Hist_NUM_RunBtoF->Fill( mu1, pass1, mu2, pass2, TotWeight);
               else
-                Hist_NUM_RunGtoH->Fill( mu1, mu2, TotWeight );  FIXME
+                Hist_NUM_RunGtoH->Fill( mu1, pass1, mu2, pass2, TotWeight);
             }
           }
 
@@ -445,7 +449,7 @@ protected:
     return 0;
   }
 
-  Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
+  Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<Bool_t,Bool_t> SelectedPairPass )
   {
     Bool_t isPassEventSelection = kFALSE;
 
@@ -471,14 +475,14 @@ protected:
 
           Bool_t Flag_Mass = pair_temp.M > 50 ? kTRUE : kFALSE;
 
-          // Bool_t Flag_TrigMatched = kFALSE;  FIXME
+          // Bool_t Flag_TrigMatched = kFALSE;
           // if( this->TriggerMatching( analyzer->HLT, ntuple, pair_temp.First) ||
           //   this->TriggerMatching( analyzer->HLT, ntuple, pair_temp.Second) )
           //   Flag_TrigMatched = kTRUE;
 
           Bool_t Flag_Acc = pair_temp.isWithinAcc( 53, 53, 2.4, 2.4 );
 
-          Bool_t Flag_3DAngle = pair_temp.Angle3D < TMath::Pi()-0.02 ? kTRUE : kFALSE;   FIXME
+          Bool_t Flag_3DAngle = pair_temp.Angle3D < TMath::Pi()-0.02 ? kTRUE : kFALSE;
 
           pair_temp.Calc_CommonVertexVariable_TuneP( ntuple );
           Bool_t Flag_Vtx = pair_temp.NormVtxChi2 < 20 ? kTRUE : kFALSE;
@@ -493,7 +497,7 @@ protected:
           Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
           if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
 
-          if( Flag_Mass &&     FIXME
+          if( Flag_Mass &&
             // Flag_TrigMatched &&
             Flag_Acc &&
             Flag_3DAngle &&
@@ -513,21 +517,23 @@ protected:
         std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_DimuonPt );
         isPassEventSelection = kTRUE;
         SelectedPair = vec_GoodPair[0];
+        SelectedPairPass = make_pair(kTRUE,kTRUE);
       }
     } // -- end of if( nQMuons >= 2 ) -- //
 
     return isPassEventSelection;
   }
 
-  FIXME
-  Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair )
+
+  Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<Bool_t,Bool_t> SelectedPairPass )
   {
     Bool_t isPassEventSelection = kFALSE;
 
     vector< Muon > QMuonCollection;
     for(Int_t j=0; j<(int)MuonCollection.size(); j++)
     {
-      if( this->isMuon_NUM( MuonCollection[j] ) )
+      //if( this->isMuon_NUM( MuonCollection[j] ) )
+      if( this->isMuon_DEN( MuonCollection[j] ) )
         QMuonCollection.push_back( MuonCollection[j] );
     }
 
@@ -553,15 +559,20 @@ protected:
 
           Bool_t Flag_Acc = pair_temp.isWithinAcc( 53, 53, 2.4, 2.4 );
 
-          // Bool_t Flag_3DAngle = pair_temp.Angle3D < TMath::Pi()-0.02 ? kTRUE : kFALSE;  FIXME
+          Bool_t Flag_3DAngle = pair_temp.Angle3D < TMath::Pi()-0.02 ? kTRUE : kFALSE;
 
           pair_temp.Calc_CommonVertexVariable_TuneP( ntuple );
           Bool_t Flag_Vtx = pair_temp.NormVtxChi2 < 20 ? kTRUE : kFALSE;
 
-          // Bool_t Flag_OS = pair_temp.isOS;  FIXME
+          Bool_t Flag_OS = pair_temp.isOS;
 
           Bool_t Flag_PtRatio = kFALSE;
           if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
+
+          Bool_t Flag_B2B = kFALSE;
+          Double_t pi = 3.141592; Double_t dPhim = 0.7*pi; Double_t dPhiM = 1.3*pi;
+          Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
+          if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
 
           if( Flag_Mass &&
             // Flag_TrigMatched &&
@@ -569,7 +580,8 @@ protected:
             Flag_3DAngle &&
             Flag_Vtx &&
             Flag_OS &&
-            Flag_PtRatio )
+            Flag_PtRatio &&
+            Flag_B2B )
             vec_GoodPair.push_back( pair_temp );
 
         } // -- end of second muon iteration -- //
@@ -582,6 +594,9 @@ protected:
         std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_DimuonPt );
         isPassEventSelection = kTRUE;
         SelectedPair = vec_GoodPair[0];
+
+        // -- final numerator selection -- //
+        SelectedPairPass = make_pair( isMuon_NUM(SelectedPair_DEN.First), isMuon_NUM(SelectedPair_DEN.Second));
       }
     } // -- end of if( nQMuons >= 2 ) -- //
 
