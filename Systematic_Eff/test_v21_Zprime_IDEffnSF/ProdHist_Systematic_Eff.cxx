@@ -367,6 +367,8 @@ public:
           {
             Muon mu1 = SelectedPair_NUM.First;
             Muon mu2 = SelectedPair_NUM.Second;
+            Bool_t pass1 = SelectedPairPass_NUM.first;
+            Bool_t pass2 = SelectedPairPass_NUM.second;
             Hist_NUM->Fill( mu1, pass1, mu2, pass2, TotWeight);
 
             if( !isMC ) // -- data -- //
@@ -596,7 +598,7 @@ protected:
         SelectedPair = vec_GoodPair[0];
 
         // -- final numerator selection -- //
-        SelectedPairPass = make_pair( isMuon_NUM(SelectedPair_DEN.First), isMuon_NUM(SelectedPair_DEN.Second));
+        SelectedPairPass = make_pair( isMuon_NUM(SelectedPair.First), isMuon_NUM(SelectedPair.Second));
       }
     } // -- end of if( nQMuons >= 2 ) -- //
 
