@@ -49,7 +49,7 @@ public:
 	TH1D* h_mass_PtRatio3toInf_M400to2500;
 	TH1D* h_mass_PtRatio4toInf_M400to2500;
 	TH1D* h_mass_PtRatio5toInf_M400to2500;
-	
+
 	HistContainer( TString _Type )
 	{
 		Type = _Type;
@@ -58,7 +58,7 @@ public:
 	}
 
 	void Set_Histograms()
-	{		
+	{
 		this->h_mass = new TH1D("h_mass_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( this->h_mass );
 		this->h_mass_BB = new TH1D("h_mass_BB_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( this->h_mass_BB );
 		this->h_mass_BEEE = new TH1D("h_mass_BEEE_"+this->Type, "", 10000, 0, 10000); vec_Hist.push_back( this->h_mass_BEEE );
@@ -190,7 +190,7 @@ public:
 		TChain *chain = new TChain("recoTree/DYTree");
 		analyzer->MakeTChain_fromTextFile( chain, FileName_ROOTFileList );
 
-		// -- turn-on ntuple -- //		
+		// -- turn-on ntuple -- //
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_Muon();
 		if( this->isMC )
@@ -223,7 +223,7 @@ public:
 		for(Int_t i=0; i<nTotEvent; i++)
 		{
 			this->loadBar(i+1, nTotEvent, 100, 100);
-			
+
 			ntuple->GetEvent(i);
 
 			// cout << i << "th event, Flag_noBadMuons: " << Flag_noBadMuons << endl;
@@ -256,7 +256,7 @@ public:
 						// // if( isCorrected == kTRUE )
 						// {
 						// 	float qter = 1.0;
-							
+
 						// 	if( this->SampleName == "Data" )
 						// 		rmcor->momcor_data(mu.Momentum, mu.charge, 0, qter);
 						// 	else
@@ -267,7 +267,7 @@ public:
 						// 	mu.eta = mu.Momentum.Eta();
 						// 	mu.phi = mu.Momentum.Phi();
 						// }
-						
+
 						MuonCollection.push_back( mu );
 					}
 
@@ -362,7 +362,7 @@ protected:
 			&& mu.trackerLayersGLB > 5
 			&& mu.pixelHitsGLB > 0
 			&& mu.muonHits > 0
-			&& (  mu.nMatches > 1 
+			&& (  mu.nMatches > 1
 				|| ( mu.nMatches==1 && !(mu.stationMask==1 || mu.stationMask==16) )
 				|| ( mu.nMatches==1 && (mu.stationMask==1 || mu.stationMask==16) && mu.nMatchesRPCLayers > 2 )  )
 			&& (mu.TuneP_pTError / mu.TuneP_pT ) < 0.3
@@ -418,8 +418,8 @@ protected:
 					Bool_t Flag_PtRatio = kFALSE;
 					if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-					if( Flag_Mass && 
-						Flag_TrigMatched && 
+					if( Flag_Mass &&
+						Flag_TrigMatched &&
 						Flag_Acc &&
 						Flag_3DAngle &&
 						// Flag_Vtx &&
@@ -447,7 +447,7 @@ protected:
 	{
 		Bool_t isPassEventSelection = kFALSE;
 
-		vector< Muon > QMuonCollection; 
+		vector< Muon > QMuonCollection;
 		for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 		{
 			if( this->isMuon_NUM( MuonCollection[j] ) )
@@ -486,8 +486,8 @@ protected:
 					Bool_t Flag_PtRatio = kFALSE;
 					if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-					if( Flag_Mass && 
-						Flag_TrigMatched && 
+					if( Flag_Mass &&
+						Flag_TrigMatched &&
 						Flag_Acc &&
 						Flag_3DAngle &&
 						Flag_Vtx &&
@@ -519,10 +519,10 @@ protected:
 		else
 			return mu.isTrigMatched_dR0p2(ntuple, HLT);
 	}
-	
+
 	void PrintRecoMuonInfo( Muon mu )
 	{
-		printf("\t\t(pT = %.3lf, eta = %.3lf, phi = %.3lf, charge = %.d)\n", 
+		printf("\t\t(pT = %.3lf, eta = %.3lf, phi = %.3lf, charge = %.d)\n",
 						mu.Pt, mu.eta, mu.phi, mu.charge);
 	}
 
@@ -534,19 +534,19 @@ protected:
 
 	    if ( x % (n/r +1) != 0 ) return;
 
-	 
+
 	    // Calculuate the ratio of complete-to-incomplete.
 	    float ratio = x/(float)n;
 	    int   c     = ratio * w;
-	 
+
 	    // Show the percentage complete.
 	    printf("%3d%% [", (int)(ratio*100) );
-	 
+
 	    // Show the load bar.
 	    for (int x=0; x<c; x++) cout << "=";
-	 
+
 	    for (int x=c; x<w; x++) cout << " ";
-	 
+
 	    // ANSI Control codes to go back to the
 	    // previous line and clear it.
 		cout << "]\r" << flush;
