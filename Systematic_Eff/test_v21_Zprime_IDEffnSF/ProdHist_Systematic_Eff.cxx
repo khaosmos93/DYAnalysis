@@ -113,8 +113,12 @@ public:
       vec_Hist[i]->Sumw2();
   }
 
-  void Fill( Muon mu1, Bool_t pass1, Muon mu2, Bool_t pass2, Double_t weight )
+  void Fill( Muon mu1, bool pass1, Muon mu2, bool pass2, Double_t weight )
   {
+
+    /*Verbose*/////cout << "pass1 : " << pass1 << endl;
+    /*Verbose*/////cout << "pass2 : " << pass2 << endl;
+
     Double_t M = (mu1.Momentum + mu2.Momentum).M();
 
     // -- Mass -- //
@@ -339,15 +343,17 @@ public:
           }
 
           MuPair SelectedPair_DEN;
-          pair<Bool_t,Bool_t> SelectedPairPass_DEN;
+          pair<bool, bool> SelectedPairPass_DEN;
           Bool_t IsSelected_DEN = this->EventSelection_Zprime_DEN( ntuple, analyzer, MuonCollection, SelectedPair_DEN, SelectedPairPass_DEN );
 
           if( IsSelected_DEN )
           {
             Muon mu1 = SelectedPair_DEN.First;
             Muon mu2 = SelectedPair_DEN.Second;
-            Bool_t pass1 = SelectedPairPass_DEN.first;
-            Bool_t pass2 = SelectedPairPass_DEN.second;
+            bool pass1 = SelectedPairPass_DEN.first;
+            bool pass2 = SelectedPairPass_DEN.second;
+            /*Verbose*///cout << "DEN pass1 : " << pass1 << endl;
+            /*Verbose*///cout << "DEN pass2 : " << pass2 << endl;
             Hist_DEN->Fill( mu1, pass1, mu2, pass2, TotWeight);
 
             if( !isMC ) // -- data -- //
@@ -360,15 +366,15 @@ public:
           }
 
           MuPair SelectedPair_NUM;
-          pair<Bool_t,Bool_t> SelectedPairPass_NUM;
+          pair<bool, bool> SelectedPairPass_NUM;
           Bool_t IsSelected_NUM = this->EventSelection_Zprime_NUM( ntuple, analyzer, MuonCollection, SelectedPair_NUM, SelectedPairPass_NUM );
 
           if( IsSelected_NUM )
           {
             Muon mu1 = SelectedPair_NUM.First;
             Muon mu2 = SelectedPair_NUM.Second;
-            Bool_t pass1 = SelectedPairPass_NUM.first;
-            Bool_t pass2 = SelectedPairPass_NUM.second;
+            bool pass1 = SelectedPairPass_NUM.first;
+            bool pass2 = SelectedPairPass_NUM.second;
             Hist_NUM->Fill( mu1, pass1, mu2, pass2, TotWeight);
 
             if( !isMC ) // -- data -- //
@@ -451,7 +457,7 @@ protected:
     return 0;
   }
 
-  Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<Bool_t,Bool_t> SelectedPairPass )
+  Bool_t EventSelection_Zprime_DEN( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<bool, bool> &SelectedPairPass )
   {
     Bool_t isPassEventSelection = kFALSE;
 
@@ -499,6 +505,14 @@ protected:
           Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
           if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
 
+          /*Verbose*///cout << "Flag_Mass :" << Flag_Mass << endl;
+          /*Verbose*///cout << "Flag_Acc :" << Flag_Acc << endl;
+          /*Verbose*///cout << "Flag_3DAngle :" << Flag_3DAngle << endl;
+          /*Verbose*///cout << "Flag_Vtx :" << Flag_Vtx << endl;
+          /*Verbose*///cout << "Flag_OS :" << Flag_OS << endl;
+          /*Verbose*///cout << "Flag_PtRatio :" << Flag_PtRatio << endl;
+          /*Verbose*///cout << "Flag_B2B :" << Flag_B2B << endl;
+
           if( Flag_Mass &&
             // Flag_TrigMatched &&
             Flag_Acc &&
@@ -513,13 +527,14 @@ protected:
       } // -- end of first muon iteration -- //
 
       Int_t nPair = (Int_t)vec_GoodPair.size();
+      /*Verbose*///cout << "Den nPair : " << nPair << endl;
       if( nPair >= 1 ) // -- at least one pair pass all good pair condition -- //
       {
         // -- the pair with "largest" dimuon pT will be the first element -- //
         std::sort( vec_GoodPair.begin(), vec_GoodPair.end(), ComparePair_DimuonPt );
         isPassEventSelection = kTRUE;
         SelectedPair = vec_GoodPair[0];
-        SelectedPairPass = make_pair(kTRUE,kTRUE);
+        SelectedPairPass = make_pair(true,true);
       }
     } // -- end of if( nQMuons >= 2 ) -- //
 
@@ -527,7 +542,7 @@ protected:
   }
 
 
-  Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<Bool_t,Bool_t> SelectedPairPass )
+  Bool_t EventSelection_Zprime_NUM( NtupleHandle* ntuple, DYAnalyzer* analyzer, vector<Muon> &MuonCollection, MuPair &SelectedPair, pair<bool, bool> &SelectedPairPass )
   {
     Bool_t isPassEventSelection = kFALSE;
 
@@ -598,7 +613,11 @@ protected:
         SelectedPair = vec_GoodPair[0];
 
         // -- final numerator selection -- //
-        SelectedPairPass = make_pair( isMuon_NUM(SelectedPair.First), isMuon_NUM(SelectedPair.Second));
+        bool p1 = false;
+        bool p2 = false;
+        if ( isMuon_NUM(SelectedPair.First) ) p1 = true;
+        if ( isMuon_NUM(SelectedPair.Second) ) p2 = true;
+        SelectedPairPass = make_pair( p1, p2 );
       }
     } // -- end of if( nQMuons >= 2 ) -- //
 
