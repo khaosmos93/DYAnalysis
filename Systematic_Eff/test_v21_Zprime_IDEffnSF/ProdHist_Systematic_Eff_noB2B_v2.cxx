@@ -118,9 +118,9 @@ public:
     this->h_Eta_B = new TH1D("h_Eta_B_"+this->Type, "", 24, -2.4, 2.4); vec_Hist.push_back( this->h_Eta_B );
     this->h_Eta_E = new TH1D("h_Eta_E_"+this->Type, "", 24, -2.4, 2.4); vec_Hist.push_back( this->h_Eta_E );
 
-    this->h_Eta_bin = new TH1D("h_Eta_bin_"+this->Type, "", 24, -2.4, 2.4); vec_Hist.push_back( this->h_Eta_bin );
-    this->h_Eta_bin_B = new TH1D("h_Eta_bin_B_"+this->Type, "", 24, -2.4, 2.4); vec_Hist.push_back( this->h_Eta_bin_B );
-    this->h_Eta_bin_E = new TH1D("h_Eta_bin_E_"+this->Type, "", 24, -2.4, 2.4); vec_Hist.push_back( this->h_Eta_bin_E );
+    this->h_Eta_bin = new TH1D("h_Eta_bin_"+this->Type, "", 15, Eta_bins); vec_Hist.push_back( this->h_Eta_bin );
+    this->h_Eta_bin_B = new TH1D("h_Eta_bin_B_"+this->Type, "", 15, Eta_bins); vec_Hist.push_back( this->h_Eta_bin_B );
+    this->h_Eta_bin_E = new TH1D("h_Eta_bin_E_"+this->Type, "", 15, Eta_bins); vec_Hist.push_back( this->h_Eta_bin_E );
 
     this->h_Phi = new TH1D("h_Phi_"+this->Type, "", 40, -3.2, 3.2); vec_Hist.push_back( this->h_Phi );
     this->h_Phi_B = new TH1D("h_Phi_B_"+this->Type, "", 40, -3.2, 3.2); vec_Hist.push_back( this->h_Phi_B );
@@ -261,7 +261,7 @@ public:
 
       // -- Mass -- //
       h_mass->Fill( M, weight );
-      h_mass_Z->Fill( M, weight );
+      if ( M > 60 || M < 120 ) h_mass_Z->Fill( M, weight );
 
       // -- pT, Eta, Phi -- //
       h_Pt     ->Fill( ProbeMu.Pt, weight );
@@ -294,7 +294,7 @@ public:
 
       // -- Mass -- //
       h_mass->Fill( M, weight );
-      h_mass_Z->Fill( M, weight );
+      if ( M > 60 || M < 120 ) h_mass_Z->Fill( M, weight );
 
       // -- pT, Eta, Phi -- //
       h_Pt     ->Fill( ProbeMu.Pt, weight );
@@ -337,26 +337,26 @@ public:
       if (pass2) {
         // -- Mass -- //
         h_mass->Fill( M, weight );
-        h_mass_Z->Fill( M, weight );
+        if ( M > 60 || M < 120 ) h_mass_Z->Fill( M, weight );
 
         // -- pT, Eta, Phi -- //
         h_Pt     ->Fill( ProbeMu.Pt, weight );
         h_Pt_bin ->Fill( ProbeMu.Pt, weight );
         h_Eta    ->Fill( ProbeMu.eta, weight );
-      h_Eta_bin    ->Fill( ProbeMu.eta, weight );
+        h_Eta_bin    ->Fill( ProbeMu.eta, weight );
         h_Phi    ->Fill( ProbeMu.phi, weight );
         if (fabs(ProbeMu.eta) <= 1.2) {
           h_Pt_B     ->Fill( ProbeMu.Pt, weight );
           h_Pt_bin_B ->Fill( ProbeMu.Pt, weight );
           h_Eta_B    ->Fill( ProbeMu.eta, weight );
-        h_Eta_bin_B    ->Fill( ProbeMu.eta, weight );
+          h_Eta_bin_B    ->Fill( ProbeMu.eta, weight );
           h_Phi_B    ->Fill( ProbeMu.phi, weight );
         }
         else if (fabs(ProbeMu.eta) > 1.2) {
           h_Pt_E     ->Fill( ProbeMu.Pt, weight );
           h_Pt_bin_E ->Fill( ProbeMu.Pt, weight );
           h_Eta_E    ->Fill( ProbeMu.eta, weight );
-        h_Eta_bin_E    ->Fill( ProbeMu.eta, weight );
+          h_Eta_bin_E    ->Fill( ProbeMu.eta, weight );
           h_Phi_E    ->Fill( ProbeMu.phi, weight );
         }
       }
@@ -372,7 +372,7 @@ public:
       if (pass1) {
         // -- Mass -- //
         h_mass->Fill( M, weight );
-        h_mass_Z->Fill( M, weight );
+        if ( M > 60 || M < 120 ) h_mass_Z->Fill( M, weight );
 
         // -- pT, Eta, Phi -- //
         h_Pt     ->Fill( ProbeMu.Pt, weight );
