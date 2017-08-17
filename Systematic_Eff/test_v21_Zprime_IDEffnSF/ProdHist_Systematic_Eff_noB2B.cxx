@@ -412,7 +412,7 @@ public:
 
     } // -- end of event iteration -- //
 
-    TFile *f_output = TFile::Open("ROOTFile_Output_Systematic_Eff_"+this->Tag+".root", "RECREATE");
+    TFile *f_output = TFile::Open("ROOTFile_Output_Systematic_Eff_"+this->Tag+"_noB2B.root", "RECREATE");
 
     Hist_DEN->Save( f_output );
     Hist_NUM->Save( f_output );
@@ -520,10 +520,10 @@ protected:
           Bool_t Flag_PtRatio = kFALSE;
           if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-          Bool_t Flag_B2B = kFALSE;
-          Double_t pi = 3.141592; Double_t dPhim = 0.7*pi; Double_t dPhiM = 1.3*pi;
-          Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
-          if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
+          //Bool_t Flag_B2B = kFALSE;
+          //Double_t pi = 3.141592; Double_t dPhim = 0.7*pi; Double_t dPhiM = 1.3*pi;
+          //Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
+          //if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
 
           /*Verbose*///cout << "Flag_Mass :" << Flag_Mass << endl;
           /*Verbose*///cout << "Flag_Acc :" << Flag_Acc << endl;
@@ -539,8 +539,9 @@ protected:
             Flag_3DAngle &&
             Flag_Vtx &&
             Flag_OS &&
-            Flag_PtRatio &&
-            Flag_B2B )
+            Flag_PtRatio //&&
+            // Flag_B2B
+            )
             vec_GoodPair.push_back( pair_temp );
 
         } // -- end of second muon iteration -- //
@@ -606,10 +607,10 @@ protected:
           Bool_t Flag_PtRatio = kFALSE;
           if( pair_temp.First.Pt / pair_temp.Second.Pt < 3 ) Flag_PtRatio = kTRUE;
 
-          Bool_t Flag_B2B = kFALSE;
-          Double_t pi = 3.141592; Double_t dPhim = 0.7*pi; Double_t dPhiM = 1.3*pi;
-          Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
-          if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
+          //Bool_t Flag_B2B = kFALSE;
+          //Double_t pi = 3.141592; Double_t dPhim = 0.7*pi; Double_t dPhiM = 1.3*pi;
+          //Double_t dPhi = fabs(pair_temp.First.phi - pair_temp.Second.phi);
+          //if ( (dPhi < dPhiM) && (dPhi > dPhim) ) Flag_B2B = kTRUE;
 
           if( Flag_Mass &&
             // Flag_TrigMatched &&
@@ -617,8 +618,9 @@ protected:
             Flag_3DAngle &&
             Flag_Vtx &&
             Flag_OS &&
-            Flag_PtRatio &&
-            Flag_B2B )
+            Flag_PtRatio //&&
+            //Flag_B2B
+            )
             vec_GoodPair.push_back( pair_temp );
 
         } // -- end of second muon iteration -- //
@@ -688,7 +690,7 @@ protected:
 };
 
 // -- SampleName: QCD, Diboson, WJets, DYTauTau, SingleTop, ttbar, DYPowheg -- //
-void ProdHist_Systematic_Eff(Int_t _isMC, TString _FileName_ROOTFileList, Double_t _NormFactor)
+void ProdHist_Systematic_Eff_noB2B(Int_t _isMC, TString _FileName_ROOTFileList, Double_t _NormFactor)
 {
   HistogramProducer *producer = new HistogramProducer( _isMC, _FileName_ROOTFileList, _NormFactor );
   producer->Producer();
