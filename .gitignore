@@ -1,5 +1,9 @@
 # Plots, Big files...
 Local/
+Local_*/
+
+# logs
+*.log
 
 # Split jobs
 Outputs/

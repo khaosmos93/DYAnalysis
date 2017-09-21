@@ -20,6 +20,25 @@ if "ROOTFile_WJets.root" not in os.listdir("."):
 	print cmd_mv
 	os.system( cmd_mv )
 
+if "ROOTFile_DYLL.root" not in os.listdir("."):
+	cmd_hadd = "hadd ROOTFile_DYLL.root ROOTFile_DYLL_Pt*.root"
+	print cmd_hadd
+	os.system( cmd_hadd )
+	cmd_mv = "mv ROOTFile_DYLL_Pt*.root ./Local"
+	print cmd_mv
+	os.system( cmd_mv )
+
+if "ROOTFile_DYTotal.root" not in os.listdir("."):
+	cmd_hadd = "hadd ROOTFile_DYTotal.root ROOTFile_DYPowheg.root ROOTFile_DYLL.root"
+	print cmd_hadd
+	os.system( cmd_hadd )
+	#cmd_mv = "mv ROOTFile_DYPowheg.root ./Local"
+	#print cmd_mv
+	#os.system( cmd_mv )
+	#cmd_mv = "mv ROOTFile_DYLL.root ./Local"
+	#print cmd_mv
+	#os.system( cmd_mv )
+
 List_ROOTFile = []
 print "List of ROOT files that will be merged: "
 for file in os.listdir("."):
@@ -29,12 +48,12 @@ for file in os.listdir("."):
 		List_ROOTFile.append ( file )
 
 
-OutputFileName = "ROOTFile_Systematic_Eff.root"
+OutputFileName = "ROOTFile_ZPrime_IDEffnSF_noB2B_v3.root"
 if OutputFileName in os.listdir("."):
 	print "%s is already exists! ... please check"
 	sys.exit()
 
-f_output = TFile("ROOTFile_Systematic_Eff.root", "RECREATE")
+f_output = TFile("ROOTFile_ZPrime_IDEffnSF_noB2B_v3.root", "RECREATE")
 
 print "Loop over list of ROOT files ..."
 for ROOTFile in List_ROOTFile:
@@ -53,7 +72,7 @@ for ROOTFile in List_ROOTFile:
 
 		f_output.cd( DirName ) # -- move to sub directory -- #
 		obj.Write()
-		
+
 		f_input.cd()
 
 	f_input.Close()

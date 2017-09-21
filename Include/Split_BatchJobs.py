@@ -6,7 +6,7 @@ def usage():
     print sys.argv[0], " : split the jobs"
     print "  Mandatory options :"
     print "   --code CODE.cxx                  C++ Code file name: should be absolute path"
-    print "   --sample SAMPLENAME    		   Sample Name"
+    print "   --sample SAMPLENAME          Sample Name"
     print "   --njob N                9         Total number of jobs"
     print "   --lumi LUMI                      Integrated lumionsity in pb"
     print "   --isMC isMC                      MC or data"
@@ -26,142 +26,142 @@ except:
 
 
 class SplitJobs:
-	def __init__(self, _opts):
-		self.CodeFullPath = _opts['--code']
-		self.Sample = _opts['--sample']
-		self.nJob = int(_opts['--njob'])
-		self.Lumi = float(_opts['--lumi'])
-		self.isMC = int(_opts['--isMC'])
-		self.OutDir = _opts['--outdir']
+  def __init__(self, _opts):
+    self.CodeFullPath = _opts['--code']
+    self.Sample = _opts['--sample']
+    self.nJob = int(_opts['--njob'])
+    self.Lumi = float(_opts['--lumi'])
+    self.isMC = int(_opts['--isMC'])
+    self.OutDir = _opts['--outdir']
 
-		self.CodeName = self.CodeFullPath.split('/')[-1]
+    self.CodeName = self.CodeFullPath.split('/')[-1]
 
-		self.queue = "fastq"
-		if os.environ["HOSTNAME"] == "tamsa2.snu.ac.kr":
-			self.queue = "bigq"
-		if '--queue' in _opts:
-			self.queue = _opts['--queue']
+    self.queue = "fastq"
+    if os.environ["HOSTNAME"] == "tamsa2.snu.ac.kr":
+      self.queue = "bigq"
+    if '--queue' in _opts:
+      self.queue = _opts['--queue']
 
-		_TYPE = ""
-		if self.isMC == 1: _TYPE = "MC"
-		else: _TYPE = "Data"
+    _TYPE = ""
+    if self.isMC == 1: _TYPE = "MC"
+    else: _TYPE = "Data"
 
-		print "+" * 100
-		print "Create %d jobs to run %s with lumi = %lf on %s -> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, self.queue)
-		print "Output directory: %s" % (self.OutDir)
-		print "+" * 100
+    print "+" * 100
+    print "Create %d jobs to run %s with lumi = %lf on %s -> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, self.queue)
+    print "Output directory: %s" % (self.OutDir)
+    print "+" * 100
 
-		print self.isMC
-		
-		self.List_ROOTFiles = self.GetListOfROOTFiles()
-		if self.isMC == 1:
-			self.NormFactor = self.GetNormFactor()
-		else:
-			self.NormFactor = 1
+    print self.isMC
 
-		os.chdir( self.OutDir )
+    self.List_ROOTFiles = self.GetListOfROOTFiles()
+    if self.isMC == 1:
+      self.NormFactor = self.GetNormFactor()
+    else:
+      self.NormFactor = 1
+
+    os.chdir( self.OutDir )
 
 
-	def CreateWorkSpace( self ):
-		DirName = "%s" % (self.Sample)
-		
-		List_File_cwd = os.listdir( "." )
-		if DirName in List_File_cwd:
-			print "%s is already exists!" % (DirName)
-			sys.exit()
+  def CreateWorkSpace( self ):
+    DirName = "%s" % (self.Sample)
 
-		os.mkdir( DirName )
+    List_File_cwd = os.listdir( "." )
+    if DirName in List_File_cwd:
+      print "%s is already exists!" % (DirName)
+      sys.exit()
 
-		nROOTFile = len(self.List_ROOTFiles)
-		if self.nJob > nROOTFile:
-			print "nJob > nROOTFile -> nJob is set as same with nROOTFile"
-			self.nJob = nROOTFile
+    os.mkdir( DirName )
 
-		nROOTFilePerJob = int( float(nROOTFile) / float(self.nJob) )
-		print "nJob = %d, nROOTFile = %d -> nROOTFilePerJob = %d\n" % (self.nJob, nROOTFile, nROOTFilePerJob)
+    nROOTFile = len(self.List_ROOTFiles)
+    if self.nJob > nROOTFile:
+      print "nJob > nROOTFile -> nJob is set as same with nROOTFile"
+      self.nJob = nROOTFile
 
-		List_cmd_qsub = []
-		List_cmd_hadd = []
-		for i in range(0, self.nJob):
-			List_ROOTFilesPerJob = []
-			if i == self.nJob-1:
-				List_ROOTFilesPerJob = self.List_ROOTFiles[int(i*nROOTFilePerJob):]
-			else:
-				List_ROOTFilesPerJob = self.List_ROOTFiles[int(i*nROOTFilePerJob):int((i+1)*nROOTFilePerJob)]
-			
-			# print "List_ROOTFilesPerJob"
-			# for rootfile in List_ROOTFilesPerJob:
-			# 	print "%s" % (rootfile)
-			# print "\n"
-			
-			self.CreateWorkSpace_PerJob( i, List_ROOTFilesPerJob, List_cmd_qsub, List_cmd_hadd )
+    nROOTFilePerJob = int( float(nROOTFile) / float(self.nJob) )
+    print "nJob = %d, nROOTFile = %d -> nROOTFilePerJob = %d\n" % (self.nJob, nROOTFile, nROOTFilePerJob)
 
-		self.CreateScript_qsub( List_cmd_qsub )
-		self.CreateScript_hadd( List_cmd_hadd )
+    List_cmd_qsub = []
+    List_cmd_hadd = []
+    for i in range(0, self.nJob):
+      List_ROOTFilesPerJob = []
+      if i == self.nJob-1:
+        List_ROOTFilesPerJob = self.List_ROOTFiles[int(i*nROOTFilePerJob):]
+      else:
+        List_ROOTFilesPerJob = self.List_ROOTFiles[int(i*nROOTFilePerJob):int((i+1)*nROOTFilePerJob)]
 
-	def CreateWorkSpace_PerJob( self, _iter, _List_ROOTFilesPerJob, List_cmd_qsub, List_cmd_hadd ):
-		DirName = "Job_%d" % (_iter)
-		os.mkdir( "./"+self.Sample+"/"+DirName )
+      # print "List_ROOTFilesPerJob"
+      # for rootfile in List_ROOTFilesPerJob:
+      #   print "%s" % (rootfile)
+      # print "\n"
 
-		FileName = "ROOTFileList-%s-%d.txt" % (self.Sample, _iter)
-		f_ROOTFileList = open("./"+self.Sample+"/"+DirName+"/"+FileName, "w")
-		for rootfilepath in _List_ROOTFilesPerJob:
-			f_ROOTFileList.write( rootfilepath )
-			f_ROOTFileList.write( "\n" )
-		f_ROOTFileList.close()
+      self.CreateWorkSpace_PerJob( i, List_ROOTFilesPerJob, List_cmd_qsub, List_cmd_hadd )
 
-		cmd_cp = "cp %s ./%s/%s" % (self.CodeFullPath, self.Sample, DirName)
-		# print cmd_cp
-		os.system( cmd_cp )
+    self.CreateScript_qsub( List_cmd_qsub )
+    self.CreateScript_hadd( List_cmd_hadd )
 
-		cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'";
-		print cmd_execute
+  def CreateWorkSpace_PerJob( self, _iter, _List_ROOTFilesPerJob, List_cmd_qsub, List_cmd_hadd ):
+    DirName = "Job_%d" % (_iter)
+    os.mkdir( "./"+self.Sample+"/"+DirName )
 
-		BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
+    FileName = "ROOTFileList-%s-%d.txt" % (self.Sample, _iter)
+    f_ROOTFileList = open("./"+self.Sample+"/"+DirName+"/"+FileName, "w")
+    for rootfilepath in _List_ROOTFilesPerJob:
+      f_ROOTFileList.write( rootfilepath )
+      f_ROOTFileList.write( "\n" )
+    f_ROOTFileList.close()
 
-		cmd_cd = "cd ${cwd}/%s" % (DirName)
-		cmd_sub = "qsub -V -q %s %s" % (self.queue, BatchFileName)
-		List_cmd_qsub.append( [cmd_cd, cmd_sub] )
+    cmd_cp = "cp %s ./%s/%s" % (self.CodeFullPath, self.Sample, DirName)
+    # print cmd_cp
+    os.system( cmd_cp )
 
-		cmd_hadd = "${cwd}/%s/*.root \\" % (DirName)
-		List_cmd_hadd.append( cmd_hadd )
+    cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'";
+    print cmd_execute
 
-	def CreateScript_qsub( self, _List_cmd_qsub ):
-		f = open("./"+self.Sample+"/qsub_all.sh", "w")
-		f.write( "#!bin/bash\n" )
-		f.write( "cwd=$(pwd)\n\n" )
-		for cmd_qsub in _List_cmd_qsub:
-			cmd_cd = cmd_qsub[0]
-			cmd_sub = cmd_qsub[1]
+    BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
 
-			f.write( cmd_cd )
-			f.write( "\n" )
-			f.write( cmd_sub )
-			f.write( "\n\n" )
+    cmd_cd = "cd ${cwd}/%s" % (DirName)
+    cmd_sub = "qsub -V -q %s %s" % (self.queue, BatchFileName)
+    List_cmd_qsub.append( [cmd_cd, cmd_sub] )
 
-		f.write( 'cd ${cwd}\n' )
-		f.write( 'echo "finished"\n' )
-		f.close()
+    cmd_hadd = "${cwd}/%s/*.root \\" % (DirName)
+    List_cmd_hadd.append( cmd_hadd )
 
-		print "cd %s; source qsub_all.sh" % (self.Sample)
+  def CreateScript_qsub( self, _List_cmd_qsub ):
+    f = open("./"+self.Sample+"/qsub_all.sh", "w")
+    f.write( "#!bin/bash\n" )
+    f.write( "cwd=$(pwd)\n\n" )
+    for cmd_qsub in _List_cmd_qsub:
+      cmd_cd = cmd_qsub[0]
+      cmd_sub = cmd_qsub[1]
 
-	def CreateScript_hadd( self, _List_cmd_hadd ):
-		f = open("./"+self.Sample+"/hadd_all.sh", "w")
-		f.write( "#!bin/bash\n" )
-		f.write( "cwd=$(pwd)\n\n" )
-		f.write( "hadd ROOTFile_%s.root \\\n" % (self.Sample) )
-		for cmd_hadd in _List_cmd_hadd:
-			f.write( cmd_hadd )
-			f.write( "\n" )
-		
-		f.write( "\n" )
-		f.write( 'echo "finished"\n' )
-		f.close()
+      f.write( cmd_cd )
+      f.write( "\n" )
+      f.write( cmd_sub )
+      f.write( "\n\n" )
 
-	def CreateBatchJobScript( self, iter, _DirName, cmd_execute ):
-		BatchFileName = "%s_%d.sh" % (self.Sample, iter)
-		f = open("./"+self.Sample+"/"+_DirName+"/"+BatchFileName, "w")
-		f.write(
+    f.write( 'cd ${cwd}\n' )
+    f.write( 'echo "finished"\n' )
+    f.close()
+
+    print "cd %s; source qsub_all.sh" % (self.Sample)
+
+  def CreateScript_hadd( self, _List_cmd_hadd ):
+    f = open("./"+self.Sample+"/hadd_all.sh", "w")
+    f.write( "#!bin/bash\n" )
+    f.write( "cwd=$(pwd)\n\n" )
+    f.write( "hadd ROOTFile_%s.root \\\n" % (self.Sample) )
+    for cmd_hadd in _List_cmd_hadd:
+      f.write( cmd_hadd )
+      f.write( "\n" )
+
+    f.write( "\n" )
+    f.write( 'echo "finished"\n' )
+    f.close()
+
+  def CreateBatchJobScript( self, iter, _DirName, cmd_execute ):
+    BatchFileName = "%s_%d.sh" % (self.Sample, iter)
+    f = open("./"+self.Sample+"/"+_DirName+"/"+BatchFileName, "w")
+    f.write(
 """#!/bin/bash
 
 #########################################################
@@ -197,203 +197,230 @@ echo "job is completed"
 
 # -- &>log: "Invalid null command" Error occurs. please use >&log. -- #
 
-# -- PLEASE ENTER AFTER THE LAST LINE! ... IF YOU DON'T, LAST LINE WILL NOT BE EXECUTED BY BATCH JOB -- # 
+# -- PLEASE ENTER AFTER THE LAST LINE! ... IF YOU DON'T, LAST LINE WILL NOT BE EXECUTED BY BATCH JOB -- #
 """.format(_cmd_execute=cmd_execute)
-		)
-		print "[%s is created]" % BatchFileName
-		f.close()
+    )
+    print "[%s is created]" % BatchFileName
+    f.close()
 
-		return BatchFileName
+    return BatchFileName
 
-	def GetListOfROOTFiles( self ):
-		List_FullPath = []
-		BasePath = os.environ['KP_DATA_PATH'] + "/"
+  def GetListOfROOTFiles( self ):
+    List_FullPath = []
+    BasePath = os.environ['KP_DATA_PATH'] + "/"
 
-		if "DYPowheg" in self.Sample:
-			MassRange = self.Sample.split("_")[-1]
-			List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
+    if "DYPowheg" in self.Sample:
+      MassRange = self.Sample.split("_")[-1]
+      List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
-		elif "WJets_HT" in self.Sample:
-			HTRange = self.Sample.split("_")[-1]
-			List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
+    elif "WJets_HT" in self.Sample:
+      HTRange = self.Sample.split("_")[-1]
+      List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
 
-		# elif "DYMuMu" in self.Sample:
-		# 	MassRange = self.Sample.split("_")[-1]
-		# 	if MassRange == "M50to100": MassRange = "M50toInf"
-		# 	List_FullPath.append( BasePath + "v20160304_76X_MINIAODv2_DYLL_"+MassRange+"_25ns" )
+    elif "DYLL_Pt" in self.Sample:    #Min
+      PtRange = self.Sample.split("_")[-1]
+      List_FullPath.append( BasePath + "DYntuple_v20170816_DYLL_"+PtRange )
 
-		elif "ZZ" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZ" )
+    # elif "DYMuMu" in self.Sample:
+    #   MassRange = self.Sample.split("_")[-1]
+    #   if MassRange == "M50to100": MassRange = "M50toInf"
+    #   List_FullPath.append( BasePath + "v20160304_76X_MINIAODv2_DYLL_"+MassRange+"_25ns" )
 
-		elif "ZZTo4L" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZto4L" )
+    elif "ZZ" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZ" )
 
-		elif "WW" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WW" )
+    elif "ZZTo4L" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ZZto4L" )
 
-		elif "WWTo2L2Nu" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WWTo2L2Nu" )
+    elif "WW" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WW" )
 
-		elif "WZ" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZ" )
+    elif "WWTo2L2Nu" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WWTo2L2Nu" )
 
-		elif "WZTo3LNu" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZTo3LNu" )
+    elif "WZ" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZ" )
 
-		elif "ttbar" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbar" )
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarBackup" )
+    elif "WZTo3LNu" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_WZTo3LNu" )
 
-		elif "ttbarTo2L2Nu" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
+    elif "ttbar" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbar" )
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarBackup" )
 
-		elif "tW" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
+    elif "ttbarTo2L2Nu" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ttbarTo2L2Nu" )
 
-		elif "tbarW" == self.Sample:
-			List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
+    elif "tW" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tW" )
 
-		elif self.Sample == "Data":
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+    elif "tbarW" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_ST_tbarW" )
 
-		elif self.Sample == "DataRunBtoF":
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+    elif "DYTauTau" == self.Sample:
+      List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
 
-		elif self.Sample == "DataRunGtoH":
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
-			List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+    elif self.Sample == "Data":
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
-		List_ROOTFiles = []
-		for fullpath in List_FullPath:
-			FileList = os.listdir( fullpath )
+    elif self.Sample == "DataRunBtoF":
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
 
-			for file in FileList:
-				if ".root" in file:
-					List_ROOTFiles.append( fullpath+"/"+file )
+    elif self.Sample == "DataRunGtoH":
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
-		if len(List_ROOTFiles) == 0:
-			print "There is no available root files ... check the directory name"
-			print "Path: ", List_FullPath
-			sys.exit()
+    List_ROOTFiles = []
+    for fullpath in List_FullPath:
+      FileList = os.listdir( fullpath )
 
-		return List_ROOTFiles
+      for file in FileList:
+        if ".root" in file:
+          List_ROOTFiles.append( fullpath+"/"+file )
 
-	def GetNormFactor( self ):
-		XSecSumW_Powheg = {}
-		XSecSumW_Powheg["M50to120"] = [1975, 2976526.0]
-		XSecSumW_Powheg["M120to200"] = [19.32, 99998]
-		XSecSumW_Powheg["M200to400"] = [2.731, 99999]
-		XSecSumW_Powheg["M400to800"] = [0.241, 98999]
-		XSecSumW_Powheg["M800to1400"] = [0.01678, 96398]
-		XSecSumW_Powheg["M1400to2300"] = [0.00139, 99998]
-		XSecSumW_Powheg["M2300to3500"] = [0.00008948, 100000]
-		XSecSumW_Powheg["M3500to4500"] = [0.000004135, 99000]
-		XSecSumW_Powheg["M4500to6000"] = [4.56E-07, 100000]
-		XSecSumW_Powheg["M6000toInf"] = [2.066E-08, 100000]
+    if len(List_ROOTFiles) == 0:
+      print "There is no available root files ... check the directory name"
+      print "Path: ", List_FullPath
+      sys.exit()
 
-		xSecSumW_WJetsHTBinned = {}
-		xSecSumW_WJetsHTBinned["HT70to100"] = [-1, 10094300.0]
-		xSecSumW_WJetsHTBinned["HT100to200"] = [1345, 39617782.0]
-		xSecSumW_WJetsHTBinned["HT200to400"] = [359.7, 4950372.0]
-		xSecSumW_WJetsHTBinned["HT400to600"] = [48.91, 5796237.0]
-		xSecSumW_WJetsHTBinned["HT600to800"] = [12.05, 14908337.0]
-		xSecSumW_WJetsHTBinned["HT800to1200"] = [5.501, 6200954.0]
-		xSecSumW_WJetsHTBinned["HT1200to2500"] = [1.329, 6474309.0]
-		xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, 2384259.0]
+    return List_ROOTFiles
 
-		# XSecSumW_DYMMaMCNLO = {}
-		# XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]
-		# XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 6311695]
-		# XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 6061181]
-		# XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 227522]
-		# XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 170955]
-		# XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 50136]
-		# XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 47833]
-		# XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 44740]
-		# XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 43496]
-		# XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 40783]
-		# XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 37176]
-		# XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 23078]
+  def GetNormFactor( self ):
+    XSecSumW_Powheg = {}
+    XSecSumW_Powheg["M50to120"] = [1975.0, 2977596.0]
+    XSecSumW_Powheg["M120to200"] = [19.32, 100000.0]
+    XSecSumW_Powheg["M200to400"] = [2.731, 100000.0]
+    XSecSumW_Powheg["M400to800"] = [0.241, 98400.0]
+    XSecSumW_Powheg["M800to1400"] = [0.01678, 100000.0]
+    XSecSumW_Powheg["M1400to2300"] = [0.00139, 95106.0]
+    XSecSumW_Powheg["M2300to3500"] = [0.00008948, 100000.0]
+    XSecSumW_Powheg["M3500to4500"] = [0.000004135, 100000.0]
+    XSecSumW_Powheg["M4500to6000"] = [4.56E-07, 100000.0]
+    XSecSumW_Powheg["M6000toInf"] = [2.066E-08, 100000.0]
 
-		XSec = -1
-		SumW = -1
+    xSecSumW_WJetsHTBinned = {}
+    xSecSumW_WJetsHTBinned["HT70to100"] = [-1, 10094300.0]
+    xSecSumW_WJetsHTBinned["HT100to200"] = [1345, 39617782.0]
+    xSecSumW_WJetsHTBinned["HT200to400"] = [359.7, 4950372.0]
+    xSecSumW_WJetsHTBinned["HT400to600"] = [48.91, 5796237.0]
+    xSecSumW_WJetsHTBinned["HT600to800"] = [12.05, 14908337.0]
+    xSecSumW_WJetsHTBinned["HT800to1200"] = [5.501, 6200954.0]
+    xSecSumW_WJetsHTBinned["HT1200to2500"] = [1.329, 6474309.0]
+    xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, 2384259.0]
 
-		# -- need to be added: ttbar, diboson, ... -- #
-		xSecSumW_Others = {}
-		xSecSumW_Others["ZZ"] = [16.523, 998034]
-		xSecSumW_Others["ZZTo4L"] = [1.256, -1.0]
+    xSecSumW_DYLLPtBinned = {}  #Min
+    xSecSumW_DYLLPtBinned["Pt50to100"]  = [3.543900e+02/3.0, 15866595.0]
+    xSecSumW_DYLLPtBinned["Pt100to250"] = [8.120819e+01/3.0, 9952789.0]
+    xSecSumW_DYLLPtBinned["Pt250to400"] = [2.991468e+00/3.0, 2591931.0]
+    xSecSumW_DYLLPtBinned["Pt400to650"] = [3.881616e-01/3.0, 209669.0]
+    xSecSumW_DYLLPtBinned["Pt650toInf"] = [3.737180e-02/3.0, 223792.0]
 
-		xSecSumW_Others["WW"] = [-1.0, 6987123]
-		xSecSumW_Others["WWTo2L2Nu"] = [12.178, 1999000]
+    # XSecSumW_DYMMaMCNLO = {}
+    # XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]
+    # XSecSumW_DYMMaMCNLO["M50toInf"] = [6025.2/3.0, 6311695]
+    # XSecSumW_DYMMaMCNLO["M50to100"] = [5869.58346/3.0, 6061181]
+    # XSecSumW_DYMMaMCNLO["M100to200"] = [226/3.0, 227522]
+    # XSecSumW_DYMMaMCNLO["M200to400"] = [7.67/3.0, 170955]
+    # XSecSumW_DYMMaMCNLO["M400to500"] = [0.423/3.0, 50136]
+    # XSecSumW_DYMMaMCNLO["M500to700"] = [0.24/3.0, 47833]
+    # XSecSumW_DYMMaMCNLO["M700to800"] = [0.035/3.0, 44740]
+    # XSecSumW_DYMMaMCNLO["M800to1000"] = [0.03/3.0, 43496]
+    # XSecSumW_DYMMaMCNLO["M1000to1500"] = [0.016/3.0, 40783]
+    # XSecSumW_DYMMaMCNLO["M1500to2000"] = [0.002/3.0, 37176]
+    # XSecSumW_DYMMaMCNLO["M2000to3000"] = [0.00054/3.0, 23078]
 
-		xSecSumW_Others["WZ"] = [47.13, 2995828]
-		xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
+    XSec = -1
+    SumW = -1
 
-		xSecSumW_Others["ttbar"] = [831.76, 77229334+76175894]
-		xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
+    # -- need to be added: ttbar, diboson, ... -- #
+    xSecSumW_Others = {}
+    xSecSumW_Others["ZZ"] = [16.523, 998034.0]
+    xSecSumW_Others["ZZTo4L"] = [1.256, -1.0]
 
-		xSecSumW_Others["tW"] = [35.6, 6952830]
-		xSecSumW_Others["tbarW"] = [35.6, 6933093]
+    xSecSumW_Others["WW"] = [-1.0, 6987123.0]
+    xSecSumW_Others["WWTo2L2Nu"] = [12.178, 1999000.0]
+
+    xSecSumW_Others["WZ"] = [47.13, 2995828.0]
+    xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
+
+    xSecSumW_Others["ttbar"] = [831.76, 77229334.0+76175894.0]
+    xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391.0]
+
+    xSecSumW_Others["tW"] = [35.6, 6952830.0]
+    xSecSumW_Others["tbarW"] = [35.6, 6933093.0]
+
+    xSecSumW_Others["DYTauTau"] = [6025.2/3.0, 6467286.0]
 
 
-		if "DYPowheg" in self.Sample:
-			MassRange = self.Sample.split("_")[1]
-			if MassRange in XSecSumW_Powheg:
-				XSec = XSecSumW_Powheg[ MassRange ][0]
-				SumW = XSecSumW_Powheg[ MassRange ][1]
-			else:
-				XSec = -1
-				SumW = -1
+    if "DYPowheg" in self.Sample:
+      MassRange = self.Sample.split("_")[1]
+      if MassRange in XSecSumW_Powheg:
+        XSec = XSecSumW_Powheg[ MassRange ][0]
+        SumW = XSecSumW_Powheg[ MassRange ][1]
+      else:
+        XSec = -1
+        SumW = -1
 
-		elif "WJets_HT" in self.Sample:
-			HTRange = self.Sample.split("_")[-1]
-			if HTRange in xSecSumW_WJetsHTBinned:
-				XSec = xSecSumW_WJetsHTBinned[ HTRange ][0]
-				SumW = xSecSumW_WJetsHTBinned[ HTRange ][1]
-			else:
-				XSec = -1
-				SumW = -1
-		# elif "DYMuMu" in self.Sample:
-		# 	MassRange = self.Sample.split("_")[1]
-		# 	if MassRange in XSecSumW_DYMMaMCNLO:
-		# 		XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
-		# 		SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
-		# 	else:
-		# 		XSec = -1
-		# 		SumW = -1
-		elif self.Sample in xSecSumW_Others:
-			XSec = xSecSumW_Others[ self.Sample ][0]
-			SumW = xSecSumW_Others[ self.Sample ][1]
-		else:
-			XSec = -1
-			SumW = -1
+    elif "WJets_HT" in self.Sample:
+      HTRange = self.Sample.split("_")[-1]
+      if HTRange in xSecSumW_WJetsHTBinned:
+        XSec = xSecSumW_WJetsHTBinned[ HTRange ][0]
+        SumW = xSecSumW_WJetsHTBinned[ HTRange ][1]
+      else:
+        XSec = -1
+        SumW = -1
 
-		if XSec < 0:
-			print "There is no cross section information for this sample: %s" % (self.Sample)
-			sys.exit()
+    elif "DYLL_Pt" in self.Sample:     #Min
+      PtRange = self.Sample.split("_")[-1]
+      if PtRange in xSecSumW_DYLLPtBinned:
+        XSec = xSecSumW_DYLLPtBinned[ PtRange ][0]
+        SumW = xSecSumW_DYLLPtBinned[ PtRange ][1]
+      else:
+        XSec = -1
+        SumW = -1
 
-		if SumW < 0:
-			print "There is no SumW information for this sample: %s" % (self.Sample)
-			sys.exit()
+    # elif "DYMuMu" in self.Sample:
+    #   MassRange = self.Sample.split("_")[1]
+    #   if MassRange in XSecSumW_DYMMaMCNLO:
+    #     XSec = XSecSumW_DYMMaMCNLO[ MassRange ][0]
+    #     SumW = XSecSumW_DYMMaMCNLO[ MassRange ][1]
+    #   else:
+    #     XSec = -1
+    #     SumW = -1
 
-		normfactor = (XSec * self.Lumi) / SumW
-		print "[%s] Normalization factor = (%.10lf * %.10lf) / %.10lf = %.10lf" % (self.Sample, XSec, self.Lumi, SumW, normfactor)
+    elif self.Sample in xSecSumW_Others:
+      XSec = xSecSumW_Others[ self.Sample ][0]
+      SumW = xSecSumW_Others[ self.Sample ][1]
+    else:
+      XSec = -1
+      SumW = -1
 
-		return normfactor
+    if XSec < 0:
+      print "There is no cross section information for this sample: %s" % (self.Sample)
+      sys.exit()
+
+    if SumW < 0:
+      print "There is no SumW information for this sample: %s" % (self.Sample)
+      sys.exit()
+
+    normfactor = (XSec * self.Lumi) / SumW
+    print "[%s] Normalization factor = (%.10lf * %.10lf) / %.10lf = %.10lf" % (self.Sample, XSec, self.Lumi, SumW, normfactor)
+
+    return normfactor
 
 
 if __name__ == "__main__":
-	split = SplitJobs( opts )
-	split.CreateWorkSpace()
+  split = SplitJobs( opts )
+  split.CreateWorkSpace()
