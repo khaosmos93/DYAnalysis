@@ -1,6 +1,7 @@
 # Plots, Big files...
 Local/
 Local_*/
+*.root
 
 # logs
 *.log
