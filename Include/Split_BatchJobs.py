@@ -208,18 +208,19 @@ echo "job is completed"
   def GetListOfROOTFiles( self ):
     List_FullPath = []
     BasePath = os.environ['KP_DATA_PATH'] + "/"
+    BasePath_MS = os.environ['MS_DATA_PATH'] + "/"   #Min
 
     if "DYPowheg" in self.Sample:
       MassRange = self.Sample.split("_")[-1]
       List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
-    elif "WJets_HT" in self.Sample:
+    elif "WJets_HT" in self.Sample:    #Min
       HTRange = self.Sample.split("_")[-1]
-      List_FullPath.append( BasePath + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
 
     elif "DYLL_Pt" in self.Sample:    #Min
       PtRange = self.Sample.split("_")[-1]
-      List_FullPath.append( BasePath + "DYntuple_v20170816_DYLL_"+PtRange )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170816_DYLL_"+PtRange )
 
     # elif "DYMuMu" in self.Sample:
     #   MassRange = self.Sample.split("_")[-1]
@@ -261,26 +262,26 @@ echo "job is completed"
       List_FullPath.append( BasePath + "DYntuple_v20170127_80XMoriond17_AddZprimeVar_DYLL_M50toInf" )
 
     elif self.Sample == "Data":
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
     elif self.Sample == "DataRunBtoF":
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016B_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016C_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016D_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016E_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016F_v1_GoldenJSON_271036_to_284044" )
 
     elif self.Sample == "DataRunGtoH":
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
-      List_FullPath.append( BasePath + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016G_v1_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v2_GoldenJSON_271036_to_284044" )
+      List_FullPath.append( BasePath_MS + "DYntuple_v20170316_80XReMiniAOD_SingleMuon_Run2016H_v3_GoldenJSON_271036_to_284044" )
 
     List_ROOTFiles = []
     for fullpath in List_FullPath:

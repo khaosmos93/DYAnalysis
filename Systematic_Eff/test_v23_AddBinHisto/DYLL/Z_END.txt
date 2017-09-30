@@ -1,0 +1,8 @@
+
+tail -n 2 ../../../Outputs/v20170927_142*/**/Job*/*.sh.* Z_END.txt
+
+Tot jobs = 60
+
+tail -n 2 ../../../Outputs/v20170927_181*/**/Job*/*.sh.* Z_END.txt
+
+Tot jobs = 100

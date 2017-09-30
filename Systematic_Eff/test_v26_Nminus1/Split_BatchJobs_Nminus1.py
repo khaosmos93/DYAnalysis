@@ -10,7 +10,14 @@ def usage():
     print "   --njob N                9         Total number of jobs"
     print "   --lumi LUMI                      Integrated lumionsity in pb"
     print "   --isMC isMC                      MC or data"
+    print "   --isZwin isZwin                  Applying Zwindow or not"
     print "   --outdir Dir                     Directory where outputs are stored"
+    print """   --theCut CutNo.                  fabs(mu.dB) < 0.2                            // theCut = 1
+                                              && mu.trackerLayers > 5                         // theCut = 2
+                                              && mu.pixelHits > 0                             // theCut = 3
+                                              && mu.muonHits > 0                              // theCut = 4
+                                              && (mu.TuneP_pTError / mu.TuneP_pT ) < 0.3      // theCut = 5
+                                              && Z' matched station                           // theCut = 6"""
     print "  Optional options :"
     print "   --queue queueName                      queue name (default: fastq or bigq)"
     sys.exit()
@@ -18,7 +25,7 @@ def usage():
 # Parse arguments
 if len(sys.argv) < 2: usage()
 try:
-    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "queue=", "outdir="])
+    opts, args = getopt(sys.argv[1:], 'n', ["code=", "sample=", "njob=", "lumi=", "isMC=", "isZwin=","queue=", "outdir=", "theCut="])
     opts = dict(opts)
 except:
     print "!!! Error parsing arguments"
@@ -32,7 +39,9 @@ class SplitJobs:
     self.nJob = int(_opts['--njob'])
     self.Lumi = float(_opts['--lumi'])
     self.isMC = int(_opts['--isMC'])
+    self.isZwin = int(_opts['--isZwin'])
     self.OutDir = _opts['--outdir']
+    self.theCut = int(_opts['--theCut'])
 
     self.CodeName = self.CodeFullPath.split('/')[-1]
 
@@ -46,8 +55,12 @@ class SplitJobs:
     if self.isMC == 1: _TYPE = "MC"
     else: _TYPE = "Data"
 
+    _TYPE2 = ""
+    if self.isZwin == 1: _TYPE2 = "isZwin"
+    else: _TYPE2 = "noZwin"
+
     print "+" * 100
-    print "Create %d jobs to run %s with lumi = %lf on %s -> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, self.queue)
+    print "Create %d jobs to run %s with lumi = %lf on %s with %s, N-1 : %d-> queue name = %s" % (self.nJob, self.CodeName, self.Lumi, _TYPE, _TYPE2, self.queue, , self.theCut)
     print "Output directory: %s" % (self.OutDir)
     print "+" * 100
 
@@ -114,7 +127,7 @@ class SplitJobs:
     # print cmd_cp
     os.system( cmd_cp )
 
-    cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, "%s", %.15lf)' % (self.isMC, FileName, self.NormFactor) + "'";
+    cmd_execute = "root -l -b -q '"+ self.CodeName + '++(%d, %d, "%s", %.15lf, %d)' % (self.isMC, self.isZwin, FileName, self.NormFactor, self.theCut) + "'";
     print cmd_execute
 
     BatchFileName = self.CreateBatchJobScript( _iter, DirName, cmd_execute )
@@ -214,7 +227,7 @@ echo "job is completed"
       MassRange = self.Sample.split("_")[-1]
       List_FullPath.append( BasePath + "DYntuple_v20170207_80XMoriond17_AddZprimeVar_ZMuMuPowheg_"+MassRange )
 
-    elif "WJets_HT" in self.Sample:
+    elif "WJets_HT" in self.Sample:    #Min
       HTRange = self.Sample.split("_")[-1]
       List_FullPath.append( BasePath_MS + "DYntuple_v20170228_80XMoriond17_AddZprimeVar_WJets_"+HTRange)
 
@@ -322,11 +335,11 @@ echo "job is completed"
     xSecSumW_WJetsHTBinned["HT2500toInf"] = [0.03216, 2384259.0]
 
     xSecSumW_DYLLPtBinned = {}  #Min
-    xSecSumW_DYLLPtBinned["Pt50to100"]  = [3.543900e+02/3, 15866595.0]
-    xSecSumW_DYLLPtBinned["Pt100to250"] = [8.120819e+01/3, 9952789.0]
-    xSecSumW_DYLLPtBinned["Pt250to400"] = [2.991468e+00/3, 2591931.0]
-    xSecSumW_DYLLPtBinned["Pt400to650"] = [3.881616e-01/3, 209669.0]
-    xSecSumW_DYLLPtBinned["Pt650toInf"] = [3.737180e-02/3, 223792.0]
+    xSecSumW_DYLLPtBinned["Pt50to100"]  = [3.543900e+02/3.0, 15866595.0]
+    xSecSumW_DYLLPtBinned["Pt100to250"] = [8.120819e+01/3.0, 9952789.0]
+    xSecSumW_DYLLPtBinned["Pt250to400"] = [2.991468e+00/3.0, 2591931.0]
+    xSecSumW_DYLLPtBinned["Pt400to650"] = [3.881616e-01/3.0, 209669.0]
+    xSecSumW_DYLLPtBinned["Pt650toInf"] = [3.737180e-02/3.0, 223792.0]
 
     # XSecSumW_DYMMaMCNLO = {}
     # XSecSumW_DYMMaMCNLO["M10to50"] = [18610.0/3.0, 7506956]
@@ -347,20 +360,20 @@ echo "job is completed"
 
     # -- need to be added: ttbar, diboson, ... -- #
     xSecSumW_Others = {}
-    xSecSumW_Others["ZZ"] = [16.523, 998034]
+    xSecSumW_Others["ZZ"] = [16.523, 998034.0]
     xSecSumW_Others["ZZTo4L"] = [1.256, -1.0]
 
-    xSecSumW_Others["WW"] = [-1.0, 6987123]
-    xSecSumW_Others["WWTo2L2Nu"] = [12.178, 1999000]
+    xSecSumW_Others["WW"] = [-1.0, 6987123.0]
+    xSecSumW_Others["WWTo2L2Nu"] = [12.178, 1999000.0]
 
-    xSecSumW_Others["WZ"] = [47.13, 2995828]
+    xSecSumW_Others["WZ"] = [47.13, 2995828.0]
     xSecSumW_Others["WZTo3LNu"] = [-1.0, -1.0]
 
-    xSecSumW_Others["ttbar"] = [831.76, 77229334+76175894]
-    xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391]
+    xSecSumW_Others["ttbar"] = [831.76, 77229334.0+76175894.0]
+    xSecSumW_Others["ttbarTo2L2Nu"] = [87.31, 79092391.0]
 
-    xSecSumW_Others["tW"] = [35.6, 6952830]
-    xSecSumW_Others["tbarW"] = [35.6, 6933093]
+    xSecSumW_Others["tW"] = [35.6, 6952830.0]
+    xSecSumW_Others["tbarW"] = [35.6, 6933093.0]
 
     xSecSumW_Others["DYTauTau"] = [6025.2/3.0, 6467286.0]
 

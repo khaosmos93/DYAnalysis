@@ -1,0 +1,6 @@
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_38_ext5.root
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_39_ext5.root
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_3_ext5.root
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_40_ext5.root
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_41_ext5.root
+/data1/msoh/DYNtuple_KP/80X/DYntuple_v20170816_DYLL_Pt250to400/ntuple_skim_42_ext5.root

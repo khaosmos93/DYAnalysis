@@ -1,0 +1,4 @@
+
+tail -n 2 ../../Outputs/v20170927_090*/**/Job*/*.sh.* Z_END.txt
+
+Tot jobs = 66 ( Data = 20, MCs = 46)

@@ -65,7 +65,7 @@ public:
 		ID 		= ntuple->GenLepton_ID[index];
 		charge 	= ntuple->GenLepton_charge[index];
 		Status 	= ntuple->GenLepton_status[index];
-
+		
 		if( ID == -11 || ID == 11 )
 		    Mass = M_Elec;
 		else if( ID == -13 || ID == 13 )
@@ -159,7 +159,7 @@ public:
 		ID      = ntuple->GenOthers_ID[index];
 		charge  = ntuple->GenOthers_charge[index];
 		Status  = ntuple->GenOthers_status[index];
-
+		
 		Mass = 0;
 		if( abs(ID) == 22 ) // -- Photon -- //
 		    Mass = 0;
@@ -307,8 +307,8 @@ public:
 				&& InvEminusInvP < 0.0174
 				&& fabs(dxyVTX) < 0.0118
 				&& fabs(dzVTX) < 0.373
-				&& mHits <= 2
-				// && passConvVeto == 1
+				&& mHits <= 2 
+				// && passConvVeto == 1 
 				)
 				isPass = kTRUE;
 		}
@@ -323,7 +323,7 @@ public:
 				&& fabs(dxyVTX) < 0.0739
 				&& fabs(dzVTX) < 0.602
 				&& mHits <= 1
-				// && passConvVeto == 1
+				// && passConvVeto == 1 
 				)
 				isPass = kTRUE;
 		}
@@ -352,8 +352,8 @@ public:
 				&& InvEminusInvP < 0.0174
 				&& fabs(dxyVTX) < 0.0118
 				&& fabs(dzVTX) < 0.373
-				&& mHits <= 2
-				// && passConvVeto == 1
+				&& mHits <= 2 
+				// && passConvVeto == 1 
 				)
 				isPass = kTRUE;
 		}
@@ -368,7 +368,7 @@ public:
 				&& fabs(dxyVTX) < 0.0739
 				&& fabs(dzVTX) < 0.602
 				&& mHits <= 1
-				// && passConvVeto == 1
+				// && passConvVeto == 1 
 				)
 				isPass = kTRUE;
 		}
@@ -880,7 +880,7 @@ public:
 			&& fabs(this->dxyVTX) < 0.2
 			&& fabs(this->dzVTX) < 0.5
 			&& this->pixelHits > 0
-			// && this->trackerLayers > 5
+			// && this->trackerLayers > 5 
 			)
 		{
 			return 1;
@@ -955,7 +955,7 @@ public:
 			&& this->trackerLayersGLB > 5
 			&& this->pixelHitsGLB > 0
 			&& this->muonHits > 0
-			&& (  this->nMatches > 1
+			&& (  this->nMatches > 1 
 				|| ( this->nMatches==1 && !(this->stationMask==1 || this->stationMask==16) )  )
 			&& (this->TuneP_pTError / this->TuneP_pT ) < 0.3
 			&& (this->AbsTrkIso / this->Inner_pT) < 0.1
@@ -975,7 +975,7 @@ public:
 			&& this->trackerLayersGLB > 5
 			&& this->pixelHitsGLB > 0
 			&& this->muonHits > 0
-			&& (  this->nMatches > 1
+			&& (  this->nMatches > 1 
 				|| ( this->nMatches==1 && !(this->stationMask==1 || this->stationMask==16) )
 				|| ( this->nMatches==1 && (this->stationMask==1 || this->stationMask==16) && this->nMatchesRPCLayers > 2 )  )
 			&& (this->TuneP_pTError / this->TuneP_pT ) < 0.3
@@ -1034,7 +1034,7 @@ public:
 			&& this->trackerLayersGLB > 5
 			&& this->pixelHitsGLB > 0
 			&& this->muonHits > 0
-			&& (  this->nMatches > 1
+			&& (  this->nMatches > 1 
 				|| ( this->nMatches==1 && !(this->stationMask==1 || this->stationMask==16) )  )
 			&& (this->TuneP_pTError / this->TuneP_pT ) < 0.3
 			// && (this->AbsTrkIso / this->Inner_pT) < 0.1
@@ -1054,7 +1054,7 @@ public:
 			&& this->trackerLayersGLB > 5
 			&& this->pixelHitsGLB > 0
 			&& this->muonHits > 0
-			&& (  this->nMatches > 1
+			&& (  this->nMatches > 1 
 				|| ( this->nMatches==1 && !(this->stationMask==1 || this->stationMask==16) )
 				|| ( this->nMatches==1 && (this->stationMask==1 || this->stationMask==16) && this->nMatchesRPCLayers > 2 )  )
 			&& (this->TuneP_pTError / this->TuneP_pT ) < 0.3
@@ -1081,7 +1081,6 @@ public:
 	Double_t NormVtxChi2;
 	Double_t Angle3D;
 	Double_t Angle3D_Inner;
-	Double_t deltaR;
 
 	Bool_t isOS;
 
@@ -1114,10 +1113,9 @@ public:
 
 		this->Angle3D = First.Momentum.Angle( Second.Momentum.Vect() );
 		this->Angle3D_Inner = First.Momentum_Inner.Angle( Second.Momentum_Inner.Vect() );
-		this->deltaR = sqrt( (First.eta - Second.eta)*(First.eta - Second.eta) + (First.phi - Second.phi)*(First.phi - Second.phi) );
 
 		// -- initialization -- //
-		this->VtxProb = -999;
+		this->VtxProb = -999; 
 		this->NormVtxChi2 = 999;
 
 		this->isOS = First.charge != Second.charge ? kTRUE : kFALSE;
@@ -1138,7 +1136,7 @@ public:
 		Int_t NPt2 = (Int_t)PtCollection2->size();
 		Int_t NProb = (Int_t)VtxProbCollection->size();
 
-		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb )
+		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
 			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
 
 		// -- inner pT values are used -- //
@@ -1166,7 +1164,7 @@ public:
 		Int_t NPt2 = (Int_t)PtCollection2->size();
 		Int_t NProb = (Int_t)VtxProbCollection->size();
 
-		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb )
+		if( NPt1 != NPt2 || NPt2 != NProb || NPt1 != NProb ) 
 			cout << "NPt1: " << NPt1 << " NPt2: " << NPt2 << " Nprob: " << NProb << endl;
 
 		// cout << "Pt1: " << Pt1 << " Pt2: " << Pt2 << endl;
@@ -1187,7 +1185,7 @@ public:
 		return;
 	}
 
-	Bool_t isGoodMuPair( NtupleHandle *ntuple, TString HLT,
+	Bool_t isGoodMuPair( NtupleHandle *ntuple, TString HLT, 
 						   Double_t LeadPtCut, Double_t SubPtCut, Double_t LeadEtaCut, Double_t SubEtaCut )
 	{
 		Bool_t GoodPair = kFALSE;
@@ -1210,7 +1208,7 @@ public:
 			this->NormVtxChi2 < 20 &&  // -- vertex chi2 < 20 -- //
 			this->Angle3D_Inner < TMath::Pi()-0.005 &&  // -- 3D open angle -- //
 			this->isOS == kTRUE // -- opposite sign -- //
-			)
+			) 
 			GoodPair = kTRUE;
 
 		return GoodPair;
@@ -1221,7 +1219,7 @@ public:
 		Bool_t Flag = kFALSE;
 
 		// -- first: leading, second: sub-leading -- //
-		if( this->First.Pt > LeadPtCut && fabs(this->First.eta) < LeadEtaCut &&
+		if( this->First.Pt > LeadPtCut && fabs(this->First.eta) < LeadEtaCut && 
 			this->Second.Pt > SubPtCut && fabs(this->Second.eta) < SubEtaCut )
 				Flag = kTRUE;
 
@@ -1232,13 +1230,13 @@ public:
 Bool_t ComparePair_VtxChi2( MuPair pair1, MuPair pair2 )
 {
 	// -- the pair with "smallest" vertex chi2 will be the first element -- //
-	return pair1.NormVtxChi2 < pair2.NormVtxChi2;
+	return pair1.NormVtxChi2 < pair2.NormVtxChi2; 
 }
 
 Bool_t ComparePair_DimuonPt( MuPair pair1, MuPair pair2 )
 {
 	// -- the pair with "largest" dimuon pT will be the first element -- //
-	return pair1.Pt > pair2.Pt;
+	return pair1.Pt > pair2.Pt; 
 }
 
 class Photon : public Object
@@ -1305,9 +1303,9 @@ public:
 				isPass = kTRUE;
 		}
 
-		return isPass;
+		return isPass;		
 	}
-
+	
 };
 
 class Jet : public Object

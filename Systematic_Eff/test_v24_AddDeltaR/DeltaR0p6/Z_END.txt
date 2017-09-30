@@ -1,0 +1,4 @@
+
+
+
+tail -n 2 ../../../Outputs/v20170930_025700_ProdHist_Systematic_Eff_DeltaR_v1/**/Job*/*.sh.* Z_END.txt >tail_All.log
